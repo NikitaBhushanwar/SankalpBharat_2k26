@@ -2,16 +2,33 @@
 
 import { useTheme } from '@/context/theme-provider';
 import { Moon, Sun, Monitor } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isOpen]);
 
   const themes = [
     { value: 'light', label: 'Light', icon: Sun },
@@ -31,7 +48,7 @@ export function ThemeToggle() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
@@ -43,7 +60,7 @@ export function ThemeToggle() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-700">
           <div className="p-2">
             {themes.map((t) => {
               const IconComponent = t.icon;

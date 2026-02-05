@@ -143,6 +143,7 @@ export default function AdminLoginPage() {
               </p>
             </div>
           </div>
+          </div>
         </main>
       </PageTransition>
   )
