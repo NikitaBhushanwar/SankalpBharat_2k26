@@ -79,21 +79,38 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ================= Floating Logo ================= */}
-      <div
-        className="fixed z-[60] pointer-events-none"
-        style={{
-          left: `${currentX}px`,
-          top: `${currentY}px`,
-          width: `${currentSize}px`,
-          height: `${currentSize}px`,
-          transform: 'translate(-50%, -50%)',
-        }}
-      >
+      {/* ================= Floating Logo + Intro Title ================= */}
+<div
+  className="fixed z-[60] pointer-events-none flex flex-col items-center"
+  style={{
+    left: `${currentX}px`,
+    top: `${currentY}px`,
+    transform: 'translate(-50%, -50%)',
+  }}
+>
+  {/* Logo */}
+  <div
+    style={{
+      width: `${currentSize}px`,
+      height: `${currentSize}px`,
+    }}
+  >
+    <Logo className="w-full h-full drop-shadow-2xl" />
+  </div>
 
-     <Logo className="w-full h-full drop-shadow-2xl" />
+  {/* Intro Text (Only when at top) */}
+  {scrollProgress < 0.05 && (
+    <h1
+      className="mt-8 text-3xl md:text-4xl font-black tracking-[0.2em]
+                 text-slate-900 dark:text-white
+                 transition-all duration-1000 ease-out
+                 animate-intro-title"
+    >
+      SANKALP BHARAT
+    </h1>
+  )}
+</div>
 
-      </div>
 
       {/* ================= Floating Navbar ================= */}
       <nav
