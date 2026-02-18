@@ -1,11 +1,53 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import {
-  ThemeProvider as NextThemesProvider,
-  type ThemeProviderProps,
-} from 'next-themes'
+import { createContext, useContext, useEffect, useState } from 'react';
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+type Theme = 'light' | 'dark';
+
+interface ThemeContextType {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  isDark: boolean;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>('light');
+
+  useEffect(() => {
+    const stored = localStorage.getItem('sb-theme') as Theme | null;
+    const initial =
+      stored ??
+      (window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light');
+
+    setThemeState(initial);
+    document.documentElement.classList.toggle('dark', initial === 'dark');
+  }, []);
+
+  const setTheme = (next: Theme) => {
+    setThemeState(next);
+    document.documentElement.classList.toggle('dark', next === 'dark');
+    localStorage.setItem('sb-theme', next);
+  };
+
+  return (
+    <ThemeContext.Provider
+      value={{
+        theme,
+        setTheme,
+        isDark: theme === 'dark',
+      }}
+    >
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
+  return ctx;
 }

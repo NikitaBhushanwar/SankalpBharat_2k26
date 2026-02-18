@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -309,3 +313,47 @@
     box-shadow: 0 12px 24px rgba(16, 185, 129, 0.15);
   }
 }
+
+/*new*/
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-30px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes drift {
+  0% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(-12px) translateX(8px); }
+  100% { transform: translateY(0px) translateX(0px); }
+}
+
+.animate-float {
+  animation: float 12s ease-in-out infinite;
+}
+
+.animate-drift {
+  animation: drift 8s ease-in-out infinite;
+}
+
+.bg-hero-green-focus {
+  background: linear-gradient(
+    180deg,
+    #ECFDF5 0%,
+    #F0FDF4 40%,
+    #FFFFFF 100%
+  );
+}
+
+.dark .bg-hero-green-focus {
+  background: linear-gradient(
+    180deg,
+    #022C22 0%,
+    #020617 70%,
+    #020617 100%
+  );
+}
+
+
+
+
+

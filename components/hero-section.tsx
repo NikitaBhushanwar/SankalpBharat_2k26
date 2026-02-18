@@ -1,146 +1,172 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
+import {
+  Leaf,
+  TreePine,
+  Droplets,
+  Recycle,
+  Wind,
+  Sprout,
+  Wheat,
+  Tractor,
+  Cpu,
+  CircuitBoard,
+} from 'lucide-react';
 
-export function HeroSection() {
-  const [days, setDays] = useState(0)
-  const [hours, setHours] = useState(0)
-  const [minutes, setMinutes] = useState(0)
-  const [seconds, setSeconds] = useState(0)
 
-  useEffect(() => {
-    const calculateCountdown = () => {
-      // Demo date: March 15, 2026, 10:00 AM IST
-      const targetDate = new Date('2026-03-15T10:00:00').getTime()
-      const now = new Date().getTime()
-      const distance = targetDate - now
 
-      if (distance > 0) {
-        setDays(Math.floor(distance / (1000 * 60 * 60 * 24)))
-        setHours(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)))
-        setMinutes(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)))
-        setSeconds(Math.floor((distance % (1000 * 60)) / 1000))
-      }
-    }
+interface HeroSectionProps {
+  visible: boolean;
+}
 
-    calculateCountdown()
-    const interval = setInterval(calculateCountdown, 1000)
-    return () => clearInterval(interval)
-  }, [])
-
+export function HeroSection({ visible }: HeroSectionProps) {
   return (
-    <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-8">
-      {/* Gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-emerald-300/20 rounded-full blur-3xl opacity-40 animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl opacity-40 animate-pulse" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-amber-300/20 rounded-full blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }} />
+    <section
+      className={`
+        relative min-h-screen flex items-center justify-center overflow-hidden
+        transition-all duration-700 mt-170
+        ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12 pointer-events-none'}
+      `}
+    >
+      {/* ================= BACKGROUND GRADIENT ================= */}
+{/* HERO BACKGROUND */}
+<div className="absolute inset-0 -z-20 bg-hero-tricolor transition-colors duration-500" />
 
-      {/* Main content */}
-      <div className="relative z-10 max-w-5xl mx-auto text-center page-transition-enter">
-        {/* Intro tag */}
-        <div className="mb-6 sm:mb-8 inline-block">
-          <div className="glass-effect px-3 sm:px-4 py-2 rounded-full">
-            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 tracking-widest uppercase">
-              🚀 National Level Hackathon 2026
-            </p>
-          </div>
+      {/* ================= FLOATING BLOBS ================= */}
+      <FloatingBlob className="top-32 left-1/4 bg-orange-400/30 dark:bg-orange-500/10" size="w-[420px] h-[420px]" />
+      <FloatingBlob className="bottom-32 right-1/4 bg-green-400/30 dark:bg-green-500/10" size="w-[380px] h-[380px]" />
+      <FloatingBlob className="top-1/3 right-24 bg-blue-400/30 dark:bg-blue-500/10" size="w-[260px] h-[260px]" />
+
+      {/* ================= DOODLES ================= */}
+      <div className="hidden lg:block">
+        {/* ENVIRONMENT */}
+        <FloatingIcon icon={<TreePine />} className="top-24 left-16 text-green-600 opacity-70" />
+        <FloatingIcon icon={<Droplets />} className="top-[45%] left-28 text-sky-500 opacity-60" />
+        <FloatingIcon icon={<Wind />} className="bottom-28 left-20 text-teal-500 opacity-60" />
+
+        {/* AGRICULTURE */}
+        <FloatingIcon icon={<Sprout />} className="top-32 right-24 text-emerald-600 opacity-70" />
+        <FloatingIcon icon={<Wheat />} className="top-[60%] right-36 text-lime-600 opacity-60" />
+        <FloatingIcon icon={<Tractor />} className="bottom-24 right-28 text-green-700 opacity-60 scale-90" />
+
+        {/* SUSTAINABILITY */}
+        <FloatingIcon icon={<Recycle />} className="top-[18%] left-[52%] text-green-500 opacity-50 scale-90" />
+        <FloatingIcon icon={<Leaf />} className="bottom-[22%] right-[52%] text-emerald-500 opacity-50 scale-90" />
+
+        {/* TECHNOLOGY (SUBTLE) */}
+        <FloatingIcon icon={<Cpu />} className="top-[30%] left-[70%] text-blue-500 opacity-40 scale-75" />
+        <FloatingIcon icon={<CircuitBoard />} className="bottom-[35%] right-[70%] text-indigo-500 opacity-40 scale-75" />
+      </div>
+
+      {/* ================= CONTENT CONTAINER ================= */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full
+                        bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl
+                        border border-blue-700 dark:border-white/10
+                        shadow-md mb-10 animate-pulse">
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+          <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+            National Innovation Hackathon 2026
+          </span>
         </div>
 
-        {/* Main headline */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight text-balance">
-          <span className="text-foreground">Sankalp Bharat</span>
-          <br />
-          <span className="gradient-text text-5xl sm:text-6xl md:text-7xl lg:text-7xl">
-            Hackathon 2026
-          </span>
+        {/* Title */}
+        <h1 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tight
+                       text-slate-900 dark:text-white leading-[1.05]">
+          SANKALP BHARAT
         </h1>
 
-        {/* Tagline */}
-        <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 max-w-3xl mx-auto text-pretty">
-          Innovating Sustainable Technology for a Better India 🌱
+        {/* Gradient Subtitle */}
+        <h2
+          className="mt-4 text-2xl md:text-4xl font-black tracking-tight
+                     bg-gradient-to-r from-blue-700 via-blue-900 to-blue-700
+                     bg-clip-text text-transparent"
+        >
+          HACKATHON 2026
+        </h2>
+
+        {/* Description */}
+        <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl
+                      text-slate-600 dark:text-slate-400 leading-relaxed">
+          Innovating
+          <span className="mx-1 font-semibold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+            sustainable
+          </span>
+          and
+          <span className="mx-1 font-semibold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+            technology-driven
+          </span>
+          solutions for a
+          <span className="mx-1 font-semibold bg-gradient-to-r from-orange-600 to-amber-500 bg-clip-text text-transparent">
+            Viksit Bharat
+          </span>
         </p>
 
-        {/* Keywords */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12">
-          {['🌍 Environment', '🌾 Agriculture', '♻️ Sustainability'].map((keyword) => (
-            <div key={keyword} className="glass-effect px-3 sm:px-4 py-2 rounded-lg card-hover">
-              <p className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-emerald-400">{keyword}</p>
-            </div>
-          ))}
+        {/* Stats */}
+        <div className="mt-16 grid grid-cols-3 gap-8 max-w-3xl mx-auto text-black">
+          <Stat value="₹10L+" label="Prize Pool" />
+          <Stat value="500+" label="Participants" />
+          <Stat value="48 Hrs" label="Innovation Sprint" />
         </div>
 
-        {/* Countdown */}
-        <div className="mb-8 sm:mb-12 p-6 sm:p-8 glass-effect rounded-2xl max-w-2xl mx-auto">
-          <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 tracking-widest">⏱️ TIME REMAINING</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
-            {[
-              { value: days, label: 'Days' },
-              { value: hours, label: 'Hours' },
-              { value: minutes, label: 'Minutes' },
-              { value: seconds, label: 'Seconds' },
-            ].map(({ value, label }) => (
-              <div key={label} className="text-center">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-1 sm:mb-2">
-                  {String(value).padStart(2, '0')}
-                </div>
-                <p className="text-xs font-mono text-gray-600 dark:text-gray-400 uppercase">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8">
-          <a
-            href="https://unstop.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-modern text-sm sm:text-base"
-          >
-            Register on Unstop
-          </a>
-          <a
-            href="#guidelines"
-            className="btn-modern-secondary text-sm sm:text-base"
-          >
-            View Guidelines
-          </a>
-        </div>
-
-        {/* Quick navigation */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm font-medium">
-          <a href="/leaderboard" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
-            📊 Leaderboard
-          </a>
-          <span className="text-gray-300 dark:text-gray-600">•</span>
-          <a href="/winners" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
-            🏆 Winners
-          </a>
-          <span className="text-gray-300 dark:text-gray-600">•</span>
-          <a href="#contact" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
-            ✉️ Contact
-          </a>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="mt-12 sm:mt-16 flex justify-center">
-          <div className="animate-bounce">
-            <svg
-              className="w-6 h-6 text-emerald-600 dark:text-emerald-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              />
-            </svg>
-          </div>
+        {/* Scroll Hint */}
+        <div className="mt-20 text-sm text-slate-400 dark:text-slate-500 animate-bounce">
+          Explore ↓
         </div>
       </div>
     </section>
-  )
+  );
+}
+
+/* ================= HELPERS ================= */
+
+function FloatingBlob({
+  className,
+  size,
+  delay,
+}: {
+  className: string;
+  size: string;
+  delay: string;
+}) {
+  return (
+    <div
+      className={`absolute ${className} ${size}
+                  rounded-full blur-3xl animate-float ${delay}`}
+    />
+  );
+}
+
+function FloatingIcon({
+  icon,
+  className,
+}: {
+  icon: React.ReactNode;
+  className: string;
+}) {
+  return (
+    <div
+      className={`absolute ${className}
+                  animate-drift opacity-70`}
+    >
+      <div className="w-10 h-10 flex items-center justify-center">
+        {icon}
+      </div>
+    </div>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="text-center">
+      <div className="text-3xl md:text-4xl font-black text-blue-800">
+        {value}
+      </div>
+      <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        {label}
+      </div>
+    </div>
+  );
 }

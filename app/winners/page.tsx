@@ -118,6 +118,6 @@ export default function WinnersPage() {
         </section>
       </main>
     </PageTransition>
-    <ModernFooter />
+    
   )
 }

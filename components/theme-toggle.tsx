@@ -1,5 +1,6 @@
 'use client';
 
+import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/context/theme-provider';
 import { Moon, Sun, Monitor } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
@@ -54,10 +55,12 @@ export function ThemeToggle() {
         className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
         aria-label="Toggle theme"
       >
-        {theme === 'light' && <Sun className="w-5 h-5 text-yellow-500" />}
-        {theme === 'dark' && <Moon className="w-5 h-5 text-blue-400" />}
-        {theme === 'system' && <Monitor className="w-5 h-5 text-gray-600 dark:text-gray-400" />}
-      </button>
+        {isDark ? (
+          <Moon size={12} className="text-slate-700" />
+        ) : (
+          <Sun size={12} className="text-amber-500" />
+        )}
+      </span>
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-700">
