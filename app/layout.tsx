@@ -46,7 +46,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans antialiased interactive-bg`}>
+<body className="font-sans antialiased transition-colors duration-300">
+
+
         <ThemeProvider>
           <AuthProvider>
             <Navbar />

@@ -353,6 +353,36 @@
   );
 }
 
+@keyframes introTitle {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+    letter-spacing: 0.4em;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: 0.2em;
+  }
+}
+
+.animate-intro-title {
+  animation: introTitle 1.2s ease forwards;
+}
+
+.dark .animate-intro-title {
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.15);
+}
+
+/* ===== Premium Dark Background Layer ===== */
+.dark body {
+  background: linear-gradient(
+    180deg,
+    #020617 0%,
+    #0f172a 55%,
+    #020617 100%
+  );
+}
 
 
 
