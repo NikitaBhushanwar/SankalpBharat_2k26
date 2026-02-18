@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import ThemeToggle from './theme-toggle';
-import Logo from './logo';
+import { ThemeToggle } from './theme-toggle';
+import SBLogo from './logo';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -91,7 +91,7 @@ export default function Navbar() {
         }}
       >
 
-     <Logo className="w-full h-full drop-shadow-2xl" />
+     <SBLogo className="w-full h-full drop-shadow-2xl" />
 
       </div>
 
