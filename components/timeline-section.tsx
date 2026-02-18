@@ -44,7 +44,7 @@ export function TimelineSection() {
         {/* Timeline */}
         <div className="relative">
           {/* Vertical line - hidden on mobile */}
-          <div className="hidden sm:block absolute left-0 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-500 via-blue-500 to-emerald-500 opacity-30" />
+          <div className="hidden sm:block absolute left-0 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500 via-blue-500 to-green-500 opacity-30" />
 
           {/* Timeline items */}
           <div className="space-y-6 sm:space-y-8 lg:space-y-12">
@@ -55,17 +55,17 @@ export function TimelineSection() {
                   {/* Left/Right content */}
                   <div className="flex-1">
                     <div className="glass-effect rounded-xl lg:rounded-2xl p-4 sm:p-6 card-hover">
-                      <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 tracking-widest mb-2">PHASE {item.phase}</p>
+                      <p className="text-xs font-semibold text-orange-600 dark:text-emerald-400 tracking-widest mb-2">PHASE {item.phase}</p>
                       <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 sm:mb-3 font-medium">{item.date}</p>
-                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">{item.title}</h3>
+                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 dark:text-emerald-400 mb-2">{item.title}</h3>
                       <p className="text-sm text-foreground leading-relaxed">{item.description}</p>
                     </div>
                   </div>
 
                   {/* Center circle */}
                   <div className="flex-shrink-0 flex items-center justify-center">
-                    <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-background dark:bg-slate-900 border-2 border-emerald-500 flex items-center justify-center relative z-10">
-                      <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-emerald-500 animate-pulse" />
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-background dark:bg-slate-900 border-2 border-green-500 flex items-center justify-center relative z-10">
+                      <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-orange-500 animate-pulse" />
                     </div>
                   </div>
 
