@@ -3,6 +3,7 @@ import { LeaderboardTable } from '@/components/leaderboard-table'
 import ModernFooter from '@/components/modern-footer'
 import { ArrowLeft, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'Leaderboard - Sankalp Bharat Hackathon 2026',
@@ -10,6 +11,8 @@ export const metadata: Metadata = {
 }
 
 export default function LeaderboardPage() {
+  redirect('/comming-soon')
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -65,19 +68,21 @@ export default function LeaderboardPage() {
                 </p>
               </div>
               <div className="flex gap-2 w-full sm:w-auto">
-                <button className="btn-modern text-xs sm:text-sm flex-1 sm:flex-none">
+                <Link href="/leaderboard#all-teams" className="btn-modern text-xs sm:text-sm flex-1 sm:flex-none text-center">
                   All Teams
-                </button>
-                <button className="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg glass-effect text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                </Link>
+                <Link href="/leaderboard#top-10" className="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg glass-effect text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-center">
                   Top 10
-                </button>
+                </Link>
               </div>
             </div>
 
             {/* Table */}
-            <div className="glass-effect rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 card-hover overflow-x-auto">
+            <div id="all-teams" className="glass-effect rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 card-hover overflow-x-auto">
               <LeaderboardTable />
             </div>
+
+            <div id="top-10" className="sr-only" />
 
             {/* Footer note */}
             <div className="mt-6 sm:mt-8 p-3 sm:p-4 border-l-4 border-emerald-500 bg-emerald-500/5 rounded-lg">

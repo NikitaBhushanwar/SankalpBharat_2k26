@@ -1,8 +1,17 @@
 export function ThemesSection() {
   const themes = [
-    { title: 'Sustainability', desc: 'Green and climate-focused innovation.' },
-    { title: 'AgriTech', desc: 'Technology for farmers and food systems.' },
-    { title: 'Smart India', desc: 'AI, IoT, and digital governance.' },
+    {
+      title: 'Environment',
+      desc: 'Address ecological conservation, pollution control, resource management, and climate resilience through practical engineering solutions.',
+    },
+    {
+      title: 'Sustainability',
+      desc: 'Build for sustainable development with circular economy models, green energy innovation, and measurable waste reduction.',
+    },
+    {
+      title: 'Agriculture',
+      desc: 'Innovate in precision farming, supply-chain efficiency, soil health analytics, and sustainable agricultural practices.',
+    },
   ];
 
   return (

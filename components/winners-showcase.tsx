@@ -10,6 +10,7 @@ interface WinnerCard {
   teamName: string
   description: string
   prizeAmount: string
+  projectUrl: string
   icon: React.ReactNode
   gradient: string
 }
@@ -21,6 +22,7 @@ const winners: WinnerCard[] = [
     teamName: 'Green Innovators',
     description: 'Renewable Energy Management System - A breakthrough solution for efficient energy distribution and smart grid management using AI and IoT.',
     prizeAmount: '₹5,00,000',
+    projectUrl: 'https://github.com/search?q=Green+Innovators',
     icon: <Trophy className="w-8 h-8" />,
     gradient: 'from-yellow-400 to-orange-500',
   },
@@ -30,6 +32,7 @@ const winners: WinnerCard[] = [
     teamName: 'AgriTech Revolution',
     description: 'AI-Powered Crop Disease Detection - Revolutionary application detecting plant diseases through image recognition and providing treatment solutions.',
     prizeAmount: '₹3,00,000',
+    projectUrl: 'https://github.com/search?q=AgriTech+Revolution',
     icon: <Award className="w-8 h-8" />,
     gradient: 'from-gray-300 to-slate-400',
   },
@@ -39,6 +42,7 @@ const winners: WinnerCard[] = [
     teamName: 'EcoSolve',
     description: 'Smart Waste Management Platform - Intelligent waste segregation and recycling system optimizing municipal waste management processes.',
     prizeAmount: '₹2,00,000',
+    projectUrl: 'https://github.com/search?q=EcoSolve',
     icon: <Award className="w-8 h-8" />,
     gradient: 'from-orange-300 to-amber-500',
   },
@@ -102,7 +106,7 @@ export function WinnersShowcase() {
                         <p className="text-xs font-mono text-muted-foreground tracking-widest uppercase mb-1">Prize Amount</p>
                         <p className="text-2xl font-bold text-accent">{winner.prizeAmount}</p>
                       </div>
-                      <a href="#" className="btn-neon glow-cyan text-sm">
+                      <a href={winner.projectUrl} target="_blank" rel="noopener noreferrer" className="btn-neon glow-cyan text-sm">
                         View Project
                       </a>
                     </div>

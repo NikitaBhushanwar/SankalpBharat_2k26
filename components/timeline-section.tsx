@@ -3,27 +3,45 @@
 const timeline = [
   {
     phase: '01',
-    date: 'January 15 - February 28, 2026',
-    title: 'Registration Phase',
-    description: 'Team formation and registration opening. Get your team ready and register on Unstop.',
+    date: '28th February 2026 (Saturday)',
+    title: 'Website Hosted & Unstop Live',
+    description: 'Official website goes live and registration opens on Unstop.',
   },
   {
     phase: '02',
-    date: 'March 1 - March 10, 2026',
-    title: 'Idea Submission',
-    description: 'Submit your innovative project ideas. Guidelines and templates will be provided.',
+    date: '2nd March 2026 (Monday)',
+    title: 'Promotions Start',
+    description: 'Outreach campaigns begin across institutions and innovation communities.',
   },
   {
     phase: '03',
-    date: 'March 15 - March 17, 2026',
-    title: 'Hackathon Event',
-    description: '48-hour intensive coding marathon with expert mentors, workshops, and support.',
+    date: '18th March 2026 (Wednesday)',
+    title: 'Problem Statement Release',
+    description: 'Approximately 10 industry-collaborated problem statements are released officially.',
   },
   {
     phase: '04',
-    date: 'March 20 - March 25, 2026',
-    title: 'Judging & Results',
-    description: 'Expert panel evaluation, live results, and winner announcements.',
+    date: '4th April 2026 (Saturday)',
+    title: 'Registration Closes',
+    description: 'Final day for team registration (team size 4-6, registration fee ₹400 per team).',
+  },
+  {
+    phase: '05',
+    date: '5th April 2026 (Sunday)',
+    title: 'Submission Deadline',
+    description: 'Teams submit detailed PPT or poster of their proposed solution on Unstop.',
+  },
+  {
+    phase: '06',
+    date: '10th April 2026 (Friday)',
+    title: 'Round 1 Results Announced',
+    description: 'Top 10% teams (20 teams out of 200) are shortlisted for the offline finale.',
+  },
+  {
+    phase: '07',
+    date: '17th & 18th April 2026 (Friday & Saturday)',
+    title: 'Offline Grand Finale',
+    description: '24-hour onsite hack, final submissions, and jury presentations for selected finalists.',
   },
 ]
 
