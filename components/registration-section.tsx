@@ -4,7 +4,7 @@ import { Users } from 'lucide-react'
 
 export function RegistrationSection() {
   return (
-    <section className="py-20 px-4 relative overflow-hidden">
+    <section id="register" className="py-20 px-4 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 tech-grid opacity-20" />
 
@@ -26,15 +26,15 @@ export function RegistrationSection() {
             Ready to Innovate?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of innovators, developers, and creative thinkers in building sustainable solutions for India&apos;s future.
+            Register your team for Sankalp Bharat 2K26 and build high-impact solutions for Environment, Sustainability, and Agriculture.
           </p>
 
           {/* Details */}
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {[
-              { label: 'Team Size', value: '2-5 Members' },
-              { label: 'Registration Fee', value: 'To Be Announced' },
-              { label: 'Prize Pool', value: 'To Be Announced' },
+              { label: 'Team Size', value: '4-6 Members' },
+              { label: 'Registration Fee', value: '₹400 per Team' },
+              { label: 'Registration Closes', value: '4 April 2026' },
             ].map((item) => (
               <div key={item.label} className="text-center">
                 <p className="text-xs font-mono text-secondary tracking-widest uppercase mb-2">{item.label}</p>
@@ -45,7 +45,9 @@ export function RegistrationSection() {
 
           {/* CTA */}
           <a
-            href="#"
+            href="https://unstop.com"
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn-primary-neon glow-accent inline-block mb-6"
           >
             Register Your Team on Unstop
@@ -54,8 +56,8 @@ export function RegistrationSection() {
           {/* Venue info */}
           <div className="text-center border-t border-border/30 pt-8">
             <p className="text-xs font-mono text-muted-foreground tracking-widest uppercase mb-3">Event Venue</p>
-            <p className="text-lg font-semibold text-accent">To Be Announced</p>
-            <p className="text-sm text-muted-foreground mt-2">Details will be shared with registered teams</p>
+            <p className="text-lg font-semibold text-accent">St. Vincent Pallotti College of Engineering &amp; Technology, Nagpur</p>
+            <p className="text-sm text-muted-foreground mt-2">Offline Grand Finale on 17th &amp; 18th April 2026</p>
           </div>
         </div>
       </div>

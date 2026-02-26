@@ -4,6 +4,7 @@ import ModernFooter from '@/components/modern-footer'
 import { ArrowLeft, Star } from 'lucide-react'
 import Link from 'next/link'
 import PageTransition from '@/components/page-transition' // Declare the PageTransition variable
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'Winners - Sankalp Bharat Hackathon 2026',
@@ -11,6 +12,8 @@ export const metadata: Metadata = {
 }
 
 export default function WinnersPage() {
+  redirect('/comming-soon')
+
   return (
     <PageTransition>
       <main className="min-h-screen">
@@ -109,7 +112,7 @@ export default function WinnersPage() {
                 <a href="/" className="btn-primary-neon glow-accent">
                   Back to Home
                 </a>
-                <a href="#" className="btn-neon glow-cyan">
+                <a href="mailto:cse@stvincentngp.edu.in?subject=Sankalp%20Bharat%202K26%20Updates" className="btn-neon glow-cyan">
                   Subscribe for Updates
                 </a>
               </div>

@@ -79,7 +79,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
         >
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
           <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-            National Innovation Hackathon 2026
+            National Level Hackathon 2K26
           </span>
         </div>
 
@@ -100,7 +100,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
                      dark:from-orange-400 dark:via-green-400 dark:to-blue-400
                      bg-clip-text text-transparent"
         >
-          HACKATHON 2026
+          2K26
         </h2>
 
         {/* Description */}
@@ -110,11 +110,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
         >
           Innovating
           <span className="mx-1 font-semibold bg-gradient-to-r from-green-600 to-emerald-500 dark:from-green-400 dark:to-emerald-300 bg-clip-text text-transparent">
-            sustainable
-          </span>
-          and
-          <span className="mx-1 font-semibold bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 bg-clip-text text-transparent">
-            technology-driven
+            sustainable solutions
           </span>
           solutions for a
           <span className="mx-1 font-semibold bg-gradient-to-r from-orange-600 to-amber-500 dark:from-orange-400 dark:to-amber-300 bg-clip-text text-transparent">
@@ -124,9 +120,9 @@ export function HeroSection({ visible }: HeroSectionProps) {
 
         {/* Stats */}
         <div className="mt-16 grid grid-cols-3 gap-8 max-w-3xl mx-auto">
-          <Stat value="₹10L+" label="Prize Pool" />
-          <Stat value="500+" label="Participants" />
-          <Stat value="48 Hrs" label="Innovation Sprint" />
+          <Stat value="200+" label="Teams" />
+          <Stat value="800+" label="Participants" />
+          <Stat value="24 Hrs" label="Grand Finale" />
         </div>
 
         {/* Scroll Hint */}

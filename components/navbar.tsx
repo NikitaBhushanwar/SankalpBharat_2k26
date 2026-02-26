@@ -8,10 +8,10 @@ import Logo from './logo';
 
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '#about', label: 'About' },
-  { href: '#leaderboard', label: 'Leaderboard' },
-  { href: '/winners', label: 'Winners' },
-  { href: '#contact', label: 'Contact' },
+  { href: '/#about', label: 'About' },
+  { href: '/comming-soon', label: 'Leaderboard' },
+  { href: '/comming-soon', label: 'Winners' },
+  { href: '/#contact', label: 'Contact' },
 ];
 
 export default function Navbar() {
