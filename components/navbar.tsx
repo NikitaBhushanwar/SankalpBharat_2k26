@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import ThemeToggle from './theme-toggle';
-import Logo from './logo';
+import SBLogo from './logo';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -15,127 +16,126 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const isAdmin = pathname.startsWith('/admin');
+
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [windowDim, setWindowDim] = useState({ w: 0, h: 0 });
 
-  /* --------------------------------------------
-     Window + Scroll Tracking (REFERENCE STYLE)
-  --------------------------------------------- */
   useEffect(() => {
+    if (isAdmin) return;
+
     const onResize = () =>
       setWindowDim({ w: window.innerWidth, h: window.innerHeight });
 
     const onScroll = () =>
-      setScrollProgress(Math.min(window.scrollY / 450, 1));
+      setScrollProgress(Math.min(window.scrollY / 40, 1));
 
     onResize();
     onScroll();
 
     window.addEventListener('resize', onResize);
-    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('scroll', onScroll);
 
     return () => {
       window.removeEventListener('resize', onResize);
       window.removeEventListener('scroll', onScroll);
     };
-  }, []);
+  }, [isAdmin]);
 
-  /* --------------------------------------------
-     Logo Diagonal Math 
-  --------------------------------------------- */
-  const logoInitialSize = Math.min(windowDim.w * 0.8, 380);
-  const logoFinalSize = 44;
+  /* ================= ADMIN NAVBAR ================= */
 
-  const containerWidth = Math.min(windowDim.w, 1280);
-  const paddingX = windowDim.w > 640 ? 32 : 16;
+  if (isAdmin) {
+    return (
+      <nav className="fixed inset-x-0 top-0 z-50 bg-white dark:bg-slate-900 shadow px-6 py-4 flex justify-between items-center">
 
-  // Navbar logo slot center (KNOWN GEOMETRY)
-  const targetX =
-    (windowDim.w - containerWidth) / 2 +
-    paddingX +
-    logoFinalSize / 2;
+        <div className="flex items-center gap-3">
 
-  const targetY = 28 + logoFinalSize / 2;
+          {/* Logo */}
+          <div className="relative w-[70px] h-[70px] flex-shrink-0">
+            <img
+              src="/sb_logo.webp"
+              className="object-contain w-full h-full"
+              alt="Logo"
+            />
+          </div>
 
-  // Hero center start
-  const centerX = windowDim.w / 2;
-  const centerY = windowDim.h / 2 - 120;
+          {/* Name */}
+          <div className="relative w-[260px] h-[70px] flex-shrink-0">
+            <img
+              src="/sb_name.webp"
+              className="object-contain w-full h-full"
+              alt="Sankalp Bharat"
+            />
+          </div>
 
-  // Interpolation
-  const currentX = centerX + (targetX - centerX) * scrollProgress;
-  const currentY = centerY + (targetY - centerY) * scrollProgress;
+        </div>
+
+        <ThemeToggle />
+      </nav>
+    );
+  }
+
+  /* ================= HERO ANIMATION ================= */
+
+  const logoInitialSize = Math.min(windowDim.w * 0.9, 520);
+  const logoFinalSize = 70;
+
   const currentSize =
     logoInitialSize -
     (logoInitialSize - logoFinalSize) * scrollProgress;
 
-  /* --------------------------------------------
-     Navbar Entrance
-  --------------------------------------------- */
-  const navOpacity =
-    scrollProgress > 0.4 ? (scrollProgress - 0.4) * 2 : 0;
-
-  const navY = -100 + Math.min(scrollProgress * 160, 100);
+  const nameScale = 1 - scrollProgress * 0.6;
 
   return (
     <>
-      {/* ================= Floating Logo + Intro Title ================= */}
-<div
-  className="fixed z-[60] pointer-events-none flex flex-col items-center"
-  style={{
-    left: `${currentX}px`,
-    top: `${currentY}px`,
-    transform: 'translate(-50%, -50%)',
-  }}
->
-  {/* Logo */}
-  <div
-    style={{
-      width: `${currentSize}px`,
-      height: `${currentSize}px`,
-    }}
-  >
-    <Logo className="w-full h-full drop-shadow-2xl" />
-  </div>
-
-  {/* Intro Text (Only when at top) */}
-  {scrollProgress < 0.05 && (
-    <h1
-      className="mt-8 text-3xl md:text-4xl font-black tracking-[0.2em]
-                 text-slate-900 dark:text-white
-                 transition-all duration-1000 ease-out
-                 animate-intro-title"
-    >
-      SANKALP BHARAT
-    </h1>
-  )}
-</div>
-
-
-      {/* ================= Floating Navbar ================= */}
-      <nav
-        className="fixed inset-x-0 top-0 z-50 transition-all duration-500"
+      {/* Floating Hero Logo + Name */}
+      <div
+        className="fixed inset-0 z-[60] pointer-events-none flex flex-col items-center justify-center transition-all duration-300"
         style={{
-          opacity: navOpacity,
-          transform: `translateY(${navY}px)`,
-          pointerEvents: scrollProgress > 0.45 ? 'auto' : 'none',
+          opacity: scrollProgress < 1 ? 1 : 0,
+          transform: `translateY(-${scrollProgress * 120}px)`,
+        }}
+      >
+        <SBLogo
+          size={currentSize}
+          showName
+          nameWidth={520 * nameScale}
+        />
+      </div>
+
+      {/* Navbar */}
+      <nav
+        className="fixed inset-x-0 top-0 z-50 transition-all duration-300"
+        style={{
+          opacity: scrollProgress,
+          transform: `translateY(${(1 - scrollProgress) * -60}px)`,
         }}
       >
         <div className="mx-auto max-w-7xl mt-4 px-4">
-          <div className="rounded-2xl border border-white/20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl shadow-2xl px-6 py-3 flex items-center justify-between">
+          <div className="rounded-2xl border border-white/20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl shadow-2xl px-6 py-4 flex items-center justify-between">
 
-            {/* Branding */}
-            <div className="flex items-center gap-4 min-w-[240px]">
-              <div className="w-[44px] h-[44px]" />
-              <div className="h-8 w-px bg-gray-300 dark:bg-slate-700" />
-              <div className="leading-tight">
-                <div className="text-sm font-black uppercase tracking-wide">
-                  Sankalp Bharat
-                </div>
-                <div className="text-xs font-semibold text-orange-500">
-                  National Innovation Event
-                </div>
+            <div className="flex items-center gap-3">
+
+              {/* Logo */}
+              <div className="relative w-[70px] h-[70px] flex-shrink-0">
+                <img
+                  src="/sb_logo.webp"
+                  className="object-contain w-full h-full"
+                  alt="Logo"
+                />
               </div>
+
+              {/* Name */}
+              <div className="relative w-[260px] h-[70px] flex-shrink-0">
+                <img
+                  src="/sb_name.webp"
+                  className="object-contain w-full h-full"
+                  alt="Sankalp Bharat"
+                />
+              </div>
+
             </div>
 
             {/* Desktop Links */}
@@ -155,10 +155,10 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <ThemeToggle />
               <Link
-                href="/admin/login"
+                href="https://unstop.com/"
                 className="hidden sm:block bg-orange-500 text-white px-5 py-2 rounded-full text-sm font-black shadow-lg hover:scale-105 transition"
               >
-                Admin Login
+                Register
               </Link>
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -167,6 +167,7 @@ export default function Navbar() {
                 {isOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </div>
+
           </div>
         </div>
       </nav>
