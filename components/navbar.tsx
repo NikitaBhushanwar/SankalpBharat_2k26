@@ -155,10 +155,10 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <ThemeToggle />
               <Link
-                href="/register"
+                href="/admin/login"
                 className="hidden sm:block bg-orange-500 text-white px-5 py-2 rounded-full text-sm font-black shadow-lg hover:scale-105 transition"
               >
-                Register
+                Admin Login
               </Link>
               <button
                 onClick={() => setIsOpen(!isOpen)}
