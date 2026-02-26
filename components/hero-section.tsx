@@ -20,6 +20,7 @@ interface HeroSectionProps {
 export function HeroSection({ visible }: HeroSectionProps) {
   return (
     <section
+      id="hackathon-2k26"
       className={`
         relative min-h-screen flex items-center justify-center overflow-hidden
         transition-all duration-700 mt-170

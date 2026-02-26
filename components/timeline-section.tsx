@@ -3,42 +3,30 @@
 const timeline = [
   {
     phase: '01',
-    date: '28th February 2026 (Saturday)',
-    title: 'Website Hosted & Unstop Live',
-    description: 'Official website goes live and registration opens on Unstop.',
-  },
-  {
-    phase: '02',
-    date: '2nd March 2026 (Monday)',
-    title: 'Promotions Start',
-    description: 'Outreach campaigns begin across institutions and innovation communities.',
-  },
-  {
-    phase: '03',
     date: '18th March 2026 (Wednesday)',
     title: 'Problem Statement Release',
     description: 'Approximately 10 industry-collaborated problem statements are released officially.',
   },
   {
-    phase: '04',
+    phase: '02',
     date: '4th April 2026 (Saturday)',
     title: 'Registration Closes',
     description: 'Final day for team registration (team size 4-6, registration fee ₹400 per team).',
   },
   {
-    phase: '05',
+    phase: '03',
     date: '5th April 2026 (Sunday)',
     title: 'Submission Deadline',
     description: 'Teams submit detailed PPT or poster of their proposed solution on Unstop.',
   },
   {
-    phase: '06',
+    phase: '04',
     date: '10th April 2026 (Friday)',
     title: 'Round 1 Results Announced',
     description: 'Top 10% teams (20 teams out of 200) are shortlisted for the offline finale.',
   },
   {
-    phase: '07',
+    phase: '05',
     date: '17th & 18th April 2026 (Friday & Saturday)',
     title: 'Offline Grand Finale',
     description: '24-hour onsite hack, final submissions, and jury presentations for selected finalists.',
