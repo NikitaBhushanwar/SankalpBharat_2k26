@@ -1,51 +1,49 @@
+'use client';
+
+import Image from 'next/image';
+
 interface SBLogoProps {
-  className?: string;
-  showTitle?: boolean;
+  size?: number;
+  showName?: boolean;
+  nameWidth?: number;
 }
 
-export default function SBLogo({ className, showTitle = false }: SBLogoProps) {
+export default function SBLogo({
+  size = 500,
+  showName = false,
+  nameWidth = 700,
+}: SBLogoProps) {
   return (
     <div className="flex flex-col items-center justify-center">
-      
-      {/* SVG LOGO */}
-      <svg
-        viewBox="0 0 100 100"
-        className={className}
-        xmlns="http://www.w3.org/2000/svg"
+
+      {/* Main Logo */}
+      <div
+        style={{ width: size, height: size }}
+        className="relative"
       >
-        <defs>
-          <linearGradient id="sbGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#f97316" />
-            <stop offset="40%" stopColor="#ffffff" />
-            <stop offset="100%" stopColor="#16a34a" />
-          </linearGradient>
-        </defs>
+        <Image
+          src="/sb_logo.webp"
+          alt="Sankalp Bharat Logo"
+          fill
+          priority
+          className="object-contain"
+        />
+      </div>
 
-        <rect width="100" height="100" rx="45" fill="url(#sbGradient)" />
-        <text
-          x="50%"
-          y="55%"
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fontSize="42"
-          fontWeight="900"
-          fill="black"
-          fontFamily="Inter, system-ui, sans-serif"
+      {/* Name Image */}
+      {showName && (
+        <div
+          className="relative mt-3"
+          style={{ width: nameWidth, height: nameWidth * 0.28 }}
         >
-          SB
-        </text>
-      </svg>
-
-      {/* TITLE BELOW LOGO */}
-      {showTitle && (
-        <h1
-          className="mt-6 text-3xl md:text-4xl font-black tracking-[0.18em]
-                     text-slate-900 dark:text-white
-                     transition-all duration-1000 ease-out
-                     animate-fade-up"
-        >
-          SANKALP BHARAT
-        </h1>
+          <Image
+            src="/sb_name.webp"
+            alt="Sankalp Bharat"
+            fill
+            priority
+            className="object-contain"
+          />
+        </div>
       )}
     </div>
   );
