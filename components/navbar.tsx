@@ -88,7 +88,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-orange-500 transition"
+                  className="text-sm font-black uppercase tracking-widest text-slate-500 hover:text-orange-500 transition"
                 >
                   {link.label}
                 </Link>

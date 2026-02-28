@@ -1,6 +1,7 @@
 'use client'
 
 const timeline = [
+  
   {
     phase: '01',
     date: '18th March 2026 (Wednesday)',
