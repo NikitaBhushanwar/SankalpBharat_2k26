@@ -114,7 +114,7 @@ export default function Navbar() {
         }}
       >
         <div className="mx-auto max-w-7xl mt-4 px-4">
-          <div className="rounded-2xl border border-white/20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl shadow-2xl px-6 py-4 flex items-center justify-between">
+          <div className="rounded-2xl border border-white/20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl shadow-2xl px-6 py-1 flex items-center justify-between">
 
             <div className="flex items-center gap-3">
 
@@ -144,7 +144,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-orange-500 transition"
+                  className="text-sm font-black uppercase tracking-widest text-slate-500 hover:text-orange-500 transition"
                 >
                   {link.label}
                 </Link>
