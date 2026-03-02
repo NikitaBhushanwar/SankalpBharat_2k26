@@ -1,48 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// In-memory data storage for demo. In production, this would be a database
-let leaderboardData = [
-  {
-    id: '1',
-    rank: 1,
-    teamName: 'Green Innovators',
-    projectTitle: 'Renewable Energy Management System',
-    score: 9850,
-    members: 4,
-  },
-  {
-    id: '2',
-    rank: 2,
-    teamName: 'AgriTech Revolution',
-    projectTitle: 'AI-Powered Crop Disease Detection',
-    score: 9720,
-    members: 3,
-  },
-  {
-    id: '3',
-    rank: 3,
-    teamName: 'EcoSolve',
-    projectTitle: 'Smart Waste Management Platform',
-    score: 9620,
-    members: 5,
-  },
-  {
-    id: '4',
-    rank: 4,
-    teamName: 'FarmConnect',
-    projectTitle: 'Real-time Market Price Intelligence',
-    score: 9480,
-    members: 4,
-  },
-  {
-    id: '5',
-    rank: 5,
-    teamName: 'ClimateShield',
-    projectTitle: 'Carbon Footprint Tracking App',
-    score: 9350,
-    members: 3,
-  },
-]
+import { leaderboardStore } from '@/lib/admin-store'
 
 export async function GET(request: NextRequest) {
   try {
@@ -51,7 +8,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit')
     const sortBy = searchParams.get('sortBy') || 'rank'
 
-    let data = [...leaderboardData]
+    let data = [...leaderboardStore]
 
     // Sort by specified field
     if (sortBy === 'score') {
@@ -69,7 +26,7 @@ export async function GET(request: NextRequest) {
       {
         success: true,
         data,
-        total: leaderboardData.length,
+        total: leaderboardStore.length,
       },
       { status: 200 }
     )
@@ -103,18 +60,18 @@ export async function POST(request: NextRequest) {
     // Create new entry
     const newEntry = {
       id: Date.now().toString(),
-      rank: leaderboardData.length + 1,
+      rank: leaderboardStore.length + 1,
       teamName,
       projectTitle,
       score: parseInt(score),
       members: parseInt(members),
     }
 
-    leaderboardData.push(newEntry)
+    leaderboardStore.push(newEntry)
 
     // Sort by score
-    leaderboardData.sort((a, b) => b.score - a.score)
-    leaderboardData.forEach((entry, index) => {
+    leaderboardStore.sort((a, b) => b.score - a.score)
+    leaderboardStore.forEach((entry, index) => {
       entry.rank = index + 1
     })
 

@@ -44,8 +44,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setError(null)
 
-      // Demo credentials: admin@sankalp.com / admin123
-      if (email === 'admin@sankalp.com' && password === 'admin123') {
+      // Hardcoded admin credentials
+      if (email === 'admin@sankalp.com' && password === 'SankalpB@1234321') {
         const adminUser: AdminUser = {
           id: '1',
           email: email,
@@ -58,18 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Store in localStorage for demo purposes
         localStorage.setItem('admin_auth', 'true')
         localStorage.setItem('admin_user', JSON.stringify(adminUser))
-      } else if (email === 'moderator@sankalp.com' && password === 'mod123') {
-        const modUser: AdminUser = {
-          id: '2',
-          email: email,
-          role: 'moderator',
-        }
-
-        setUser(modUser)
-        setIsAuthenticated(true)
-
-        localStorage.setItem('admin_auth', 'true')
-        localStorage.setItem('admin_user', JSON.stringify(modUser))
       } else {
         setError('Invalid email or password')
         throw new Error('Invalid credentials')

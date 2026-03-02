@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Leaf,
   TreePine,
@@ -18,12 +19,45 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ visible }: HeroSectionProps) {
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isLive: false,
+  });
+
+  useEffect(() => {
+    const eventDate = new Date('2026-04-17T09:00:00+05:30').getTime();
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = eventDate - now;
+
+      if (distance <= 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0, isLive: true });
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      setCountdown({ days, hours, minutes, seconds, isLive: false });
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section
       id="hackathon-2k26"
       className={`
-        relative min-h-screen flex items-center justify-center overflow-hidden
-        transition-all duration-700 mt-170
+        relative min-h-screen flex items-start justify-center overflow-hidden
+        transition-all duration-700 pt-28
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none"}
       `}
     >
@@ -84,25 +118,13 @@ export function HeroSection({ visible }: HeroSectionProps) {
           </span>
         </div>
 
-        {/* Title */}
-        <h1
-          className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tight
-                     text-slate-900 dark:text-white
-                     dark:drop-shadow-[0_0_14px_rgba(255,255,255,0.15)]"
-        >
-          SANKALP BHARAT
-        </h1>
-
-        {/* Subtitle */}
-        <h2
-          className="mt-4 text-2xl md:text-4xl font-black tracking-tight
-                     bg-gradient-to-r
-                     from-orange-500 via-green-500 to-blue-500
-                     dark:from-orange-400 dark:via-green-400 dark:to-blue-400
-                     bg-clip-text text-transparent"
-        >
-          2K26
-        </h2>
+        <div className="mx-auto mt-2 w-[280px] sm:w-[360px] md:w-[460px] lg:w-[560px]">
+          <img
+            src="/sb_name.webp"
+            alt="Sankalp Bharat 2K26"
+            className="w-full h-auto object-contain"
+          />
+        </div>
 
         {/* Description */}
         <p
@@ -119,11 +141,24 @@ export function HeroSection({ visible }: HeroSectionProps) {
           </span>
         </p>
 
-        {/* Stats */}
-        <div className="mt-16 grid grid-cols-3 gap-8 max-w-3xl mx-auto">
-          <Stat value="200+" label="Teams" />
-          <Stat value="800+" label="Participants" />
-          <Stat value="24 Hrs" label="Grand Finale" />
+        <div className="mt-10 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/40 bg-slate-900/60 backdrop-blur mb-5">
+            <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+            <span className="text-xs sm:text-sm font-semibold text-slate-200 tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
+          </div>
+
+          {countdown.isLive ? (
+            <div className="glass-effect rounded-2xl p-6 border border-emerald-500/40">
+              <p className="text-2xl md:text-3xl font-black text-emerald-400">Hackathon is Live!</p>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center gap-2 sm:gap-3">
+              <CountdownCard value={countdown.days} label="Days" />
+              <CountdownCard value={countdown.hours} label="Hours" />
+              <CountdownCard value={countdown.minutes} label="Minutes" />
+              <CountdownCard value={countdown.seconds} label="Seconds" />
+            </div>
+          )}
         </div>
 
         {/* Scroll Hint */}
@@ -168,13 +203,13 @@ function FloatingIcon({
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function CountdownCard({ value, label }: { value: number; label: string }) {
   return (
-    <div className="text-center">
-      <div className="text-3xl md:text-4xl font-black text-blue-700 dark:text-blue-400 dark:drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]">
-        {value}
+    <div className="glass-effect rounded-xl border border-orange-500/25 px-3 py-2 sm:px-4 sm:py-3 text-center card-hover min-w-[70px] sm:min-w-[88px]">
+      <div className="text-2xl sm:text-3xl md:text-4xl font-black text-orange-500 dark:text-orange-400 leading-none">
+        {String(value).padStart(2, '0')}
       </div>
-      <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+      <div className="mt-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
         {label}
       </div>
     </div>

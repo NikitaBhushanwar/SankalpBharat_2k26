@@ -1,33 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// This would be a database in production
-// For now using a shared store - in real app use a proper database
-let leaderboardData = [
-  {
-    id: '1',
-    rank: 1,
-    teamName: 'Green Innovators',
-    projectTitle: 'Renewable Energy Management System',
-    score: 9850,
-    members: 4,
-  },
-  {
-    id: '2',
-    rank: 2,
-    teamName: 'AgriTech Revolution',
-    projectTitle: 'AI-Powered Crop Disease Detection',
-    score: 9720,
-    members: 3,
-  },
-]
+import { leaderboardStore } from '@/lib/admin-store'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
-    const entry = leaderboardData.find((e) => e.id === id)
+    const { id } = await params
+    const entry = leaderboardStore.find((e) => e.id === id)
 
     if (!entry) {
       return NextResponse.json(
@@ -50,14 +30,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     const { teamName, projectTitle, score, members } = body
 
-    const entryIndex = leaderboardData.findIndex((e) => e.id === id)
+    const entryIndex = leaderboardStore.findIndex((e) => e.id === id)
 
     if (entryIndex === -1) {
       return NextResponse.json(
@@ -67,24 +47,26 @@ export async function PUT(
     }
 
     // Update entry
-    leaderboardData[entryIndex] = {
-      ...leaderboardData[entryIndex],
-      teamName: teamName || leaderboardData[entryIndex].teamName,
-      projectTitle: projectTitle || leaderboardData[entryIndex].projectTitle,
-      score: score !== undefined ? parseInt(score) : leaderboardData[entryIndex].score,
-      members: members !== undefined ? parseInt(members) : leaderboardData[entryIndex].members,
+    leaderboardStore[entryIndex] = {
+      ...leaderboardStore[entryIndex],
+      teamName: teamName || leaderboardStore[entryIndex].teamName,
+      projectTitle: projectTitle || leaderboardStore[entryIndex].projectTitle,
+      score: score !== undefined ? parseInt(score) : leaderboardStore[entryIndex].score,
+      members: members !== undefined ? parseInt(members) : leaderboardStore[entryIndex].members,
     }
 
     // Re-sort and update ranks
-    leaderboardData.sort((a, b) => b.score - a.score)
-    leaderboardData.forEach((entry, index) => {
+    leaderboardStore.sort((a, b) => b.score - a.score)
+    leaderboardStore.forEach((entry, index) => {
       entry.rank = index + 1
     })
+
+    const updatedEntry = leaderboardStore.find((e) => e.id === id)
 
     return NextResponse.json(
       {
         success: true,
-        data: leaderboardData[entryIndex],
+        data: updatedEntry,
         message: 'Entry updated successfully',
       },
       { status: 200 }
@@ -102,12 +84,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
-    const entryIndex = leaderboardData.findIndex((e) => e.id === id)
+    const entryIndex = leaderboardStore.findIndex((e) => e.id === id)
 
     if (entryIndex === -1) {
       return NextResponse.json(
@@ -116,11 +98,11 @@ export async function DELETE(
       )
     }
 
-    const deletedEntry = leaderboardData.splice(entryIndex, 1)[0]
+    const deletedEntry = leaderboardStore.splice(entryIndex, 1)[0]
 
     // Re-sort and update ranks
-    leaderboardData.sort((a, b) => b.score - a.score)
-    leaderboardData.forEach((entry, index) => {
+    leaderboardStore.sort((a, b) => b.score - a.score)
+    leaderboardStore.forEach((entry, index) => {
       entry.rank = index + 1
     })
 
