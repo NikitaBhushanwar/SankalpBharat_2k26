@@ -5,7 +5,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/context/auth-context'
 import { ThemeProvider } from '@/context/theme-provider'
 import Navbar from '@/components/navbar'
-import InteractiveBackground from '@/components/interactive-background'
+import Galaxy from '@/components/Galaxy'
 import './globals.css'
 
 const geist = Geist({ subsets: ["latin"] });
@@ -25,12 +25,28 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${geist.className} antialiased transition-colors duration-300`}>
         <ThemeProvider>
           <AuthProvider>
             <Navbar />
-            <InteractiveBackground />
+            <div className="fixed inset-0 z-[5] pointer-events-none">
+              <Galaxy
+                mouseRepulsion
+                mouseInteraction
+                density={1}
+                glowIntensity={0.3}
+                saturation={0}
+                hueShift={140}
+                twinkleIntensity={0.3}
+                rotationSpeed={0.1}
+                repulsionStrength={2}
+                autoCenterRepulsion={0}
+                starSpeed={0.5}
+                speed={1}
+                transparent
+              />
+            </div>
             <main className="relative z-10">
               {children}
             </main>

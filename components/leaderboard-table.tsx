@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronUp, ChevronDown, Medal, Trophy } from 'lucide-react'
+import { ChevronUp, ChevronDown, Trophy } from 'lucide-react'
 
 interface LeaderboardEntry {
   rank: number
@@ -11,64 +11,7 @@ interface LeaderboardEntry {
   members: number
 }
 
-const demoData: LeaderboardEntry[] = [
-  {
-    rank: 1,
-    teamName: 'Green Innovators',
-    projectTitle: 'Renewable Energy Management System',
-    score: 9850,
-    members: 4,
-  },
-  {
-    rank: 2,
-    teamName: 'AgriTech Revolution',
-    projectTitle: 'AI-Powered Crop Disease Detection',
-    score: 9720,
-    members: 3,
-  },
-  {
-    rank: 3,
-    teamName: 'EcoSolve',
-    projectTitle: 'Smart Waste Management Platform',
-    score: 9620,
-    members: 5,
-  },
-  {
-    rank: 4,
-    teamName: 'FarmConnect',
-    projectTitle: 'Real-time Market Price Intelligence',
-    score: 9480,
-    members: 4,
-  },
-  {
-    rank: 5,
-    teamName: 'ClimateShield',
-    projectTitle: 'Carbon Footprint Tracking App',
-    score: 9350,
-    members: 3,
-  },
-  {
-    rank: 6,
-    teamName: 'DigitalFarmer',
-    projectTitle: 'Soil Health Monitoring IoT Network',
-    score: 9210,
-    members: 4,
-  },
-  {
-    rank: 7,
-    teamName: 'SustainHub',
-    projectTitle: 'Circular Economy Exchange Platform',
-    score: 9050,
-    members: 5,
-  },
-  {
-    rank: 8,
-    teamName: 'EcoVision',
-    projectTitle: 'Pollution Detection Satellite System',
-    score: 8920,
-    members: 3,
-  },
-]
+const leaderboardData: LeaderboardEntry[] = []
 
 type SortField = 'rank' | 'score' | 'name'
 type SortOrder = 'asc' | 'desc'
@@ -86,7 +29,7 @@ export function LeaderboardTable() {
     }
   }
 
-  const sortedData = [...demoData].sort((a, b) => {
+  const sortedData = [...leaderboardData].sort((a, b) => {
     let compareValue = 0
 
     switch (sortField) {
@@ -110,6 +53,14 @@ export function LeaderboardTable() {
       <ChevronUp className="w-4 h-4" />
     ) : (
       <ChevronDown className="w-4 h-4" />
+    )
+  }
+
+  if (sortedData.length === 0) {
+    return (
+      <div className="py-14 text-center">
+        <p className="text-lg font-semibold text-muted-foreground">No leaderboard data available yet.</p>
+      </div>
     )
   }
 

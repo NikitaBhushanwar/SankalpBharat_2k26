@@ -10,11 +10,17 @@ export default function ModernFooter() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand */}
           <div className="col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-blue-500 flex items-center justify-center">
-                <span className="text-white font-bold">SB</span>
-              </div>
-              <span className="font-bold gradient-text">Sankalp Bharat</span>
+            <div className="flex items-center gap-3 mb-4">
+              <img
+                src="/sb_logo.webp"
+                className="h-12 w-auto object-contain"
+                alt="Sankalp Bharat Logo"
+              />
+              <img
+                src="/sb_name.webp"
+                className="h-8 w-auto object-contain"
+                alt="Sankalp Bharat"
+              />
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Innovating sustainable technology for India's digital future.

@@ -13,24 +13,21 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('system');
-  const [isDark, setIsDark] = useState(false);
+  const [theme, setThemeState] = useState<Theme>('dark');
+  const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
-    // Get stored theme preference
-    const storedTheme = (localStorage.getItem('theme') || 'system') as Theme;
-    setThemeState(storedTheme);
+    const rawTheme = localStorage.getItem('theme') as Theme | null;
+    const initialTheme: Theme = rawTheme === 'light' ? 'light' : 'dark';
+    setThemeState(initialTheme);
+    localStorage.setItem('theme', initialTheme);
 
     // Function to update DOM
     const updateTheme = (newTheme: Theme) => {
       const html = document.documentElement;
       let shouldBeDark = false;
 
-      if (newTheme === 'system') {
-        shouldBeDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      } else {
-        shouldBeDark = newTheme === 'dark';
-      }
+      shouldBeDark = newTheme !== 'light';
 
       if (shouldBeDark) {
         html.classList.add('dark');
@@ -41,18 +38,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setIsDark(shouldBeDark);
     };
 
-    updateTheme(storedTheme);
-
-    // Listen for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = () => {
-      if ((localStorage.getItem('theme') || 'system') === 'system') {
-        updateTheme('system');
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    updateTheme(initialTheme);
   }, []);
 
   const setTheme = (newTheme: Theme) => {
@@ -62,11 +48,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const html = document.documentElement;
     let shouldBeDark = false;
 
-    if (newTheme === 'system') {
-      shouldBeDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    } else {
-      shouldBeDark = newTheme === 'dark';
-    }
+    shouldBeDark = newTheme !== 'light';
 
     if (shouldBeDark) {
       html.classList.add('dark');
