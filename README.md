@@ -88,11 +88,17 @@ Create `.env.local` in project root:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
+ADMIN_SESSION_SECRET=
+ADMIN_PASSWORD_ENCRYPTION_KEY=
+PRIMARY_SUPER_ADMIN_EMAIL=
 ```
 
 Variable usage:
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL.
 - `SUPABASE_SERVICE_ROLE_KEY`: server-only DB access key.
+- `ADMIN_SESSION_SECRET`: secret used to sign admin session cookies.
+- `ADMIN_PASSWORD_ENCRYPTION_KEY`: encryption key used by password-visibility feature.
+- `PRIMARY_SUPER_ADMIN_EMAIL`: email of the immutable primary super admin account.
 
 Security rules:
 - Never commit `.env.local`.

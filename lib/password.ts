@@ -11,13 +11,17 @@ const KEY_LENGTH = 64
 const IV_LENGTH = 12
 
 const resolvePasswordEncryptionSecret = () =>
-  process.env.ADMIN_PASSWORD_ENCRYPTION_KEY ||
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  'sankalp-bharat-admin-password-secret'
+  process.env.ADMIN_PASSWORD_ENCRYPTION_KEY
 
-const resolveEncryptionKey = () =>
-  createHash('sha256').update(resolvePasswordEncryptionSecret()).digest()
+const resolveEncryptionKey = () => {
+  const secret = resolvePasswordEncryptionSecret()
+
+  if (!secret) {
+    throw new Error('ADMIN_PASSWORD_ENCRYPTION_KEY is missing')
+  }
+
+  return createHash('sha256').update(secret).digest()
+}
 
 export function hashPassword(password: string) {
   const salt = randomBytes(16).toString('hex')

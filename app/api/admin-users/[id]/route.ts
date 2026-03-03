@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
-import { assertSuperAdminRequest, mapAdminUserRow, PRIMARY_SUPER_ADMIN_EMAIL } from '@/lib/admin-access'
+import {
+  assertSuperAdminRequest,
+  getPrimarySuperAdminEmail,
+  mapAdminUserRow,
+} from '@/lib/admin-access'
 import { encryptPassword, hashPassword } from '@/lib/password'
 
 interface ApiResponse<T> {
@@ -16,6 +20,7 @@ export async function PUT(
   try {
     const supabase = getSupabaseAdmin()
     await assertSuperAdminRequest(request, supabase)
+    const primarySuperAdminEmail = getPrimarySuperAdminEmail()
 
     const { id } = await params
     const body = await request.json()
@@ -51,7 +56,7 @@ export async function PUT(
       )
     }
 
-    const isPrimarySuperAdmin = existing.email === PRIMARY_SUPER_ADMIN_EMAIL
+    const isPrimarySuperAdmin = existing.email === primarySuperAdminEmail
 
     const updatePayload: {
       email?: string
@@ -63,7 +68,7 @@ export async function PUT(
 
     if (email !== undefined) {
       const normalizedEmail = String(email).trim().toLowerCase()
-      if (isPrimarySuperAdmin && normalizedEmail !== PRIMARY_SUPER_ADMIN_EMAIL) {
+      if (isPrimarySuperAdmin && normalizedEmail !== primarySuperAdminEmail) {
         return NextResponse.json<ApiResponse<null>>(
           {
             success: false,
@@ -150,6 +155,7 @@ export async function DELETE(
   try {
     const supabase = getSupabaseAdmin()
     await assertSuperAdminRequest(request, supabase)
+    const primarySuperAdminEmail = getPrimarySuperAdminEmail()
 
     const { id } = await params
 
@@ -173,7 +179,7 @@ export async function DELETE(
       )
     }
 
-    if (existing.email === PRIMARY_SUPER_ADMIN_EMAIL) {
+    if (existing.email === primarySuperAdminEmail) {
       return NextResponse.json<ApiResponse<null>>(
         {
           success: false,

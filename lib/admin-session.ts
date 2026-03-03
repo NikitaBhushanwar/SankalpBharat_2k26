@@ -11,15 +11,21 @@ interface SessionPayload {
 }
 
 const resolveSessionSecret = () =>
-  process.env.ADMIN_SESSION_SECRET ||
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  'sankalp-bharat-admin-session-secret'
+  process.env.ADMIN_SESSION_SECRET
 
 const base64UrlEncode = (input: string) => Buffer.from(input, 'utf8').toString('base64url')
 const base64UrlDecode = (input: string) => Buffer.from(input, 'base64url').toString('utf8')
 
 const signValue = (value: string) =>
-  createHmac('sha256', resolveSessionSecret()).update(value).digest('base64url')
+  (() => {
+    const secret = resolveSessionSecret()
+
+    if (!secret) {
+      throw new Error('ADMIN_SESSION_SECRET is missing')
+    }
+
+    return createHmac('sha256', secret).update(value).digest('base64url')
+  })()
 
 export function createAdminSessionToken(email: string, ttlSeconds = 60 * 60 * 12) {
   const payload: SessionPayload = {

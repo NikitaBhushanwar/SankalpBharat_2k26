@@ -3,8 +3,8 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin'
 import {
   assertSuperAdminRequest,
   ensurePrimarySuperAdmin,
+  getPrimarySuperAdminEmail,
   mapAdminUserRow,
-  PRIMARY_SUPER_ADMIN_EMAIL,
 } from '@/lib/admin-access'
 import { encryptPassword, hashPassword } from '@/lib/password'
 
@@ -18,8 +18,9 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = getSupabaseAdmin()
     const requester = await assertSuperAdminRequest(request, supabase)
+    const primarySuperAdminEmail = getPrimarySuperAdminEmail()
 
-    const isPrimarySuperAdminRequester = requester.email === PRIMARY_SUPER_ADMIN_EMAIL
+    const isPrimarySuperAdminRequester = requester.email === primarySuperAdminEmail
 
     const { data, error } = await supabase
       .from('admin_users')
@@ -69,6 +70,7 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabaseAdmin()
     await assertSuperAdminRequest(request, supabase)
     await ensurePrimarySuperAdmin(supabase)
+    const primarySuperAdminEmail = getPrimarySuperAdminEmail()
 
     const body = await request.json()
     const { email, password, isSuperAdmin } = body as {
@@ -115,7 +117,7 @@ export async function POST(request: NextRequest) {
         email: normalizedEmail,
         password_hash: hashPassword(String(password)),
         password_encrypted: encryptPassword(String(password)),
-        is_super_admin: normalizedEmail === PRIMARY_SUPER_ADMIN_EMAIL ? true : Boolean(isSuperAdmin),
+        is_super_admin: normalizedEmail === primarySuperAdminEmail ? true : Boolean(isSuperAdmin),
         is_active: true,
       })
       .select('*')

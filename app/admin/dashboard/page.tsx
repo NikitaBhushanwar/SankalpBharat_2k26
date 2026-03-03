@@ -59,6 +59,7 @@ interface AdminAccessUser {
   id: string
   email: string
   password?: string | null
+  isPrimarySuperAdmin: boolean
   isSuperAdmin: boolean
   isActive: boolean
   createdAt: string
@@ -1222,7 +1223,7 @@ export default function AdminDashboardPage() {
               ) : (
                 <div className="space-y-3 p-3 sm:p-4">
                   {adminUsers.map((admin) => {
-                    const isPrimarySuperAdmin = admin.email === 'swadhin@sankalp.com'
+                    const isPrimarySuperAdmin = admin.isPrimarySuperAdmin
 
                     return (
                       <div key={admin.id} className="rounded-xl border border-violet-500/20 bg-slate-900/60 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

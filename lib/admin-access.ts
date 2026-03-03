@@ -1,10 +1,17 @@
 import type { NextRequest } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { decryptPassword, encryptPassword, hashPassword } from './password'
+import { decryptPassword } from './password'
 import { requireSuperAdminSession } from './admin-session'
 
-export const PRIMARY_SUPER_ADMIN_EMAIL = 'swadhin@sankalp.com'
-export const PRIMARY_SUPER_ADMIN_PASSWORD = 'Swadhin@1109'
+export const getPrimarySuperAdminEmail = () => {
+  const configuredEmail = process.env.PRIMARY_SUPER_ADMIN_EMAIL?.trim().toLowerCase()
+
+  if (!configuredEmail) {
+    throw new Error('PRIMARY_SUPER_ADMIN_EMAIL is missing')
+  }
+
+  return configuredEmail
+}
 
 interface AdminUserRow {
   id: string
@@ -20,6 +27,7 @@ export interface AdminUserDTO {
   id: string
   email: string
   password?: string | null
+  isPrimarySuperAdmin: boolean
   isSuperAdmin: boolean
   isActive: boolean
   createdAt: string
@@ -30,11 +38,13 @@ export const mapAdminUserRow = (
   options?: { includePassword?: boolean }
 ): AdminUserDTO => {
   const includePassword = Boolean(options?.includePassword)
+  const primarySuperAdminEmail = getPrimarySuperAdminEmail()
 
   return {
     id: row.id,
     email: row.email,
     password: includePassword ? decryptPassword(row.password_encrypted) : undefined,
+    isPrimarySuperAdmin: row.email === primarySuperAdminEmail,
     isSuperAdmin: Boolean(row.is_super_admin),
     isActive: Boolean(row.is_active),
     createdAt: row.created_at,
@@ -42,10 +52,12 @@ export const mapAdminUserRow = (
 }
 
 export async function ensurePrimarySuperAdmin(supabase: SupabaseClient) {
+  const primarySuperAdminEmail = getPrimarySuperAdminEmail()
+
   const { data: existingRow, error: fetchError } = await supabase
     .from('admin_users')
     .select('*')
-    .eq('email', PRIMARY_SUPER_ADMIN_EMAIL)
+    .eq('email', primarySuperAdminEmail)
     .maybeSingle()
 
   if (fetchError) {
@@ -53,28 +65,15 @@ export async function ensurePrimarySuperAdmin(supabase: SupabaseClient) {
   }
 
   if (!existingRow) {
-    const { error: createError } = await supabase.from('admin_users').insert({
-      email: PRIMARY_SUPER_ADMIN_EMAIL,
-      password_hash: hashPassword(PRIMARY_SUPER_ADMIN_PASSWORD),
-      password_encrypted: encryptPassword(PRIMARY_SUPER_ADMIN_PASSWORD),
-      is_super_admin: true,
-      is_active: true,
-    })
-
-    if (createError) {
-      throw new Error(createError.message)
-    }
-
-    return
+    throw new Error('Primary super admin user not found in admin_users table')
   }
 
-  if (!existingRow.is_super_admin || !existingRow.is_active || !existingRow.password_encrypted) {
+  if (!existingRow.is_super_admin || !existingRow.is_active) {
     const { error: enforceError } = await supabase
       .from('admin_users')
       .update({
         is_super_admin: true,
         is_active: true,
-        password_encrypted: existingRow.password_encrypted || encryptPassword(PRIMARY_SUPER_ADMIN_PASSWORD),
       })
       .eq('id', existingRow.id)
 
