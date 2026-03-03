@@ -38,7 +38,6 @@ export async function GET(request: NextRequest) {
           const isTargetSuperAdmin = Boolean(entry.is_super_admin)
           const isOwnAccount = entry.email === requester.email
           const canSeePassword =
-            !isTargetSuperAdmin ||
             isOwnAccount ||
             isPrimarySuperAdminRequester
 

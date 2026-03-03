@@ -19,8 +19,9 @@ export async function PUT(
 ) {
   try {
     const supabase = getSupabaseAdmin()
-    await assertSuperAdminRequest(request, supabase)
+    const requester = await assertSuperAdminRequest(request, supabase)
     const primarySuperAdminEmail = getPrimarySuperAdminEmail()
+    const isPrimarySuperAdminRequester = requester.email === primarySuperAdminEmail
 
     const { id } = await params
     const body = await request.json()
@@ -81,6 +82,26 @@ export async function PUT(
     }
 
     if (password !== undefined && String(password).trim() !== '') {
+      if (existing.is_super_admin) {
+        return NextResponse.json<ApiResponse<null>>(
+          {
+            success: false,
+            error: 'Super admin passwords cannot be changed from Access panel',
+          },
+          { status: 403 }
+        )
+      }
+
+      if (!isPrimarySuperAdminRequester) {
+        return NextResponse.json<ApiResponse<null>>(
+          {
+            success: false,
+            error: 'Only primary super admin can change other admin passwords',
+          },
+          { status: 403 }
+        )
+      }
+
       const normalizedPassword = String(password)
       updatePayload.password_hash = hashPassword(normalizedPassword)
       updatePayload.password_encrypted = encryptPassword(normalizedPassword)
@@ -123,10 +144,14 @@ export async function PUT(
       throw new Error(updateError?.message || 'Failed to update admin user')
     }
 
+    const canSeePassword =
+      updated.email === requester.email ||
+      isPrimarySuperAdminRequester
+
     return NextResponse.json<ApiResponse<ReturnType<typeof mapAdminUserRow>>>(
       {
         success: true,
-        data: mapAdminUserRow(updated, { includePassword: true }),
+        data: mapAdminUserRow(updated, { includePassword: canSeePassword }),
       },
       { status: 200 }
     )

@@ -13,6 +13,11 @@ const IV_LENGTH = 12
 const resolvePasswordEncryptionSecret = () =>
   process.env.ADMIN_PASSWORD_ENCRYPTION_KEY
 
+const resolveLegacyPasswordEncryptionSecrets = () =>
+  [process.env.SUPABASE_SERVICE_ROLE_KEY, process.env.NEXT_PUBLIC_SUPABASE_URL]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value))
+
 const resolveEncryptionKey = () => {
   const secret = resolvePasswordEncryptionSecret()
 
@@ -49,21 +54,32 @@ export function decryptPassword(encryptedPayload?: string | null) {
     return null
   }
 
-  try {
-    const decipher = createDecipheriv(
-      'aes-256-gcm',
-      resolveEncryptionKey(),
-      Buffer.from(ivHex, 'hex')
-    )
-    decipher.setAuthTag(Buffer.from(authTagHex, 'hex'))
-    const decrypted = Buffer.concat([
-      decipher.update(Buffer.from(encryptedHex, 'hex')),
-      decipher.final(),
-    ])
-    return decrypted.toString('utf8')
-  } catch {
-    return null
+  const trySecrets = [
+    resolvePasswordEncryptionSecret(),
+    ...resolveLegacyPasswordEncryptionSecrets(),
+  ]
+    .map((value) => value?.trim())
+    .filter((value, index, list): value is string => Boolean(value) && list.indexOf(value) === index)
+
+  for (const secret of trySecrets) {
+    try {
+      const decipher = createDecipheriv(
+        'aes-256-gcm',
+        createHash('sha256').update(secret).digest(),
+        Buffer.from(ivHex, 'hex')
+      )
+      decipher.setAuthTag(Buffer.from(authTagHex, 'hex'))
+      const decrypted = Buffer.concat([
+        decipher.update(Buffer.from(encryptedHex, 'hex')),
+        decipher.final(),
+      ])
+      return decrypted.toString('utf8')
+    } catch {
+      continue
+    }
   }
+
+  return null
 }
 
 export function verifyPassword(password: string, storedHash: string) {
