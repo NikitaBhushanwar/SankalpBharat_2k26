@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Lock, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Lock, RefreshCw, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
 
 export default function AdminLoginPage() {
@@ -11,6 +11,7 @@ export default function AdminLoginPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -70,14 +71,23 @@ export default function AdminLoginPage() {
             <label className="text-[11px] uppercase tracking-widest font-bold text-slate-300">
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-orange-400"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 pr-11 text-white placeholder:text-slate-500 outline-none focus:border-orange-400"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-3 inline-flex items-center text-slate-400 hover:text-white"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
 
           {error && (

@@ -1,15 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { winnersStore } from '@/lib/admin-store'
+import { getSupabaseAdmin } from '@/lib/supabase-admin'
+import { mapWinnerRow } from '@/lib/admin-repository'
+import { requireAdminSession } from '@/lib/admin-session'
 
 export async function GET() {
   try {
-    const data = [...winnersStore].sort((a, b) => a.rank - b.rank)
+    const supabase = getSupabaseAdmin()
+
+    const { data, error, count } = await supabase
+      .from('winners')
+      .select('*', { count: 'exact' })
+      .order('rank', { ascending: true })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    const mappedData = (data ?? []).map((item) => mapWinnerRow(item))
 
     return NextResponse.json(
       {
         success: true,
-        data,
-        total: winnersStore.length,
+        data: mappedData,
+        total: count ?? mappedData.length,
       },
       { status: 200 }
     )
@@ -26,6 +39,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseAdmin()
+    await requireAdminSession(request, supabase)
     const body = await request.json()
     const { teamName, title, prizeAmount } = body
 
@@ -39,39 +54,44 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const newWinner = {
-      id: Date.now().toString(),
-      rank: winnersStore.length + 1,
-      teamName: String(teamName),
-      title: String(title),
-      prizeAmount: String(prizeAmount),
-    }
+    const { count } = await supabase
+      .from('winners')
+      .select('*', { count: 'exact', head: true })
 
-    winnersStore.push(newWinner)
+    const rank = (count ?? 0) + 1
 
-    winnersStore
-      .sort((a, b) => a.rank - b.rank)
-      .forEach((winner, index) => {
-        winner.rank = index + 1
+    const { data: createdWinner, error: createError } = await supabase
+      .from('winners')
+      .insert({
+        rank,
+        team_name: String(teamName).trim(),
+        title: String(title).trim(),
+        prize_amount: String(prizeAmount).trim(),
       })
+      .select('*')
+      .single()
 
-    const createdWinner = winnersStore.find((winner) => winner.id === newWinner.id)
+    if (createError || !createdWinner) {
+      throw new Error(createError?.message || 'Failed to create winner')
+    }
 
     return NextResponse.json(
       {
         success: true,
-        data: createdWinner,
+        data: mapWinnerRow(createdWinner),
         message: 'Winner added successfully',
       },
       { status: 201 }
     )
   } catch (error) {
+    const status = error instanceof Error && error.message === 'Not authenticated' ? 401 : 500
+
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to create winner',
       },
-      { status: 500 }
+      { status }
     )
   }
 }

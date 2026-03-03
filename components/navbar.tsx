@@ -8,10 +8,10 @@ import ThemeToggle from './theme-toggle';
 
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '/#about', label: 'About' },
-  { href: '/leaderboard', label: 'Leaderboard' },
-  { href: '/winners', label: 'Winners' },
-  { href: '/#contact', label: 'Contact' },
+  { href: '/about-event', label: 'About' },
+  { href: '/problem-statements', label: 'Problems' },
+  { href: '/comming-soon', label: 'Sponsors' },
+  { href: '/contact-us', label: 'Contact' },
 ];
 
 export default function Navbar() {
@@ -25,7 +25,7 @@ export default function Navbar() {
     return (
       <nav className="fixed inset-x-0 top-3 z-50 bg-white dark:bg-slate-900 shadow px-6 py-2 flex justify-between items-center">
         
-        <div className="flex items-center gap-4">
+        <Link href="/" className="flex items-center gap-4" aria-label="Go to homepage">
           {/* Bigger Logo */}
           <img
             src="/sb_logo.webp"
@@ -39,7 +39,7 @@ export default function Navbar() {
             className="h-10 sm:h-12 w-auto object-contain"
             alt="Sankalp Bharat"
           />
-        </div>
+        </Link>
 
         <ThemeToggle />
       </nav>
@@ -54,7 +54,7 @@ export default function Navbar() {
         <div className="rounded-2xl border border-white/20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl shadow-2xl px-3 sm:px-6 py-2 flex items-center justify-between gap-3">
 
           {/* Logo Section */}
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+          <Link href="/" className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1" aria-label="Go to homepage">
             <img
               src="/sb_logo.webp"
               className="h-10 sm:h-14 lg:h-16 w-auto object-contain flex-shrink-0"
@@ -66,7 +66,7 @@ export default function Navbar() {
               className="h-6 sm:h-10 w-auto max-w-[150px] sm:max-w-none object-contain"
               alt="Sankalp Bharat"
             />
-          </div>
+          </Link>
 
           {/* Desktop Links */}
           <div className="hidden md:flex gap-8">

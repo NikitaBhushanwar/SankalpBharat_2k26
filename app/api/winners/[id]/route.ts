@@ -1,22 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { winnersStore } from '@/lib/admin-store'
+import { getSupabaseAdmin } from '@/lib/supabase-admin'
+import { mapWinnerRow, recomputeWinnerRanks } from '@/lib/admin-repository'
+import { requireAdminSession } from '@/lib/admin-session'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseAdmin()
     const { id } = await params
-    const winner = winnersStore.find((entry) => entry.id === id)
+    const { data: winner, error } = await supabase
+      .from('winners')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-    if (!winner) {
+    if (error || !winner) {
       return NextResponse.json(
         { success: false, error: 'Winner not found' },
         { status: 404 }
       )
     }
 
-    return NextResponse.json({ success: true, data: winner }, { status: 200 })
+    return NextResponse.json({ success: true, data: mapWinnerRow(winner) }, { status: 200 })
   } catch (error) {
     return NextResponse.json(
       {
@@ -33,41 +40,61 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseAdmin()
+    await requireAdminSession(request, supabase)
     const { id } = await params
     const body = await request.json()
     const { teamName, title, prizeAmount } = body
 
-    const winnerIndex = winnersStore.findIndex((entry) => entry.id === id)
+    const updatePayload: {
+      team_name?: string
+      title?: string
+      prize_amount?: string
+    } = {}
 
-    if (winnerIndex === -1) {
+    if (teamName !== undefined) {
+      updatePayload.team_name = String(teamName).trim()
+    }
+
+    if (title !== undefined) {
+      updatePayload.title = String(title).trim()
+    }
+
+    if (prizeAmount !== undefined) {
+      updatePayload.prize_amount = String(prizeAmount).trim()
+    }
+
+    const { data: winner, error: updateError } = await supabase
+      .from('winners')
+      .update(updatePayload)
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (updateError || !winner) {
       return NextResponse.json(
         { success: false, error: 'Winner not found' },
         { status: 404 }
       )
     }
 
-    winnersStore[winnerIndex] = {
-      ...winnersStore[winnerIndex],
-      teamName: teamName || winnersStore[winnerIndex].teamName,
-      title: title || winnersStore[winnerIndex].title,
-      prizeAmount: prizeAmount || winnersStore[winnerIndex].prizeAmount,
-    }
-
     return NextResponse.json(
       {
         success: true,
-        data: winnersStore[winnerIndex],
+        data: mapWinnerRow(winner),
         message: 'Winner updated successfully',
       },
       { status: 200 }
     )
   } catch (error) {
+    const status = error instanceof Error && error.message === 'Not authenticated' ? 401 : 500
+
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to update winner',
       },
-      { status: 500 }
+      { status }
     )
   }
 }
@@ -77,37 +104,43 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseAdmin()
+    await requireAdminSession(request, supabase)
     const { id } = await params
-    const winnerIndex = winnersStore.findIndex((entry) => entry.id === id)
 
-    if (winnerIndex === -1) {
+    const { data: deletedWinner, error: deleteError } = await supabase
+      .from('winners')
+      .delete()
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (deleteError || !deletedWinner) {
       return NextResponse.json(
         { success: false, error: 'Winner not found' },
         { status: 404 }
       )
     }
 
-    const deletedWinner = winnersStore.splice(winnerIndex, 1)[0]
-
-    winnersStore.forEach((winner, index) => {
-      winner.rank = index + 1
-    })
+    await recomputeWinnerRanks(supabase)
 
     return NextResponse.json(
       {
         success: true,
-        data: deletedWinner,
+        data: mapWinnerRow(deletedWinner),
         message: 'Winner deleted successfully',
       },
       { status: 200 }
     )
   } catch (error) {
+    const status = error instanceof Error && error.message === 'Not authenticated' ? 401 : 500
+
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to delete winner',
       },
-      { status: 500 }
+      { status }
     )
   }
 }

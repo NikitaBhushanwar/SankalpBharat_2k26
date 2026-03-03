@@ -13,16 +13,16 @@ export function RegistrationSection() {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl opacity-50 translate-y-1/2" />
 
       <div className="relative z-10 max-w-4xl mx-auto">
-        <div className="glass-effect rounded-2xl p-12 text-center glow-accent">
+        <div className="glass-effect rounded-2xl border border-border/50 p-8 sm:p-10 text-center">
           {/* Icon */}
           <div className="mb-6 inline-block">
-            <div className="p-4 rounded-xl bg-gradient-to-br from-accent to-secondary">
-              <Users className="w-8 h-8 text-background" />
+            <div className="p-4 rounded-xl bg-orange-500/15 border border-orange-500/30">
+              <Users className="w-8 h-8 text-orange-500" />
             </div>
           </div>
 
           {/* Content */}
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 text-balance">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 text-balance">
             Ready to Innovate?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -36,7 +36,7 @@ export function RegistrationSection() {
               { label: 'Registration Fee', value: '₹400 per Team' },
               { label: 'Registration Closes', value: '4 April 2026' },
             ].map((item) => (
-              <div key={item.label} className="text-center">
+              <div key={item.label} className="text-center rounded-xl bg-white/50 dark:bg-slate-900/40 border border-border/40 p-3">
                 <p className="text-xs font-mono text-secondary tracking-widest uppercase mb-2">{item.label}</p>
                 <p className="text-xl font-bold text-accent">{item.value}</p>
               </div>
@@ -48,7 +48,7 @@ export function RegistrationSection() {
             href="https://unstop.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-primary-neon glow-accent inline-block mb-6"
+            className="inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-black uppercase tracking-wider bg-orange-500 text-white hover:bg-orange-400 transition mb-6"
           >
             Register Your Team on Unstop
           </a>

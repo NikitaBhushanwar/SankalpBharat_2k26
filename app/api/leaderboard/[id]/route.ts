@@ -1,22 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { leaderboardStore } from '@/lib/admin-store'
+import { getSupabaseAdmin } from '@/lib/supabase-admin'
+import { mapLeaderboardRow, recomputeLeaderboardRanks } from '@/lib/admin-repository'
+import { requireAdminSession } from '@/lib/admin-session'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseAdmin()
     const { id } = await params
-    const entry = leaderboardStore.find((e) => e.id === id)
+    const { data: entry, error } = await supabase
+      .from('leaderboard_entries')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-    if (!entry) {
+    if (error || !entry) {
       return NextResponse.json(
         { success: false, error: 'Entry not found' },
         { status: 404 }
       )
     }
 
-    return NextResponse.json({ success: true, data: entry }, { status: 200 })
+    return NextResponse.json({ success: true, data: mapLeaderboardRow(entry) }, { status: 200 })
   } catch (error) {
     return NextResponse.json(
       {
@@ -33,51 +40,86 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseAdmin()
+    await requireAdminSession(request, supabase)
     const { id } = await params
     const body = await request.json()
     const { teamName, projectTitle, score, members } = body
 
-    const entryIndex = leaderboardStore.findIndex((e) => e.id === id)
+    const updatePayload: {
+      team_name?: string
+      project_title?: string
+      score?: number
+      members?: number
+    } = {}
 
-    if (entryIndex === -1) {
+    if (teamName !== undefined) {
+      updatePayload.team_name = String(teamName).trim()
+    }
+
+    if (projectTitle !== undefined) {
+      updatePayload.project_title = String(projectTitle).trim()
+    }
+
+    if (score !== undefined) {
+      const parsedScore = Number(score)
+      if (!Number.isFinite(parsedScore)) {
+        return NextResponse.json({ success: false, error: 'Invalid score' }, { status: 400 })
+      }
+      updatePayload.score = parsedScore
+    }
+
+    if (members !== undefined) {
+      const parsedMembers = Number(members)
+      if (!Number.isFinite(parsedMembers)) {
+        return NextResponse.json({ success: false, error: 'Invalid members' }, { status: 400 })
+      }
+      updatePayload.members = parsedMembers
+    }
+
+    const { data: updatedRow, error: updateError } = await supabase
+      .from('leaderboard_entries')
+      .update(updatePayload)
+      .eq('id', id)
+      .select('*')
+      .single()
+
+    if (updateError || !updatedRow) {
       return NextResponse.json(
         { success: false, error: 'Entry not found' },
         { status: 404 }
       )
     }
 
-    // Update entry
-    leaderboardStore[entryIndex] = {
-      ...leaderboardStore[entryIndex],
-      teamName: teamName || leaderboardStore[entryIndex].teamName,
-      projectTitle: projectTitle || leaderboardStore[entryIndex].projectTitle,
-      score: score !== undefined ? parseInt(score) : leaderboardStore[entryIndex].score,
-      members: members !== undefined ? parseInt(members) : leaderboardStore[entryIndex].members,
+    await recomputeLeaderboardRanks(supabase)
+
+    const { data: finalRow, error: finalRowError } = await supabase
+      .from('leaderboard_entries')
+      .select('*')
+      .eq('id', updatedRow.id)
+      .single()
+
+    if (finalRowError || !finalRow) {
+      throw new Error(finalRowError?.message || 'Failed to fetch updated entry')
     }
-
-    // Re-sort and update ranks
-    leaderboardStore.sort((a, b) => b.score - a.score)
-    leaderboardStore.forEach((entry, index) => {
-      entry.rank = index + 1
-    })
-
-    const updatedEntry = leaderboardStore.find((e) => e.id === id)
 
     return NextResponse.json(
       {
         success: true,
-        data: updatedEntry,
+        data: mapLeaderboardRow(finalRow),
         message: 'Entry updated successfully',
       },
       { status: 200 }
     )
   } catch (error) {
+    const status = error instanceof Error && error.message === 'Not authenticated' ? 401 : 500
+
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to update entry',
       },
-      { status: 500 }
+      { status }
     )
   }
 }
@@ -87,40 +129,43 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const supabase = getSupabaseAdmin()
+    await requireAdminSession(request, supabase)
     const { id } = await params
 
-    const entryIndex = leaderboardStore.findIndex((e) => e.id === id)
+    const { data: deletedRow, error: deleteError } = await supabase
+      .from('leaderboard_entries')
+      .delete()
+      .eq('id', id)
+      .select('*')
+      .single()
 
-    if (entryIndex === -1) {
+    if (deleteError || !deletedRow) {
       return NextResponse.json(
         { success: false, error: 'Entry not found' },
         { status: 404 }
       )
     }
 
-    const deletedEntry = leaderboardStore.splice(entryIndex, 1)[0]
-
-    // Re-sort and update ranks
-    leaderboardStore.sort((a, b) => b.score - a.score)
-    leaderboardStore.forEach((entry, index) => {
-      entry.rank = index + 1
-    })
+    await recomputeLeaderboardRanks(supabase)
 
     return NextResponse.json(
       {
         success: true,
-        data: deletedEntry,
+        data: mapLeaderboardRow(deletedRow),
         message: 'Entry deleted successfully',
       },
       { status: 200 }
     )
   } catch (error) {
+    const status = error instanceof Error && error.message === 'Not authenticated' ? 401 : 500
+
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to delete entry',
       },
-      { status: 500 }
+      { status }
     )
   }
 }

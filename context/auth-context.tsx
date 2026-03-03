@@ -13,7 +13,15 @@ interface AuthContextType {
 interface AdminUser {
   id: string
   email: string
-  role: 'admin' | 'moderator'
+  isSuperAdmin: boolean
+  isActive: boolean
+  createdAt: string
+}
+
+interface ApiResponse<T> {
+  success: boolean
+  data?: T
+  error?: string
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -23,45 +31,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  // Check localStorage on mount
+  // Check server session on mount (localStorage is only a client cache)
   useEffect(() => {
-    const storedAuth = localStorage.getItem('admin_auth')
-    const storedUser = localStorage.getItem('admin_user')
-
-    if (storedAuth && storedUser) {
+    const restoreSession = async () => {
       try {
-        const parsedUser = JSON.parse(storedUser)
-        setUser(parsedUser)
+        const response = await fetch('/api/admin-auth/session', {
+          method: 'GET',
+          cache: 'no-store',
+        })
+
+        const json = (await response.json()) as ApiResponse<AdminUser>
+
+        if (!response.ok || !json.success || !json.data) {
+          throw new Error('No active session')
+        }
+
+        setUser(json.data)
         setIsAuthenticated(true)
-      } catch (err) {
+        localStorage.setItem('admin_auth', 'true')
+        localStorage.setItem('admin_user', JSON.stringify(json.data))
+      } catch {
+        setUser(null)
+        setIsAuthenticated(false)
         localStorage.removeItem('admin_auth')
         localStorage.removeItem('admin_user')
       }
     }
+
+    void restoreSession()
   }, [])
 
   const login = async (email: string, password: string) => {
     try {
       setError(null)
 
-      // Hardcoded admin credentials
-      if (email === 'admin@sankalp.com' && password === 'SankalpB@1234321') {
-        const adminUser: AdminUser = {
-          id: '1',
-          email: email,
-          role: 'admin',
-        }
+      const response = await fetch('/api/admin-auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-        setUser(adminUser)
-        setIsAuthenticated(true)
+      const json = (await response.json()) as ApiResponse<AdminUser>
 
-        // Store in localStorage for demo purposes
-        localStorage.setItem('admin_auth', 'true')
-        localStorage.setItem('admin_user', JSON.stringify(adminUser))
-      } else {
-        setError('Invalid email or password')
-        throw new Error('Invalid credentials')
+      if (!response.ok || !json.success || !json.data) {
+        throw new Error(json.error || 'Invalid email or password')
       }
+
+      setUser(json.data)
+      setIsAuthenticated(true)
+
+      localStorage.setItem('admin_auth', 'true')
+      localStorage.setItem('admin_user', JSON.stringify(json.data))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
       throw err
@@ -69,6 +91,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = () => {
+    void fetch('/api/admin-auth/logout', {
+      method: 'POST',
+    })
+
     setUser(null)
     setIsAuthenticated(false)
     setError(null)

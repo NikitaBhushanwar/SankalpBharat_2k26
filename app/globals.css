@@ -131,6 +131,32 @@
 
 /* Modern utilities with smooth animations */
 @layer components {
+  .site-glass-shell {
+    margin: 5.5rem auto 0;
+    width: min(98%, 1600px);
+    border-radius: 1.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+  }
+
+  .dark .site-glass-shell {
+    border-color: rgba(148, 163, 184, 0.25);
+    background: rgba(15, 23, 42, 0.35);
+    box-shadow: 0 12px 40px rgba(2, 6, 23, 0.35);
+  }
+
+  @media (max-width: 640px) {
+    .site-glass-shell {
+      margin-top: 5rem;
+      width: 100%;
+      border-radius: 0.9rem;
+    }
+  }
+
   /* Interactive Background with Gradient */
   .interactive-bg {
     position: relative;
@@ -382,6 +408,58 @@
     #0f172a 55%,
     #020617 100%
   );
+}
+
+@keyframes sponsor-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes sponsor-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.05);
+  }
+}
+
+.sponsor-scroll-track {
+  animation: sponsor-scroll 35s linear infinite;
+  will-change: transform;
+}
+
+.group:hover .sponsor-scroll-track {
+  animation-play-state: paused;
+}
+
+.sponsor-pulse-slow {
+  animation: sponsor-pulse 6s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .sponsor-scroll-track {
+    animation-duration: 18s;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .sponsor-scroll-track {
+    animation-duration: 25s;
+  }
+}
+
+@media (min-width: 1025px) {
+  .sponsor-scroll-track {
+    animation-duration: 35s;
+  }
 }
 
 
