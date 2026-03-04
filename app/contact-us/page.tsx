@@ -35,10 +35,10 @@ export default function ContactUsPage() {
             </div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Email</h2>
             <a
-              href="mailto:cse@stvincentngp.edu.in"
+              href="mailto:sankalpbharat2k26@gmail.com"
               className="text-slate-600 dark:text-slate-300 hover:text-emerald-400 transition"
             >
-              cse@stvincentngp.edu.in
+              sankalpbharat2k26@gmail.com
             </a>
           </div>
 
