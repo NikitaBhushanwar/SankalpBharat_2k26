@@ -1,6 +1,6 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
-import { Geist } from 'next/font/google'
+import { Keania_One } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/context/auth-context'
 import { ThemeProvider } from '@/context/theme-provider'
@@ -9,7 +9,10 @@ import Galaxy from '@/components/Galaxy'
 import FooterWrapper from '@/components/footer-wrapper'
 import './globals.css'
 
-const geist = Geist({ subsets: ["latin"] });
+const keania = Keania_One({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: 'Sankalp Bharat Hackathon 2026',
@@ -31,26 +34,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${geist.className} antialiased transition-colors duration-300`}>
+      <body className={`${keania.className} antialiased transition-colors duration-300`}>
         <ThemeProvider>
           <AuthProvider>
             <Navbar />
             <div className="fixed inset-0 z-[5] pointer-events-none hidden dark:block">
-              <Galaxy
-                mouseRepulsion
-                mouseInteraction
-                density={1}
-                glowIntensity={0.3}
-                saturation={0}
-                hueShift={140}
-                twinkleIntensity={0.3}
-                rotationSpeed={0.1}
-                repulsionStrength={2}
-                autoCenterRepulsion={0}
-                starSpeed={0.5}
-                speed={1}
-                transparent
-              />
+              <Galaxy />
             </div>
             <main className="relative z-10 site-glass-shell">
               {children}
