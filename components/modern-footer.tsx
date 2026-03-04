@@ -33,8 +33,8 @@ export default function ModernFooter() {
             <ul className="space-y-2 text-sm">
               {[
                 { label: 'Home', href: '/' },
-                { label: 'Leaderboard', href: '/comming-soon' },
-                { label: 'Winners', href: '/comming-soon' },
+                { label: 'Leaderboard', href: '/leaderboard' },
+                { label: 'Winners', href: '/winners' },
                 { label: 'Admin', href: '/admin/login' },
               ].map((link) => (
                 <li key={link.href}>
@@ -51,10 +51,10 @@ export default function ModernFooter() {
             <h3 className="font-semibold text-foreground mb-4">Information</h3>
             <ul className="space-y-2 text-sm">
               {[
-                { label: 'About', href: '/#about' },
-                { label: 'Guidelines', href: '/#guidelines' },
+                { label: 'About', href: '/about-event' },
+                { label: 'Guidelines', href: '/rules-guidelines' },
                 { label: 'Timeline', href: '/#timeline' },
-                { label: 'Contact', href: '/#contact' },
+                { label: 'Contact', href: '/contact-us' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
@@ -71,8 +71,8 @@ export default function ModernFooter() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Mail className="w-4 h-4" />
-                <a href="mailto:cse@stvincentngp.edu.in" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                  cse@stvincentngp.edu.in
+                <a href="mailto:sankalpbharat2k26@gmail.com" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors break-all">
+                  sankalpbharat2k26@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">

@@ -57,7 +57,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
       id="hackathon-2k26"
       className={`
         relative min-h-screen flex items-start justify-center overflow-hidden
-        transition-all duration-700 pt-28
+        transition-all duration-700 pt-14
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none"}
       `}
     >
@@ -142,9 +142,9 @@ export function HeroSection({ visible }: HeroSectionProps) {
         </p>
 
         <div className="mt-10 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/40 bg-slate-900/60 backdrop-blur mb-5">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/40 bg-white/85 dark:bg-slate-900/60 backdrop-blur mb-5">
             <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-            <span className="text-xs sm:text-sm font-semibold text-slate-200 tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
+            <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
           </div>
 
           {countdown.isLive ? (
@@ -159,6 +159,17 @@ export function HeroSection({ visible }: HeroSectionProps) {
               <CountdownCard value={countdown.seconds} label="Seconds" />
             </div>
           )}
+
+          <div className="mt-6">
+            <a
+              href="https://unstop.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-black uppercase tracking-wider bg-orange-500 text-white hover:bg-orange-400 transition"
+            >
+              Register
+            </a>
+          </div>
         </div>
 
         {/* Scroll Hint */}

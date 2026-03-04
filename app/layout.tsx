@@ -6,6 +6,7 @@ import { AuthProvider } from '@/context/auth-context'
 import { ThemeProvider } from '@/context/theme-provider'
 import Navbar from '@/components/navbar'
 import Galaxy from '@/components/Galaxy'
+import FooterWrapper from '@/components/footer-wrapper'
 import './globals.css'
 
 const geist = Geist({ subsets: ["latin"] });
@@ -13,6 +14,10 @@ const geist = Geist({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: 'Sankalp Bharat Hackathon 2026',
   description: 'Innovating Sustainable Technology for Viksit Bharat',
+  icons: {
+    icon: '/sb_logo.webp',
+    shortcut: '/sb_logo.webp',
+  },
 };
 
 export const viewport: Viewport = {
@@ -30,7 +35,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <Navbar />
-            <div className="fixed inset-0 z-[5] pointer-events-none">
+            <div className="fixed inset-0 z-[5] pointer-events-none hidden dark:block">
               <Galaxy
                 mouseRepulsion
                 mouseInteraction
@@ -47,9 +52,10 @@ export default function RootLayout({
                 transparent
               />
             </div>
-            <main className="relative z-10">
+            <main className="relative z-10 site-glass-shell">
               {children}
             </main>
+            <FooterWrapper />
             <Analytics />
           </AuthProvider>
         </ThemeProvider>

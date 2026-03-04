@@ -1,32 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { leaderboardStore } from '@/lib/admin-store'
+import { getSupabaseAdmin } from '@/lib/supabase-admin'
+import { mapLeaderboardRow, recomputeLeaderboardRanks } from '@/lib/admin-repository'
+import { requireAdminSession } from '@/lib/admin-session'
 
 export async function GET(request: NextRequest) {
   try {
+    const supabase = getSupabaseAdmin()
+
     // Get query parameters for filtering/sorting
     const searchParams = request.nextUrl.searchParams
     const limit = searchParams.get('limit')
     const sortBy = searchParams.get('sortBy') || 'rank'
 
-    let data = [...leaderboardStore]
+    let query = supabase
+      .from('leaderboard_entries')
+      .select('*', { count: 'exact' })
 
-    // Sort by specified field
     if (sortBy === 'score') {
-      data.sort((a, b) => b.score - a.score)
+      query = query.order('score', { ascending: false })
     } else {
-      data.sort((a, b) => a.rank - b.rank)
+      query = query.order('rank', { ascending: true })
     }
 
-    // Apply limit
-    if (limit) {
-      data = data.slice(0, parseInt(limit))
+    const parsedLimit = limit ? parseInt(limit, 10) : null
+    if (parsedLimit && parsedLimit > 0) {
+      query = query.limit(parsedLimit)
     }
+
+    const { data, count, error } = await query
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    const mappedData = (data ?? []).map((item) => mapLeaderboardRow(item))
 
     return NextResponse.json(
       {
         success: true,
-        data,
-        total: leaderboardStore.length,
+        data: mappedData,
+        total: count ?? mappedData.length,
       },
       { status: 200 }
     )
@@ -43,6 +56,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseAdmin()
+    await requireAdminSession(request, supabase)
     const body = await request.json()
     const { teamName, projectTitle, score, members } = body
 
@@ -57,39 +72,64 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create new entry
-    const newEntry = {
-      id: Date.now().toString(),
-      rank: leaderboardStore.length + 1,
-      teamName,
-      projectTitle,
-      score: parseInt(score),
-      members: parseInt(members),
+    const parsedScore = Number(score)
+    const parsedMembers = Number(members)
+
+    if (!Number.isFinite(parsedScore) || !Number.isFinite(parsedMembers)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Score and members must be valid numbers',
+        },
+        { status: 400 }
+      )
     }
 
-    leaderboardStore.push(newEntry)
+    const { data: createdRow, error: createError } = await supabase
+      .from('leaderboard_entries')
+      .insert({
+        team_name: String(teamName).trim(),
+        project_title: String(projectTitle).trim(),
+        score: parsedScore,
+        members: parsedMembers,
+        rank: 0,
+      })
+      .select('*')
+      .single()
 
-    // Sort by score
-    leaderboardStore.sort((a, b) => b.score - a.score)
-    leaderboardStore.forEach((entry, index) => {
-      entry.rank = index + 1
-    })
+    if (createError || !createdRow) {
+      throw new Error(createError?.message || 'Failed to create leaderboard entry')
+    }
+
+    await recomputeLeaderboardRanks(supabase)
+
+    const { data: finalRow, error: finalRowError } = await supabase
+      .from('leaderboard_entries')
+      .select('*')
+      .eq('id', createdRow.id)
+      .single()
+
+    if (finalRowError || !finalRow) {
+      throw new Error(finalRowError?.message || 'Failed to fetch created leaderboard entry')
+    }
 
     return NextResponse.json(
       {
         success: true,
-        data: newEntry,
+        data: mapLeaderboardRow(finalRow),
         message: 'Entry added successfully',
       },
       { status: 201 }
     )
   } catch (error) {
+    const status = error instanceof Error && error.message === 'Not authenticated' ? 401 : 500
+
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to create entry',
       },
-      { status: 500 }
+      { status }
     )
   }
 }
