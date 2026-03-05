@@ -21,6 +21,12 @@ export const metadata: Metadata = {
     icon: '/sb_logo.webp',
     shortcut: '/sb_logo.webp',
   },
+  other: [
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=calendar_today',
+    },
+  ],
 };
 
 export const viewport: Viewport = {

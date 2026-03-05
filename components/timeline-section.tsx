@@ -1,33 +1,38 @@
 'use client'
 
 const timeline = [
-  
   {
     phase: '01',
-    date: '18th March 2026 (Wednesday)',
+    date: '5th March 2026 (Thursday)',
+    title: 'Registration Starts',
+    description: 'Team size of 4-6 members, registration fee  of ₹500 per team',
+  },
+  {
+    phase: '02',
+    date: '19th March 2026 (Thursday)',
     title: 'Problem Statement Release',
     description: 'Approximately 10 industry-collaborated problem statements are released officially.',
   },
   {
-    phase: '02',
-    date: '4th April 2026 (Saturday)',
+    phase: '03',
+    date: '2nd April 2026 (Thursday)',
     title: 'Registration Closes',
-    description: 'Final day for team registration (team size 4-6, registration fee ₹400 per team).',
+    description: 'Final day for team registration (team size 4-6, registration fee ₹500 per team).',
   },
   {
-    phase: '03',
-    date: '5th April 2026 (Sunday)',
+    phase: '04',
+    date: '6th April 2026 (Monday)',
     title: 'Submission Deadline',
     description: 'Teams submit detailed PPT or poster of their proposed solution on Unstop.',
   },
   {
-    phase: '04',
+    phase: '05',
     date: '10th April 2026 (Friday)',
     title: 'Round 1 Results Announced',
     description: 'Top 10% teams (20 teams out of 200) are shortlisted for the offline finale.',
   },
   {
-    phase: '05',
+    phase: '06',
     date: '17th & 18th April 2026 (Friday & Saturday)',
     title: 'Offline Grand Finale',
     description: '24-hour onsite hack, final submissions, and jury presentations for selected finalists.',
@@ -62,9 +67,9 @@ export function TimelineSection() {
                   {/* Left/Right content */}
                   <div className="flex-1">
                     <div className="glass-effect rounded-xl lg:rounded-2xl p-4 sm:p-6 card-hover">
-                      <p className="text-xs font-semibold text-orange-600 dark:text-emerald-400 tracking-widest mb-2">PHASE {item.phase}</p>
+                      <p className="text-xs font-semibold text-orange-600 dark:text-blue-400 tracking-widest mb-2">PHASE {item.phase}</p>
                       <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 sm:mb-3 font-medium">{item.date}</p>
-                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 dark:text-emerald-400 mb-2">{item.title}</h3>
+                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">{item.title}</h3>
                       <p className="text-sm text-foreground leading-relaxed">{item.description}</p>
                     </div>
                   </div>

@@ -12,7 +12,6 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <HeroSection visible />
-      <SponsorSlider />
       <AboutSection />
       <ThemesSection />
       <TimelineSection />

@@ -33,8 +33,8 @@ export function RegistrationSection() {
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {[
               { label: 'Team Size', value: '4-6 Members' },
-              { label: 'Registration Fee', value: '₹400 per Team' },
-              { label: 'Registration Closes', value: '4 April 2026' },
+              { label: 'Registration Fee', value: '₹500 per Team' },
+              { label: 'Registration Closes', value: '2 April 2026' },
             ].map((item) => (
               <div key={item.label} className="text-center rounded-xl bg-white/50 dark:bg-slate-900/40 border border-border/40 p-3">
                 <p className="text-xs font-mono text-secondary tracking-widest uppercase mb-2">{item.label}</p>
