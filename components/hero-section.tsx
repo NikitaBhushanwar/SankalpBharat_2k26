@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTheme } from "@/context/theme-provider";
+import SponsorSlider from "./sponsor-slider";
 import {
   Leaf,
   TreePine,
@@ -19,6 +21,7 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ visible }: HeroSectionProps) {
+  const { theme } = useTheme();
   const [countdown, setCountdown] = useState({
     days: 0,
     hours: 0,
@@ -57,7 +60,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
       id="hackathon-2k26"
       className={`
         relative min-h-screen flex items-start justify-center overflow-hidden
-        transition-all duration-700 pt-14
+        transition-all duration-700 pt-2 sm:pt-4
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none"}
       `}
     >
@@ -103,22 +106,23 @@ export function HeroSection({ visible }: HeroSectionProps) {
 
       {/* ================= CONTENT ================= */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-
-        {/* Badge */}
-        <div
-          className="inline-flex items-center gap-2 px-5 py-2 rounded-full
-                     bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl
-                     border border-blue-700/70 dark:border-blue-400/40
-                     shadow-md dark:shadow-[0_0_25px_rgba(59,130,246,0.25)]
-                     mb-10"
-        >
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-            National Level Hackathon 2K26
-          </span>
+        
+        <div className="mx-auto mt-0 w-[240px] sm:w-[320px] md:w-[420px] lg:w-[540px] xl:w-[660px]">
+          <img
+            src={theme === 'light' ? "/svpcet_logo_light.webp" : "/svpcet_logo.webp"}
+            alt="SVPCET Logo"
+            className="w-full h-auto object-contain"
+          />
         </div>
+        
+        <p
+          className="mt-0 max-w-2xl mx-auto text-sm md:text-xl
+                     text-slate-600 dark:text-slate-400 leading-relaxed"
+        >
+         Presents
+        </p>
 
-        <div className="mx-auto mt-2 w-[280px] sm:w-[360px] md:w-[460px] lg:w-[560px]">
+        <div className="mx-auto mt-0 w-[180px] sm:w-[240px] md:w-[300px] lg:w-[380px] xl:w-[460px]">
           <img
             src="/sb_name.webp"
             alt="Sankalp Bharat 2K26"
@@ -128,12 +132,12 @@ export function HeroSection({ visible }: HeroSectionProps) {
 
         {/* Description */}
         <p
-          className="mt-6 max-w-3xl mx-auto text-lg md:text-xl
+          className="mt-2 max-w-3xl mx-auto text-base sm:text-lg md:text-xl
                      text-slate-600 dark:text-slate-400 leading-relaxed"
         >
           Innovating
           <span className="mx-1 font-semibold bg-gradient-to-r from-green-600 to-emerald-500 dark:from-green-400 dark:to-emerald-300 bg-clip-text text-transparent">
-            sustainable solutions
+            sustainable
           </span>
           solutions for a
           <span className="mx-1 font-semibold bg-gradient-to-r from-orange-600 to-amber-500 dark:from-orange-400 dark:to-amber-300 bg-clip-text text-transparent">
@@ -141,18 +145,18 @@ export function HeroSection({ visible }: HeroSectionProps) {
           </span>
         </p>
 
-        <div className="mt-10 max-w-3xl mx-auto">
+        <div className="mt-3 max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/40 bg-white/85 dark:bg-slate-900/60 backdrop-blur mb-5">
             <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-            <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
           </div>
 
           {countdown.isLive ? (
             <div className="glass-effect rounded-2xl p-6 border border-emerald-500/40">
-              <p className="text-2xl md:text-3xl font-black text-emerald-400">Hackathon is Live!</p>
+              <p className="text-xl sm:text-2xl md:text-3xl font-black text-emerald-400">Hackathon is Live!</p>
             </div>
           ) : (
-            <div className="flex items-center justify-center gap-2 sm:gap-3">
+            <div className="flex items-center justify-center gap-0 sm:gap-1">
               <CountdownCard value={countdown.days} label="Days" />
               <CountdownCard value={countdown.hours} label="Hours" />
               <CountdownCard value={countdown.minutes} label="Minutes" />
@@ -172,8 +176,13 @@ export function HeroSection({ visible }: HeroSectionProps) {
           </div>
         </div>
 
+        {/* Sponsors placed within hero */}
+        <div className="mt-4 sm:mt-6">
+          <SponsorSlider />
+        </div>
+
         {/* Scroll Hint */}
-        <div className="mt-20 text-sm text-slate-400 dark:text-slate-500 animate-bounce">
+        <div className="mt-10 sm:mt-20 text-sm text-slate-400 dark:text-slate-500 animate-bounce">
           Explore ↓
         </div>
       </div>
@@ -216,11 +225,11 @@ function FloatingIcon({
 
 function CountdownCard({ value, label }: { value: number; label: string }) {
   return (
-    <div className="glass-effect rounded-xl border border-orange-500/25 px-3 py-2 sm:px-4 sm:py-3 text-center card-hover min-w-[70px] sm:min-w-[88px]">
-      <div className="text-2xl sm:text-3xl md:text-4xl font-black text-orange-500 dark:text-orange-400 leading-none">
+    <div className="glass-effect rounded-xl border border-orange-500/25 px-1.5 py-1 sm:px-2 sm:py-1.5 text-center card-hover min-w-[50px] sm:min-w-[60px]">
+      <div className="text-lg sm:text-xl md:text-2xl font-black text-orange-500 dark:text-orange-400 leading-none">
         {String(value).padStart(2, '0')}
       </div>
-      <div className="mt-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
+      <div className="mt-1 text-[8px] sm:text-[9px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
         {label}
       </div>
     </div>
