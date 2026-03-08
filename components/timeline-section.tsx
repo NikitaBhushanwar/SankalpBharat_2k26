@@ -41,7 +41,7 @@ const timeline = [
 
 export function TimelineSection() {
   return (
-    <section id="timeline" className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <section id="timeline" className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden light-section-tint">
       <div className="relative z-10 max-w-5xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-12 sm:mb-16 lg:mb-20">
@@ -66,11 +66,11 @@ export function TimelineSection() {
                 <div className={`hidden sm:flex gap-6 lg:gap-8 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
                   {/* Left/Right content */}
                   <div className="flex-1">
-                    <div className="glass-effect rounded-xl lg:rounded-2xl p-4 sm:p-6 card-hover">
+                    <div className="glass-effect light-card rounded-xl lg:rounded-2xl p-4 sm:p-6 border border-slate-300/60 dark:border-transparent card-hover">
                       <p className="text-xs font-semibold text-orange-600 dark:text-blue-400 tracking-widest mb-2">PHASE {item.phase}</p>
-                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 sm:mb-3 font-medium">{item.date}</p>
-                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">{item.title}</h3>
-                      <p className="text-sm text-foreground leading-relaxed">{item.description}</p>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-400 mb-2 sm:mb-3 font-medium">{item.date}</p>
+                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-700 dark:text-blue-400 mb-2">{item.title}</h3>
+                      <p className="text-sm text-slate-700 dark:text-foreground leading-relaxed">{item.description}</p>
                     </div>
                   </div>
 
@@ -86,18 +86,18 @@ export function TimelineSection() {
                 </div>
 
                 {/* Mobile layout - single column */}
-                <div className="sm:hidden glass-effect rounded-xl p-4 card-hover">
+                <div className="sm:hidden glass-effect light-card rounded-xl p-4 border border-slate-300/60 dark:border-transparent card-hover">
                   <div className="flex gap-3 mb-3">
                     <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{item.phase}</span>
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 tracking-widest">PHASE {item.phase}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{item.date}</p>
+                      <p className="text-xs text-slate-600 dark:text-gray-400">{item.date}</p>
                     </div>
                   </div>
                   <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 mb-2">{item.title}</h3>
-                  <p className="text-sm text-foreground">{item.description}</p>
+                  <p className="text-sm text-slate-700 dark:text-foreground">{item.description}</p>
                 </div>
               </div>
             ))}

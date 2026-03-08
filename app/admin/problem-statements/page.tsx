@@ -23,6 +23,7 @@ interface PublishState {
   leaderboard: boolean
   winners: boolean
   problemStatements: boolean
+  problemStatementsDownload: boolean
 }
 
 const emptyForm = {
@@ -43,6 +44,7 @@ export default function AdminProblemStatementsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [isLive, setIsLive] = useState(false)
+  const [isDownloadLive, setIsDownloadLive] = useState(false)
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -70,6 +72,7 @@ export default function AdminProblemStatementsPage() {
       setItems(json.data ?? [])
       if (publishJson.success && publishJson.data) {
         setIsLive(Boolean(publishJson.data.problemStatements))
+        setIsDownloadLive(Boolean(publishJson.data.problemStatementsDownload))
       }
     } catch (fetchError) {
       setError(fetchError instanceof Error ? fetchError.message : 'Failed to load data')
@@ -163,6 +166,31 @@ export default function AdminProblemStatementsPage() {
     }
   }
 
+  const toggleDownloadPublish = async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/publish-state', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section: 'problemStatementsDownload', value: !isDownloadLive }),
+      })
+
+      const json = (await response.json()) as ApiResponse<PublishState>
+
+      if (!response.ok || !json.success || !json.data) {
+        throw new Error(json.error || 'Failed to update download publish state')
+      }
+
+      setIsDownloadLive(Boolean(json.data.problemStatementsDownload))
+    } catch (publishError) {
+      setError(publishError instanceof Error ? publishError.message : 'Failed to update download publish state')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   if (!isAuthenticated) {
     return null
   }
@@ -204,6 +232,14 @@ export default function AdminProblemStatementsPage() {
             }`}
           >
             {isLive ? 'Unpublish' : 'Go Live'}
+          </button>
+          <button
+            onClick={() => void toggleDownloadPublish()}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
+              isDownloadLive ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-200'
+            }`}
+          >
+            {isDownloadLive ? 'Hide Download PS' : 'Show Download PS'}
           </button>
           <button
             onClick={() => {

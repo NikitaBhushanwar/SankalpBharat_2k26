@@ -20,6 +20,7 @@ interface PublishState {
   leaderboard: boolean
   winners: boolean
   problemStatements: boolean
+  problemStatementsDownload: boolean
 }
 
 export default function ProblemStatementsLive() {
@@ -27,6 +28,7 @@ export default function ProblemStatementsLive() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isLive, setIsLive] = useState(false)
+  const [isDownloadLive, setIsDownloadLive] = useState(false)
 
   useEffect(() => {
     const fetchStatements = async () => {
@@ -48,6 +50,7 @@ export default function ProblemStatementsLive() {
         setItems(json.data ?? [])
         if (publishJson.success && publishJson.data) {
           setIsLive(Boolean(publishJson.data.problemStatements))
+          setIsDownloadLive(Boolean(publishJson.data.problemStatementsDownload))
         }
       } catch (fetchError) {
         setError(fetchError instanceof Error ? fetchError.message : 'Failed to load problem statements')
@@ -138,21 +141,23 @@ export default function ProblemStatementsLive() {
             >
               View PS
             </a>
-            <a
-              href={
-                hasPdf
-                  ? `/api/problem-statements/download?link=${encodeURIComponent(item.pdfLink ?? '')}`
-                  : '#'
-              }
-              download
-              className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition ${
-                hasPdf
-                  ? 'bg-orange-500 text-white hover:bg-orange-400'
-                  : 'bg-orange-500/40 text-orange-200/70 pointer-events-none'
-              }`}
-            >
-              Download PS
-            </a>
+            {isDownloadLive && (
+              <a
+                href={
+                  hasPdf
+                    ? `/api/problem-statements/download?link=${encodeURIComponent(item.pdfLink ?? '')}`
+                    : '#'
+                }
+                download
+                className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition ${
+                  hasPdf
+                    ? 'bg-orange-500 text-white hover:bg-orange-400'
+                    : 'bg-orange-500/40 text-orange-200/70 pointer-events-none'
+                }`}
+              >
+                Download PS
+              </a>
+            )}
           </div>
               </>
             )

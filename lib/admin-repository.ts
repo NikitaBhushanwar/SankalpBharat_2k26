@@ -29,9 +29,10 @@ export interface PublishState {
   leaderboard: boolean
   winners: boolean
   problemStatements: boolean
+  problemStatementsDownload: boolean
 }
 
-export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements'
+export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload'
 
 interface LeaderboardRow {
   id: string
@@ -62,7 +63,7 @@ interface ProblemStatementRow {
 }
 
 interface PublishStateRow {
-  section: 'leaderboard' | 'winners' | 'problemStatements'
+  section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload'
   is_live: boolean
 }
 
@@ -138,6 +139,7 @@ export async function readPublishState(supabase: SupabaseClient): Promise<Publis
     leaderboard: false,
     winners: false,
     problemStatements: false,
+    problemStatementsDownload: false,
   }
 
   const { data, error } = await supabase

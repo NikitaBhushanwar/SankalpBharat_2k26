@@ -53,6 +53,7 @@ interface PublishState {
   leaderboard: boolean
   winners: boolean
   problemStatements: boolean
+  problemStatementsDownload: boolean
 }
 
 interface AdminAccessUser {
@@ -135,6 +136,7 @@ export default function AdminDashboardPage() {
     leaderboard: false,
     winners: false,
     problemStatements: false,
+    problemStatementsDownload: false,
   })
 
   useEffect(() => {
@@ -1032,6 +1034,14 @@ export default function AdminDashboardPage() {
                 }`}
               >
                 {publishState.problemStatements ? 'Unpublish' : 'Go Live'}
+              </button>
+              <button
+                onClick={() => void togglePublish('problemStatementsDownload')}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
+                  publishState.problemStatementsDownload ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-200'
+                }`}
+              >
+                {publishState.problemStatementsDownload ? 'Hide Download PS' : 'Show Download PS'}
               </button>
               <button
                 onClick={() => {
