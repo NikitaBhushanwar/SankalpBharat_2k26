@@ -203,6 +203,34 @@ For production, ensure all are true:
 - Re-run [supabase/schema.sql](supabase/schema.sql) when schema changes.
 - Verify admin login/session after each deploy.
 
+### One-command College Server Redeploy
+
+This repository includes an automation script for your college server deployment.
+
+Command:
+
+```bash
+pnpm deploy:college
+```
+
+Behavior:
+- Prompts for server password (or uses `DEPLOY_PASSWORD` env var).
+- Uploads project to `/var/www/sankalpbharat.stvincentngp.edu.in/app`.
+- Runs `npm install` + `npm run build` on server.
+- Restarts PM2 process `sankalpbharat` on port `3001`.
+- Verifies `/api/health` after restart.
+
+Optional overrides:
+
+```bash
+DEPLOY_HOST=117.239.42.27 \
+DEPLOY_USER=sanbha \
+DEPLOY_APP_DIR=/var/www/sankalpbharat.stvincentngp.edu.in/app \
+DEPLOY_APP_NAME=sankalpbharat \
+DEPLOY_APP_PORT=3001 \
+pnpm deploy:college
+```
+
 ## Troubleshooting
 
 ### 1) “Invalid email or password” for known admin
