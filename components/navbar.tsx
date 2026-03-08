@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import ThemeToggle from './theme-toggle';
+import { useRegistrationLink } from '@/lib/use-registration-link';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -18,6 +19,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
   const [isOpen, setIsOpen] = useState(false);
+  const registrationLink = useRegistrationLink();
 
   /* ================= ADMIN NAVBAR ================= */
 
@@ -88,7 +90,9 @@ export default function Navbar() {
             </div>
 
             <Link
-              href="https://unstop.com/"
+              href={registrationLink}
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-orange-500 text-white px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg hover:scale-105 transition"
             >
               Register

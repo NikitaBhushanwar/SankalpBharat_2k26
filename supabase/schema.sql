@@ -39,6 +39,12 @@ create table if not exists public.publish_state (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.site_settings (
+  key text primary key,
+  value_text text,
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.admin_users (
   id uuid primary key default gen_random_uuid(),
   email text not null unique,
@@ -61,3 +67,8 @@ values
   ('problemStatements', false),
   ('problemStatementsDownload', false)
 on conflict (section) do nothing;
+
+insert into public.site_settings(key, value_text)
+values
+  ('registration_link', 'https://unstop.com/')
+on conflict (key) do nothing;

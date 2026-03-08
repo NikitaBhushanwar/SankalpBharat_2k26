@@ -1,5 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+export const DEFAULT_REGISTRATION_LINK = 'https://unstop.com/'
+const REGISTRATION_LINK_SETTING_KEY = 'registration_link'
+
 export interface LeaderboardEntry {
   id: string
   rank: number
@@ -65,6 +68,11 @@ interface ProblemStatementRow {
 interface PublishStateRow {
   section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload'
   is_live: boolean
+}
+
+interface SiteSettingRow {
+  key: string
+  value_text: string | null
 }
 
 export const mapLeaderboardRow = (row: LeaderboardRow): LeaderboardEntry => ({
@@ -170,6 +178,37 @@ export async function writePublishState(
         is_live: value,
       },
       { onConflict: 'section' }
+    )
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
+export async function readRegistrationLink(supabase: SupabaseClient): Promise<string> {
+  const { data, error } = await supabase
+    .from('site_settings')
+    .select('key, value_text')
+    .eq('key', REGISTRATION_LINK_SETTING_KEY)
+    .maybeSingle<SiteSettingRow>()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  const value = data?.value_text?.trim()
+  return value || DEFAULT_REGISTRATION_LINK
+}
+
+export async function writeRegistrationLink(supabase: SupabaseClient, link: string) {
+  const { error } = await supabase
+    .from('site_settings')
+    .upsert(
+      {
+        key: REGISTRATION_LINK_SETTING_KEY,
+        value_text: link,
+      },
+      { onConflict: 'key' }
     )
 
   if (error) {

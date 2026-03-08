@@ -1,8 +1,11 @@
 'use client'
 
 import { Users } from 'lucide-react'
+import { useRegistrationLink } from '@/lib/use-registration-link'
 
 export function RegistrationSection() {
+  const registrationLink = useRegistrationLink()
+
   return (
     <section id="register" className="py-20 px-4 relative overflow-hidden">
       {/* Background */}
@@ -45,7 +48,7 @@ export function RegistrationSection() {
 
           {/* CTA */}
           <a
-            href="https://unstop.com"
+            href={registrationLink}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-black uppercase tracking-wider bg-orange-500 text-white hover:bg-orange-400 transition mb-6"
