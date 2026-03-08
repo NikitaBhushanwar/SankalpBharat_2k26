@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, Mail, Phone, MapPin } from 'lucide-react'
+import ContactForm from '@/components/contact-form'
 
 export const metadata: Metadata = {
   title: 'Contact Us - Sankalp Bharat Hackathon 2K26',
@@ -63,6 +64,36 @@ export default function ContactUsPage() {
             <p className="text-slate-600 dark:text-slate-300">St. Vincent Pallotti College, Nagpur, Maharashtra, India</p>
           </div>
         </div>
+
+        <section className="mt-8 sm:mt-10 rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 p-5 sm:p-6">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Visit Our Campus</h2>
+          <p className="text-slate-600 dark:text-slate-300 mb-5">
+            Find St. Vincent Pallotti College of Engineering and Technology on the map.
+          </p>
+
+          <div className="overflow-hidden rounded-xl border border-emerald-500/20 bg-slate-950/40">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.699716887783!2d79.0451582746791!3d21.00467078063862!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd4bdc6b03bfded%3A0x51964eb66fa3ec5e!2sSt.%20Vincent%20Pallotti%20College%20of%20Engineering%20and%20Technology!5e0!3m2!1sen!2sin!4v1772999139415!5m2!1sen!2sin"
+              className="h-[320px] w-full md:h-[420px]"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="St. Vincent Pallotti College Location"
+            />
+          </div>
+
+          <a
+            href="https://maps.google.com/?q=St.%20Vincent%20Pallotti%20College%20of%20Engineering%20and%20Technology%2C%20Nagpur"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex h-10 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-500/20"
+          >
+            Open in Google Maps
+          </a>
+        </section>
+
+        <ContactForm />
       </div>
     </main>
   )
