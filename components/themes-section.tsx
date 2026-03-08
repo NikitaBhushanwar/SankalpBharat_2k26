@@ -33,7 +33,7 @@ const themes = [
 
 export default function ThemesSection() {
   return (
-    <section className="relative py-24 px-4 overflow-hidden">
+    <section className="relative py-24 px-4 overflow-hidden light-section-tint">
       <div className="absolute inset-0 tech-grid opacity-20" />
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -46,17 +46,17 @@ export default function ThemesSection() {
           {themes.map((theme) => (
             <div
               key={theme.id}
-              className="glass-effect rounded-2xl p-8 border border-border/50 card-hover"
+              className="glass-effect light-card rounded-2xl p-8 border border-slate-300/60 dark:border-border/50 card-hover"
             >
               <div className="flex items-center justify-between mb-6">
-                <span className="text-xs font-mono text-muted-foreground tracking-widest">THEME {theme.id}</span>
-                <div className="p-3 rounded-xl bg-slate-100/70 dark:bg-black/30 border border-border/40">
+                <span className="text-xs font-mono text-slate-500 dark:text-muted-foreground tracking-widest">THEME {theme.id}</span>
+                <div className="p-3 rounded-xl bg-white/90 dark:bg-black/30 border border-slate-200 dark:border-border/40 shadow-sm">
                   {theme.icon}
                 </div>
               </div>
 
               <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3">{theme.title}</h3>
-              <p className="text-muted-foreground leading-relaxed mb-6">{theme.description}</p>
+              <p className="text-slate-600 dark:text-muted-foreground leading-relaxed mb-6">{theme.description}</p>
 
               <div className={`h-1 rounded-full bg-gradient-to-r ${theme.accent}`} />
             </div>

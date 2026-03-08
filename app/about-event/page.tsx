@@ -28,6 +28,39 @@ export default function AboutEventPage() {
           </p>
         </div>
 
+        <section className="rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 p-5 sm:p-6 mb-8">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white text-center mb-5 sm:mb-6">Welcome to Pallotti !!</h2>
+
+          <div className="grid lg:grid-cols-2 gap-5 sm:gap-6 items-start">
+            <div className="rounded-xl overflow-hidden border border-border/50">
+              <img
+                src="/pallotti.webp"
+                alt="St. Vincent Pallotti College campus"
+                className="w-full h-72 sm:h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+
+            <div className="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p>
+                St. Vincent Pallotti College of Engineering and Technology was established in 2004 by the Nagpur Pallottine Society.
+                The College is accredited by NAAC with A grade. The College is affiliated to Nagpur University approved by Director of
+                Technical Education, Mumbai and AICTE, Government of India.
+              </p>
+
+              <p>
+                <span className="font-bold text-slate-900 dark:text-white">Vision:</span> To develop a knowledge based society with clarity of thoughts
+                and charity at hearts to serve humanity with integrity.
+              </p>
+
+              <p>
+                <span className="font-bold text-slate-900 dark:text-white">Mission:</span> To empower youth to be technocrats of tomorrow with absolute discipline,
+                quest for knowledge and strong ethos to uphold the spirit of professionalism.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           <section className="rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 p-6">
             <h2 className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white mb-3">

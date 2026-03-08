@@ -44,8 +44,15 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <Navbar />
-            <div className="fixed inset-0 z-[5] pointer-events-none hidden dark:block">
-              <Galaxy />
+            <div className="fixed inset-0 z-[4] pointer-events-none dark:hidden light-ambient" />
+            <div className="fixed inset-0 z-[5] pointer-events-none hidden dark:block galaxy-layer">
+              <Galaxy
+                density={0.8}
+                glowIntensity={0.55}
+                twinkleIntensity={0.35}
+                speed={0.95}
+                saturation={0}
+              />
             </div>
             <main className="relative z-10 site-glass-shell">
               {children}

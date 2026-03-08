@@ -27,6 +27,7 @@ export interface PublishState {
   leaderboard: boolean
   winners: boolean
   problemStatements: boolean
+  problemStatementsDownload: boolean
 }
 
 const globalStore = globalThis as unknown as {
@@ -53,6 +54,7 @@ if (!globalStore.__sb_publish_state__) {
     leaderboard: false,
     winners: false,
     problemStatements: false,
+    problemStatementsDownload: false,
   }
 }
 

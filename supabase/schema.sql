@@ -34,7 +34,7 @@ create table if not exists public.problem_statements (
 );
 
 create table if not exists public.publish_state (
-  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements')),
+  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload')),
   is_live boolean not null default false,
   updated_at timestamptz not null default now()
 );
@@ -58,5 +58,6 @@ insert into public.publish_state(section, is_live)
 values
   ('leaderboard', false),
   ('winners', false),
-  ('problemStatements', false)
+  ('problemStatements', false),
+  ('problemStatementsDownload', false)
 on conflict (section) do nothing;

@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export function AboutSection() {
   return (
-    <section id="about" className="py-24 px-4 relative overflow-hidden">
+    <section id="about" className="py-14 sm:py-24 px-4 relative overflow-hidden light-section-tint">
       <div className="absolute inset-0 tech-grid opacity-20" />
 
       <div className="relative z-10 max-w-6xl mx-auto">
@@ -16,18 +16,18 @@ export function AboutSection() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          <div className="glass-effect rounded-2xl p-8 border border-border/40">
+          <div className="glass-effect light-card rounded-2xl p-8 border border-border/40">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Organizers &amp; Host</h3>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-slate-700 dark:text-muted-foreground leading-relaxed">
               Organized by the Department of Computer Science and Engineering, Computer Society of India,
               and Zenith Forum at St. Vincent Pallotti College of Engineering &amp; Technology, Nagpur
               (An Autonomous Institution).
             </p>
           </div>
 
-          <div className="glass-effect rounded-2xl p-8 border border-border/40">
+          <div className="glass-effect light-card rounded-2xl p-8 border border-border/40">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Objective &amp; Vision</h3>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-slate-700 dark:text-muted-foreground leading-relaxed">
               The hackathon provides a high-impact platform for engineering students across India,
               especially Vidarbha and Maharashtra, to solve real-world sustainability and social challenges.
               Through partnerships with industries and organizations, it bridges student innovation with practical deployment.

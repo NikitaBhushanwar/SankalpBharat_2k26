@@ -59,7 +59,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
     <section
       id="hackathon-2k26"
       className={`
-        relative min-h-screen flex items-start justify-center overflow-hidden
+        relative min-h-[86vh] sm:min-h-screen flex items-start justify-center overflow-hidden
         transition-all duration-700 pt-2 sm:pt-4
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none"}
       `}
@@ -107,7 +107,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
       {/* ================= CONTENT ================= */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
         
-        <div className="mx-auto mt-0 w-[240px] sm:w-[320px] md:w-[420px] lg:w-[540px] xl:w-[660px]">
+        <div className="mx-auto mt-0 w-[260px] sm:w-[340px] md:w-[440px] lg:w-[560px] xl:w-[680px]">
           <img
             src={theme === 'light' ? "/svpcet_logo_light.webp" : "/svpcet_logo.webp"}
             alt="SVPCET Logo"
@@ -122,7 +122,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
          Presents
         </p>
 
-        <div className="mx-auto mt-0 w-[180px] sm:w-[240px] md:w-[300px] lg:w-[380px] xl:w-[460px]">
+        <div className="mx-auto mt-0 w-[250px] sm:w-[240px] md:w-[300px] lg:w-[380px] xl:w-[460px]">
           <img
             src="/sb_name.webp"
             alt="Sankalp Bharat 2K26"
@@ -146,9 +146,9 @@ export function HeroSection({ visible }: HeroSectionProps) {
         </p>
 
         <div className="mt-3 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/40 bg-white/85 dark:bg-slate-900/60 backdrop-blur mb-5">
+          <div className="inline-flex items-center gap-2 px-5 py-2 sm:px-4 sm:py-1.5 rounded-full border border-blue-500/40 bg-white/85 dark:bg-slate-900/60 backdrop-blur mb-5">
             <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
+            <span className="text-xs sm:text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
           </div>
 
           {countdown.isLive ? (
@@ -182,7 +182,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
         </div>
 
         {/* Scroll Hint */}
-        <div className="mt-10 sm:mt-20 text-sm text-slate-400 dark:text-slate-500 animate-bounce">
+        <div className="mt-4 sm:mt-8 text-sm text-slate-400 dark:text-slate-500 animate-bounce">
           Explore ↓
         </div>
       </div>
@@ -225,11 +225,11 @@ function FloatingIcon({
 
 function CountdownCard({ value, label }: { value: number; label: string }) {
   return (
-    <div className="glass-effect rounded-xl border border-orange-500/25 px-1.5 py-1 sm:px-2 sm:py-1.5 text-center card-hover min-w-[50px] sm:min-w-[60px]">
-      <div className="text-lg sm:text-xl md:text-2xl font-black text-orange-500 dark:text-orange-400 leading-none">
+    <div className="glass-effect rounded-xl border border-orange-500/25 px-2.5 py-1.5 sm:px-2 sm:py-1.5 text-center card-hover min-w-[64px] sm:min-w-[60px]">
+      <div className="text-2xl sm:text-xl md:text-2xl font-black text-orange-500 dark:text-orange-400 leading-none">
         {String(value).padStart(2, '0')}
       </div>
-      <div className="mt-1 text-[8px] sm:text-[9px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
+      <div className="mt-1 text-[10px] sm:text-[9px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
         {label}
       </div>
     </div>

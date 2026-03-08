@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { readPublishState } from '@/lib/admin-repository'
+import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 const getDriveFileId = (link: string) => {
   const fromFilePath = link.match(/\/d\/([^/]+)/)?.[1]
@@ -12,6 +14,19 @@ const getDriveFileId = (link: string) => {
 
 export async function GET(request: NextRequest) {
   try {
+    const supabase = getSupabaseAdmin()
+    const publishState = await readPublishState(supabase)
+
+    if (!publishState.problemStatementsDownload) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Download is currently disabled by admin',
+        },
+        { status: 403 }
+      )
+    }
+
     const link = request.nextUrl.searchParams.get('link')
 
     if (!link) {
