@@ -15,6 +15,7 @@ import {
   Cpu,
   CircuitBoard,
 } from "lucide-react";
+import { useRegistrationLink } from '@/lib/use-registration-link';
 
 interface HeroSectionProps {
   visible: boolean;
@@ -22,6 +23,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ visible }: HeroSectionProps) {
   const { theme } = useTheme();
+  const registrationLink = useRegistrationLink();
   const [countdown, setCountdown] = useState({
     days: 0,
     hours: 0,
@@ -166,7 +168,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
 
           <div className="mt-6">
             <a
-              href="https://unstop.com/"
+              href={registrationLink}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-black uppercase tracking-wider bg-orange-500 text-white hover:bg-orange-400 transition"

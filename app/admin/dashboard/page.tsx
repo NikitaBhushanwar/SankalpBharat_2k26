@@ -49,6 +49,10 @@ interface ApiResponse<T> {
   error?: string
 }
 
+interface RegistrationLinkData {
+  registrationLink: string
+}
+
 interface PublishState {
   leaderboard: boolean
   winners: boolean
@@ -99,6 +103,8 @@ const emptyPasswordForm = {
   confirmPassword: '',
 }
 
+const defaultRegistrationLink = 'https://unstop.com/'
+
 export default function AdminDashboardPage() {
   const router = useRouter()
   const { isAuthenticated, logout, user } = useAuth()
@@ -131,6 +137,8 @@ export default function AdminDashboardPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [registrationLink, setRegistrationLink] = useState(defaultRegistrationLink)
+  const [registrationLinkInput, setRegistrationLinkInput] = useState(defaultRegistrationLink)
   const [revealedAdminPasswords, setRevealedAdminPasswords] = useState<Record<string, boolean>>({})
   const [publishState, setPublishState] = useState<PublishState>({
     leaderboard: false,
@@ -197,16 +205,28 @@ export default function AdminDashboardPage() {
       }
 
       if (user?.isSuperAdmin) {
-        const adminUsersRes = await fetch('/api/admin-users', {
-          cache: 'no-store',
-        })
+        const [adminUsersRes, registrationLinkRes] = await Promise.all([
+          fetch('/api/admin-users', {
+            cache: 'no-store',
+          }),
+          fetch('/api/site-settings/registration-link', {
+            cache: 'no-store',
+          }),
+        ])
         const adminUsersJson = (await adminUsersRes.json()) as ApiResponse<AdminAccessUser[]>
+        const registrationLinkJson = (await registrationLinkRes.json()) as ApiResponse<RegistrationLinkData>
 
         if (!adminUsersRes.ok || !adminUsersJson.success) {
           throw new Error(adminUsersJson.error || 'Failed to fetch admin users')
         }
 
         setAdminUsers(adminUsersJson.data ?? [])
+
+        if (registrationLinkRes.ok && registrationLinkJson.success && registrationLinkJson.data?.registrationLink) {
+          const nextLink = registrationLinkJson.data.registrationLink
+          setRegistrationLink(nextLink)
+          setRegistrationLinkInput(nextLink)
+        }
       }
     } catch (fetchError) {
       setError(fetchError instanceof Error ? fetchError.message : 'Failed to load data')
@@ -541,6 +561,39 @@ export default function AdminDashboardPage() {
       }
     } catch (publishError) {
       setError(publishError instanceof Error ? publishError.message : 'Failed to update publish state')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const onSaveRegistrationLink = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!user?.isSuperAdmin) return
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/site-settings/registration-link', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          registrationLink: registrationLinkInput.trim(),
+        }),
+      })
+
+      const json = (await response.json()) as ApiResponse<RegistrationLinkData>
+
+      if (!response.ok || !json.success || !json.data?.registrationLink) {
+        throw new Error(json.error || 'Failed to update registration redirect link')
+      }
+
+      setRegistrationLink(json.data.registrationLink)
+      setRegistrationLinkInput(json.data.registrationLink)
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Failed to update registration redirect link')
     } finally {
       setLoading(false)
     }
@@ -1157,6 +1210,41 @@ export default function AdminDashboardPage() {
 
         {activeTab === 'access' && user?.isSuperAdmin && (
           <div className="space-y-4">
+            <form onSubmit={onSaveRegistrationLink} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 rounded-2xl border border-violet-500/20 bg-slate-900/80 p-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-violet-300 mb-2">
+                  Register Button Redirect Link
+                </label>
+                <input
+                  value={registrationLinkInput}
+                  onChange={(e) => setRegistrationLinkInput(e.target.value)}
+                  placeholder="https://example.com/register"
+                  className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                  required
+                />
+                <p className="mt-2 text-xs text-slate-400 break-all">
+                  Current live link: {registrationLink}
+                </p>
+              </div>
+
+              <div className="flex md:items-end justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRegistrationLinkInput(registrationLink)}
+                  className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-700 text-slate-200"
+                >
+                  Reset
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-violet-500 text-slate-950 disabled:opacity-60"
+                >
+                  Save Redirect
+                </button>
+              </div>
+            </form>
+
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => {

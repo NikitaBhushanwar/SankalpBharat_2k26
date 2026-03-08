@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/context/theme-provider'
 import Navbar from '@/components/navbar'
 import Galaxy from '@/components/Galaxy'
 import FooterWrapper from '@/components/footer-wrapper'
+import { Loader } from '@/components/loader'
 import './globals.css'
 
 const keania = Keania_One({
@@ -43,6 +44,7 @@ export default function RootLayout({
       <body className={`${keania.className} antialiased transition-colors duration-300`}>
         <ThemeProvider>
           <AuthProvider>
+            <Loader />
             <Navbar />
             <div className="fixed inset-0 z-[4] pointer-events-none dark:hidden light-ambient" />
             <div className="fixed inset-0 z-[5] pointer-events-none hidden dark:block galaxy-layer">
