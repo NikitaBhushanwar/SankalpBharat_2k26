@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Keania+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Texturina:ital,opsz,wght@0,12..72,100..900;1,12..72,100..900&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @tailwind base;
@@ -82,7 +82,7 @@
 
 @theme inline {
   --font-sans: 'Inter', sans-serif;
---font-display: 'Keania One', cursive;
+--font-texturina: var(--font-texturina);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

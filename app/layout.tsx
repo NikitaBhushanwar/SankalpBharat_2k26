@@ -1,6 +1,6 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
-import { Keania_One } from 'next/font/google'
+import { Texturina } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/context/auth-context'
 import { ThemeProvider } from '@/context/theme-provider'
@@ -9,9 +9,10 @@ import Galaxy from '@/components/Galaxy'
 import FooterWrapper from '@/components/footer-wrapper'
 import './globals.css'
 
-const keania = Keania_One({
-  weight: "400",
+const texturina = Texturina({
   subsets: ["latin"],
+  variable: "--font-texturina",
+  weight: ["700","800","900"],
 });
 
 export const metadata: Metadata = {
@@ -21,12 +22,6 @@ export const metadata: Metadata = {
     icon: '/sb_logo.webp',
     shortcut: '/sb_logo.webp',
   },
-  other: [
-    {
-      rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=calendar_today',
-    },
-  ],
 };
 
 export const viewport: Viewport = {
@@ -40,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${keania.className} antialiased transition-colors duration-300`}>
+      <body className={`${texturina.className} antialiased transition-colors duration-300`}>
         <ThemeProvider>
           <AuthProvider>
             <Navbar />
