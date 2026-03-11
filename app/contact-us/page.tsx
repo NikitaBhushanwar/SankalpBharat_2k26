@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function ContactUsPage() {
   return (
     <main className="min-h-screen px-4 sm:px-6 lg:px-8 pt-28 pb-10">
-      <div className="max-w-5xl mx-auto rounded-3xl border border-emerald-500/20 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl p-5 sm:p-7 lg:p-10">
+      <div className="max-w-5xl mx-auto rounded-3xl border border-emerald-500/20 bg-white/80 dark:bg-teal-950/80 backdrop-blur-xl p-5 sm:p-7 lg:p-10">
         <div className="mb-8">
           <Link
             href="/"
@@ -30,7 +30,7 @@ export default function ContactUsPage() {
         </div>
 
         <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 p-6">
+          <div className="rounded-2xl border border-border/50 bg-white/80 dark:bg-teal-900/60 dark:backdrop-blur p-6">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mb-4">
               <Mail size={18} className="text-emerald-400" />
             </div>
@@ -43,7 +43,7 @@ export default function ContactUsPage() {
             </a>
           </div>
 
-          <div className="rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 p-6">
+          <div className="rounded-2xl border border-border/50 bg-white/80 dark:bg-teal-900/60 dark:backdrop-blur p-6">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mb-4">
               <Phone size={18} className="text-emerald-400" />
             </div>
@@ -56,7 +56,7 @@ export default function ContactUsPage() {
             </a>
           </div>
 
-          <div className="rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 p-6">
+          <div className="rounded-2xl border border-border/50 bg-white/80 dark:bg-teal-900/60 dark:backdrop-blur p-6">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mb-4">
               <MapPin size={18} className="text-emerald-400" />
             </div>
@@ -65,7 +65,7 @@ export default function ContactUsPage() {
           </div>
         </div>
 
-        <section className="mt-8 sm:mt-10 rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 p-5 sm:p-6">
+        <section className="mt-8 sm:mt-10 rounded-2xl border border-border/50 bg-white/80 dark:bg-teal-900/60 dark:backdrop-blur p-5 sm:p-6">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Visit Our Campus</h2>
           <p className="text-slate-600 dark:text-slate-300 mb-5">
             Find St. Vincent Pallotti College of Engineering and Technology on the map.

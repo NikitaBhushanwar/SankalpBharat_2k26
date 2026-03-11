@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function ProblemStatementsPage() {
   return (
     <main className="min-h-screen px-4 sm:px-6 lg:px-8 pt-28 pb-10">
-      <div className="max-w-6xl mx-auto rounded-3xl border border-orange-500/20 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl p-5 sm:p-7 lg:p-10">
+      <div className="max-w-6xl mx-auto rounded-3xl border border-orange-500/20 bg-white/80 dark:bg-teal-950/80 backdrop-blur-xl p-5 sm:p-7 lg:p-10">
         <div className="mb-8">
           <Link
             href="/"

@@ -120,7 +120,10 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
-
+html, body {
+  margin: 0;
+  padding: 0;
+}
 html {
   font-size: 100%;
 }
@@ -189,6 +192,8 @@ html {
 /* Modern utilities with smooth animations */
 @layer components {
   .site-glass-shell {
+    padding-top: 0;
+  margin-top: 0;
     position: relative;
     isolation: isolate;
     margin: 5.5rem auto 0;
@@ -668,8 +673,36 @@ html {
   }
 }
 
+.revealContainer{
+position:relative;
+width:100%;
+height:100vh;
+overflow:hidden;
+}
 
+.bottomImage{
+position:absolute;
+width:100%;
+height:100%;
+background-image:url("/bg2.webp");
+background-size:cover;
+background-position:center;
+z-index:1;
+}
 
+.topImage{
+position:absolute;
+width:100%;
+height:100%;
+background-image:url("/bg1.webp");
+background-size:cover;
+background-position:center;
+z-index:2;
+
+/* initial mask */
+mask-image: radial-gradient(circle 220px at 50% 50%, transparent 85%, black 100%);
+-webkit-mask-image: radial-gradient(circle 220px at 50% 50%, transparent 85%, black 100%);
+}
 
 
 

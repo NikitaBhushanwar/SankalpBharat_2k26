@@ -122,4 +122,17 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* utility for blue glow effect around logos */
+  .blue-glow {
+    /* stronger glow, less transparent */
+    filter: drop-shadow(0 0 20px rgba(59,130,246,0.8))
+            drop-shadow(0 0 30px rgba(59,130,246,0.6));
+  }
+
+  /* utility for white glow effect (for text/name) */
+  .white-glow {
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.8))
+            drop-shadow(0 0 25px rgba(255,255,255,0.6));
+  }
 }

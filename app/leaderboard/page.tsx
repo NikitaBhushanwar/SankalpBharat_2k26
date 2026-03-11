@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function LeaderboardPage() {
   return (
     <main className="min-h-screen px-4 sm:px-6 lg:px-8 pt-28 pb-10">
-      <div className="max-w-7xl mx-auto rounded-3xl border border-emerald-500/20 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto rounded-3xl border border-emerald-500/20 bg-white/80 dark:bg-teal-950/80 backdrop-blur-xl p-4 sm:p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
           <Link
             href="/"

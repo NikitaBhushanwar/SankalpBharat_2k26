@@ -71,7 +71,7 @@ export default function ContactForm() {
   }
 
   return (
-    <section className="mt-8 sm:mt-10 rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 p-6 sm:p-8">
+    <section className="mt-8 sm:mt-10 rounded-2xl border border-border/50 bg-white/80 dark:bg-teal-900/60 dark:backdrop-blur p-6 sm:p-8">
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Send us a message</h2>
       <p className="text-slate-600 dark:text-slate-300 mb-6">
         Fill out the form below and our team will get back to you soon.
@@ -84,14 +84,14 @@ export default function ContactForm() {
             name="name"
             placeholder="Your name"
             required
-            className="h-11 rounded-xl border border-border/60 bg-slate-100/80 dark:bg-slate-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
+            className="h-11 rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
           />
           <input
             type="email"
             name="email"
             placeholder="Your email"
             required
-            className="h-11 rounded-xl border border-border/60 bg-slate-100/80 dark:bg-slate-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
+            className="h-11 rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
           />
         </div>
 
@@ -100,7 +100,7 @@ export default function ContactForm() {
           name="subject"
           placeholder="Subject"
           required
-          className="h-11 w-full rounded-xl border border-border/60 bg-slate-100/80 dark:bg-slate-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
+          className="h-11 w-full rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
         />
 
         <textarea
@@ -108,7 +108,7 @@ export default function ContactForm() {
           placeholder="Your message"
           required
           rows={5}
-          className="w-full rounded-xl border border-border/60 bg-slate-100/80 dark:bg-slate-900/80 px-4 py-3 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
+          className="w-full rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 py-3 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
         />
 
         {submitStatus && (

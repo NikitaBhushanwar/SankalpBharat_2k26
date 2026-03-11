@@ -148,7 +148,7 @@ export default function LeaderboardLive() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-white/70 dark:bg-slate-950/40 p-2 sm:p-3">
+        <div className="rounded-2xl border border-emerald-500/20 bg-white/70 dark:bg-teal-950/40 dark:backdrop-blur p-2 sm:p-3">
           <div className="hidden sm:grid grid-cols-12 px-4 py-2 mb-1 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
             <p className="col-span-1">#</p>
             <p className="col-span-3">Team</p>
@@ -171,7 +171,7 @@ export default function LeaderboardLive() {
                   className={`rounded-xl border p-3 sm:p-4 transition-all duration-200 ${
                     isSelected
                       ? 'bg-emerald-500/15 border-emerald-400/50 shadow-[0_0_18px_rgba(16,185,129,0.2)]'
-                      : 'bg-white/90 dark:bg-slate-900/70 border-emerald-500/20'
+                      : 'bg-white/90 dark:bg-teal-900/70 border-emerald-500/20'
                   }`}
                 >
                   <div className="sm:grid sm:grid-cols-12 sm:items-center gap-2">
