@@ -50,7 +50,7 @@ export default function ThemesSection() {
             >
               <div className="flex items-center justify-between mb-6">
                 <span className="text-xs font-mono text-slate-500 dark:text-muted-foreground tracking-widest">THEME {theme.id}</span>
-                <div className="p-3 rounded-xl bg-white/90 dark:bg-black/30 border border-slate-200 dark:border-border/40 shadow-sm">
+                <div className="p-3 rounded-xl bg-white/90 dark:bg-teal-900/40 dark:backdrop-blur border border-slate-200 dark:border-teal-500/20 shadow-sm">
                   {theme.icon}
                 </div>
               </div>

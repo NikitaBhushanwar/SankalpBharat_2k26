@@ -76,7 +76,7 @@ export function TimelineSection() {
 
                   {/* Center circle */}
                   <div className="flex-shrink-0 flex items-center justify-center">
-                    <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-background dark:bg-slate-900 border-2 border-green-500 flex items-center justify-center relative z-10">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-background dark:bg-teal-900 border-2 border-green-500 flex items-center justify-center relative z-10">
                       <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-orange-500 animate-pulse" />
                     </div>
                   </div>
