@@ -39,7 +39,7 @@ export function RegistrationSection() {
               { label: 'Registration Fee', value: '₹500 per Team' },
               { label: 'Registration Closes', value: '2 April 2026' },
             ].map((item) => (
-              <div key={item.label} className="text-center rounded-xl bg-white/50 dark:bg-slate-900/40 border border-border/40 p-3">
+              <div key={item.label} className="text-center rounded-xl bg-white/50 dark:bg-teal-900/40 dark:backdrop-blur border border-border/40 p-3">
                 <p className="text-xs font-mono text-secondary tracking-widest uppercase mb-2">{item.label}</p>
                 <p className="text-xl font-bold text-accent">{item.value}</p>
               </div>

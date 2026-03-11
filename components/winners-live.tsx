@@ -78,7 +78,7 @@ export default function WinnersLive() {
   return (
     <div className="space-y-3">
       {winners.map((winner) => (
-        <div key={winner.id} className="rounded-xl border border-cyan-500/20 bg-white/80 dark:bg-slate-900/60 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div key={winner.id} className="rounded-xl border border-cyan-500/20 bg-white/80 dark:bg-teal-900/60 dark:backdrop-blur p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <p className="text-xs text-cyan-700 dark:text-cyan-300 font-bold uppercase tracking-wider">Rank #{winner.rank}</p>
             <p className="text-xl font-bold text-slate-900 dark:text-white">{winner.teamName}</p>

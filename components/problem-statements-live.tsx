@@ -135,8 +135,8 @@ export default function ProblemStatementsLive() {
               rel="noopener noreferrer"
               className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider border transition ${
                 hasPdf
-                  ? 'bg-slate-100 text-slate-800 border-slate-300 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700 dark:hover:bg-slate-700'
-                  : 'bg-slate-100/70 text-slate-400 border-slate-300/70 pointer-events-none dark:bg-slate-800/50 dark:text-slate-500 dark:border-slate-700/50'
+                  ? 'bg-slate-100 text-slate-800 border-slate-300 hover:bg-slate-200 dark:bg-teal-800 dark:text-slate-100 dark:border-teal-700 dark:hover:bg-teal-700'
+                  : 'bg-slate-100/70 text-slate-400 border-slate-300/70 pointer-events-none dark:bg-teal-800/50 dark:text-slate-500 dark:border-teal-700/50'
               }`}
             >
               View PS

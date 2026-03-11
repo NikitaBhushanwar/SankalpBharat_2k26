@@ -62,7 +62,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
       id="hackathon-2k26"
       className={`
         relative min-h-[86vh] sm:min-h-screen flex items-start justify-center overflow-hidden
-        transition-all duration-700 pt-2 sm:pt-4
+        transition-all duration-700 pt-20 sm:pt-15
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none"}
       `}
     >
@@ -118,19 +118,45 @@ export function HeroSection({ visible }: HeroSectionProps) {
         </div>
         
         <p
-          className="mt-0 max-w-2xl mx-auto text-sm md:text-xl
-                     text-slate-600 dark:text-slate-400 leading-relaxed"
+          className="-mt-10 max-w-2xl mx-auto text-xs md:text-sm
+                     text-white-600 dark:text-white-400 leading-relaxed"
         >
-         Presents
+         PRESENTS
         </p>
 
-        <div className="mx-auto mt-0 w-[250px] sm:w-[240px] md:w-[300px] lg:w-[380px] xl:w-[460px]">
+        <p
+          className="mt-0 max-w-3xl mx-auto text-base sm:text-2xl md:text-3xl
+                     text-slate-600 dark:text-slate-400 leading-relaxed"
+        >
+          <span className="mx-1 tracking-widest  font-extrabold bg-gradient-to-r from-red-800 via-orange-500 to-red-600 dark:from-red-800 via-orange-500 dark:to-red-600 bg-clip-text text-transparent">
+            NATIONAL  LEVEL  HACKATHON
+          </span>
+        </p>
+
+        <div className="mx-auto mt-0 max-w-[200px] overflow-visible">
+          <img
+            src="/sb_logo.webp"
+            alt="Sankalp Bharat 2K26"
+            className="w-full h-auto object-contain blue-glow"
+          />
+        </div>
+        
+        <div className="mx-auto mt-0 max-w-[250px] overflow-visible">
+          <img
+            src="/sb_name.webp"
+            alt="Sankalp Bharat 2K26"
+            className="w-full h-auto object-contain white-glow"
+          />
+        </div>
+
+      <div className="mx-auto mt-0 max-w-[250px] ">
           <img
             src="/sb_name.webp"
             alt="Sankalp Bharat 2K26"
             className="w-full h-auto object-contain"
           />
         </div>
+
 
         {/* Description */}
         <p
@@ -148,7 +174,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
         </p>
 
         <div className="mt-3 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-5 py-2 sm:px-4 sm:py-1.5 rounded-full border border-blue-500/40 bg-white/85 dark:bg-slate-900/60 backdrop-blur mb-5">
+          <div className="inline-flex items-center gap-2 px-5 py-2 sm:px-4 sm:py-1.5 rounded-full border border-blue-500/40 bg-white/85 dark:bg-teal-900/60 backdrop-blur mb-5">
             <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
             <span className="text-xs sm:text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
           </div>

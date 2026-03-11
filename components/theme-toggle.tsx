@@ -12,7 +12,7 @@ export default function ThemeToggle() {
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className="relative inline-flex h-9 w-16 items-center rounded-full
                  border border-black/10 dark:border-white/10
-                 bg-white/70 dark:bg-slate-800/70
+                 bg-white/70 dark:bg-teal-800/70
                  px-1 backdrop-blur transition active:scale-95 shadow-sm"
     >
       {/* Sliding Circle */}
