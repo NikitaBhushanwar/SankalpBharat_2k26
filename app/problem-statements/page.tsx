@@ -27,7 +27,8 @@ export default function ProblemStatementsPage() {
           </p>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white">Problem Statements</h1>
           <p className="mt-3 text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-            Explore the officially released problem statements. Choose one challenge and build an impactful solution aligned with the event mission.
+    Problem statements are sourced from industry experts and research organizations, reflecting real-world challenges.
+
           </p>
         </div>
 
