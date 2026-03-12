@@ -67,7 +67,7 @@ export default function ContactUsPage() {
               <MapPin size={18} className="text-cyan-500 dark:text-cyan-300" />
             </div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Address</h2>
-            <p className="break-words text-sm sm:text-base text-slate-600 dark:text-slate-300">St. Vincent Pallotti College, Nagpur, Maharashtra, India</p>
+            <p className="break-words text-sm sm:text-base text-slate-600 dark:text-slate-300">St. Vincent Pallotti College of Engineering and Technology, Gavsi Manapur, Wardha Road, Nagpur, Maharashtra, India. </p>
           </div>
         </div>
 
