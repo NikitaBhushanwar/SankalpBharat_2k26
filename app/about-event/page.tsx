@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft, Target, Lightbulb, Users, Compass } from 'lucide-react'
+import { ArrowLeft, Target, Lightbulb, Users, Compass, Users2, GraduationCap, Sparkles, CalendarDays, ExternalLink } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'About Event - Sankalp Bharat Hackathon 2K26',
@@ -59,6 +59,75 @@ export default function AboutEventPage() {
               </p>
             </div>
           </div>
+        </section>
+
+        <section className="rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 dark:backdrop-blur p-5 sm:p-6 mb-8">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-4">What is Zenith?</h2>
+          <div className="grid items-center gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+            <div>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                Zenith Forum embodies excellence; it&apos;s a platform that fosters curiosity, nurtures talent, and inspires the pursuit of excellence.
+                At Zenith, imagination finds its highest peak. Built for the students, by the students; it&apos;s where ideas spark, skills grow,
+                and connections turn into opportunities. Here, you don&apos;t just attend college—you experience it. Join Zenith today, and be part of the journey.
+              </p>
+
+              <div className="mt-6">
+                <a
+                  href="https://zenith.stvincentngp.edu.in/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-modern inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-black uppercase tracking-wider"
+                >
+                  Visit Zenith Website
+                  <ExternalLink size={16} />
+                </a>
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-2xl border border-border/50 bg-background/60">
+              <img
+                src="/zenith.webp"
+                alt="Zenith Forum"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-border/50 bg-background/60 p-4">
+              <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-500/35 bg-cyan-500/10">
+                <Users2 size={18} className="text-cyan-500 dark:text-cyan-300" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Community Driven</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Built by students, for students</p>
+            </div>
+
+            <div className="rounded-xl border border-border/50 bg-background/60 p-4">
+              <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-500/35 bg-cyan-500/10">
+                <GraduationCap size={18} className="text-cyan-500 dark:text-cyan-300" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Skill Development</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Learn and grow with expert guidance</p>
+            </div>
+
+            <div className="rounded-xl border border-border/50 bg-background/60 p-4">
+              <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-500/35 bg-cyan-500/10">
+                <Sparkles size={18} className="text-cyan-500 dark:text-cyan-300" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Innovation Hub</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Where ideas come to life</p>
+            </div>
+
+            <div className="rounded-xl border border-border/50 bg-background/60 p-4">
+              <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-500/35 bg-cyan-500/10">
+                <CalendarDays size={18} className="text-cyan-500 dark:text-cyan-300" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Regular Events</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Workshops, competitions, and more</p>
+            </div>
+          </div>
+
         </section>
 
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2">

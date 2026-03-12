@@ -75,7 +75,7 @@ export default function ProblemStatementsLive() {
   }
 
   if (!isLive) {
-    return <div className="p-8 text-center text-muted-foreground">Problem statements are not live yet.</div>
+    return <div className="p-8 text-center text-muted-foreground">Problem statements will be live on 19th March 2026.</div>
   }
 
   const getDriveFileId = (link?: string) => {
