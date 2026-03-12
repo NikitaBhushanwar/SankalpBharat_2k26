@@ -5,7 +5,7 @@ const timeline = [
     phase: '01',
     date: '5th March 2026 (Thursday)',
     title: 'Registration Starts',
-    description: 'Team size of 4-6 members, registration fee  of ₹500 per team',
+    description: 'Team size of 2-6 members, registration fee of ₹500 per team',
   },
   {
     phase: '02',
@@ -17,7 +17,7 @@ const timeline = [
     phase: '03',
     date: '2nd April 2026 (Thursday)',
     title: 'Registration Closes',
-    description: 'Final day for team registration (team size 4-6, registration fee ₹500 per team).',
+    description: 'Final day for team registration (team size 2-6, registration fee ₹500 per team).',
   },
   {
     phase: '04',

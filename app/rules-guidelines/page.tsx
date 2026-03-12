@@ -44,7 +44,7 @@ export default function RulesGuidelinesPage() {
           <section className="rounded-2xl border border-border/50 bg-white/80 dark:bg-slate-900/60 p-6">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Team Size Limit</h2>
             <ul className="space-y-2 text-slate-600 dark:text-slate-300 list-disc pl-5">
-              <li>Each team must have a minimum of 4 and maximum of 6 members.</li>
+              <li>Each team must have a minimum of 2 and maximum of 6 members.</li>
               <li>All members should be declared at registration.</li>
               <li>Team composition changes after shortlisting are subject to organizer approval.</li>
             </ul>

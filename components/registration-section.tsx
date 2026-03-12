@@ -35,7 +35,7 @@ export function RegistrationSection() {
           {/* Details */}
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {[
-              { label: 'Team Size', value: '4-6 Members' },
+              { label: 'Team Size', value: '2-6 Members' },
               { label: 'Registration Fee', value: '₹500 per Team' },
               { label: 'Registration Closes', value: '2 April 2026' },
             ].map((item) => (

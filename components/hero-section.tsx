@@ -71,7 +71,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
 
       {/* Dark ambient glow layers */}
       <div className="absolute inset-0 -z-20 pointer-events-none hidden dark:block">
-        <div className="absolute top-32 left-1/4 w-[420px] h-[420px] bg-green-500/10 blur-3xl rounded-full" />
+        <div className="absolute top-32 left-1/4 w-[420px] h-[420px] bg-sky-500/8 blur-3xl rounded-full" />
         <div className="absolute bottom-32 right-1/4 w-[380px] h-[380px] bg-orange-500/10 blur-3xl rounded-full" />
       </div>
 
@@ -81,7 +81,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
         size="w-[420px] h-[420px]"
       />
       <FloatingBlob
-        className="bottom-32 right-1/4 bg-green-400/30 dark:bg-green-500/15"
+        className="bottom-32 right-1/4 bg-blue-400/20 dark:bg-blue-500/10"
         size="w-[380px] h-[380px]"
       />
       <FloatingBlob
