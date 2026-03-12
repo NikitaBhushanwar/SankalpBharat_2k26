@@ -140,14 +140,6 @@ export function HeroSection({ visible }: HeroSectionProps) {
             className="w-full h-auto object-contain blue-glow"
           />
         </div>
-        
-        <div className="mx-auto mt-0 max-w-[250px] overflow-visible">
-          <img
-            src="/sb_name.webp"
-            alt="Sankalp Bharat 2K26"
-            className="w-full h-auto object-contain white-glow"
-          />
-        </div>
 
       <div className="mx-auto mt-0 max-w-[250px] ">
           <img

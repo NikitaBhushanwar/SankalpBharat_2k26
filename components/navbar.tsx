@@ -10,7 +10,7 @@ import { useRegistrationLink } from '@/lib/use-registration-link';
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/about-event', label: 'About' },
-  { href: '/problem-statements', label: 'Problems' },
+  { href: '/problem-statements', label: 'Problem Statements' },
   { href: '/comming-soon', label: 'Sponsors' },
   { href: '/contact-us', label: 'Contact' },
 ];

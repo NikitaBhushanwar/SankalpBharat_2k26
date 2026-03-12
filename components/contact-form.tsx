@@ -82,14 +82,14 @@ export default function ContactForm() {
           <input
             type="text"
             name="name"
-            placeholder="Your name"
+            placeholder="Name"
             required
             className="h-11 rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
           />
           <input
             type="email"
             name="email"
-            placeholder="Your email"
+            placeholder="Email"
             required
             className="h-11 rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
           />

@@ -9,7 +9,7 @@ export function AboutSection() {
         <div className="mb-14 text-center">
           <p className="text-xs font-mono text-accent tracking-widest uppercase mb-3">About the Event</p>
           <h2 className="text-4xl md:text-5xl font-black uppercase text-slate-900 dark:text-white mb-4">Event Overview</h2>
-          <p className="text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-slate-900 dark:text-white max-w-3xl mx-auto">
             Sankalp Bharat 2K26 is a National Level Hackathon under the mission:
             {' '}<span className="text-accent font-semibold">Innovating Sustainable Solutions for Viksit Bharat</span>.
           </p>

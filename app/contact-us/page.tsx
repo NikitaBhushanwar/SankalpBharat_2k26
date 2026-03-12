@@ -22,7 +22,7 @@ export default function ContactUsPage() {
         </div>
 
         <div className="mb-10 text-center">
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-400 mb-3">Contact Us</p>
+          <p className="text-lg font-semibold tracking-[0.2em] uppercase text-emerald-400 mb-3">Contact Us</p>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white">Get in Touch</h1>
           <p className="mt-3 text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
             Reach out to the organizing team for registration, participation, sponsorship, or event-related queries.
@@ -49,10 +49,16 @@ export default function ContactUsPage() {
             </div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Phone</h2>
             <a
-              href="tel:+917122582922"
+              href="tel:+917558517946"
               className="text-slate-600 dark:text-slate-300 hover:text-emerald-400 transition"
             >
-              +91 712-2582922
+              Harsh Gupta - +91 7558517946
+            </a><br></br>
+            <a
+              href="tel:+917558645260"
+              className="text-slate-600 dark:text-slate-300 hover:text-emerald-400 transition"
+            >
+              Dhanshree Hande - +91 7558645260
             </a>
           </div>
 
@@ -61,7 +67,7 @@ export default function ContactUsPage() {
               <MapPin size={18} className="text-emerald-400" />
             </div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Address</h2>
-            <p className="text-slate-600 dark:text-slate-300">St. Vincent Pallotti College, Nagpur, Maharashtra, India</p>
+            <p className="text-slate-600 dark:text-slate-300">St. Vincent Pallotti College of Engineering and Technology, Gavsi Manapur, Wardha Road, Nagpur, Maharashtra, India</p>
           </div>
         </div>
 
