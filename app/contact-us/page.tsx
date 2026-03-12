@@ -52,7 +52,13 @@ export default function ContactUsPage() {
               href="tel:+917122582922"
               className="block break-words text-sm sm:text-base text-slate-600 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-300 transition"
             >
-              +91 712-2582922
+              Harsh Gupta - +91 7558517946
+            </a><br></br>
+            <a
+              href="tel:+917558645260"
+              className="text-slate-600 dark:text-slate-300 hover:text-emerald-400 transition"
+            >
+              Dhanshree Hande - +91 7558645260
             </a>
           </div>
 

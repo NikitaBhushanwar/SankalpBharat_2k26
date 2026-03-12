@@ -153,6 +153,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
           />
         </div>
 
+
         {/* Description */}
         <p
           className="mt-2 max-w-3xl mx-auto px-2 py-1 text-xs sm:text-base md:text-lg
