@@ -63,7 +63,7 @@ export default function ProblemStatementsLive() {
   }, [])
 
   if (loading) {
-    return <div className="p-8 text-center text-slate-500 dark:text-slate-400">Loading problem statements...</div>
+    return <div className="p-8 text-center text-muted-foreground">Loading problem statements...</div>
   }
 
   if (error) {
@@ -71,11 +71,11 @@ export default function ProblemStatementsLive() {
   }
 
   if (items.length === 0) {
-    return <div className="p-8 text-center text-slate-500 dark:text-slate-400">Problem statements will be published soon.</div>
+    return <div className="p-8 text-center text-muted-foreground">Problem statements will be published soon.</div>
   }
 
   if (!isLive) {
-    return <div className="p-8 text-center text-slate-500 dark:text-slate-400">Problem statements will be live on 19th March 2026.</div>
+    return <div className="p-8 text-center text-muted-foreground">Problem statements are not live yet.</div>
   }
 
   const getDriveFileId = (link?: string) => {
@@ -113,20 +113,20 @@ export default function ProblemStatementsLive() {
             return (
               <>
           <div className="mb-4 space-y-2">
-            <p className="text-xs uppercase tracking-widest text-orange-400 font-bold">Statement {String(index + 1).padStart(2, '0')}</p>
+            <p className="text-xs uppercase tracking-widest text-cyan-600 dark:text-cyan-300 font-bold">Statement {String(index + 1).padStart(2, '0')}</p>
             <div className="flex flex-wrap gap-2">
               {(domainChips.length > 0 ? domainChips : [item.domain]).map((domain) => (
                 <span
                   key={`${item.id}-${domain}`}
-                  className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300"
+                  className="inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-700 dark:text-cyan-300"
                 >
                   {domain}
                 </span>
               ))}
             </div>
           </div>
-          <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-2">{item.title}</h3>
-          <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{item.description}</p>
+          <h3 className="text-xl sm:text-2xl font-black text-foreground mb-2">{item.title}</h3>
+          <p className="text-muted-foreground leading-relaxed">{item.description}</p>
 
           <div className="mt-4 flex flex-wrap gap-2">
             <a
@@ -135,8 +135,8 @@ export default function ProblemStatementsLive() {
               rel="noopener noreferrer"
               className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider border transition ${
                 hasPdf
-                  ? 'bg-slate-100 text-slate-800 border-slate-300 hover:bg-slate-200 dark:bg-teal-800 dark:text-slate-100 dark:border-teal-700 dark:hover:bg-teal-700'
-                  : 'bg-slate-100/70 text-slate-400 border-slate-300/70 pointer-events-none dark:bg-teal-800/50 dark:text-slate-500 dark:border-teal-700/50'
+                  ? 'bg-background/80 text-foreground border-border hover:bg-background'
+                  : 'bg-background/50 text-muted-foreground border-border/70 pointer-events-none'
               }`}
             >
               View PS
@@ -151,8 +151,8 @@ export default function ProblemStatementsLive() {
                 download
                 className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition ${
                   hasPdf
-                    ? 'bg-orange-500 text-white hover:bg-orange-400'
-                    : 'bg-orange-500/40 text-orange-200/70 pointer-events-none'
+                    ? 'btn-modern'
+                    : 'bg-primary/30 text-primary-foreground/70 pointer-events-none'
                 }`}
               >
                 Download PS

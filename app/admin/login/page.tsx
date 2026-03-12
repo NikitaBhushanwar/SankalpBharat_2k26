@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@sankalp.com"
-              className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-orange-400"
+              className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-cyan-400"
               required
             />
           </div>
@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
-                className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 pr-11 text-white placeholder:text-slate-500 outline-none focus:border-orange-400"
+                className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 pr-11 text-white placeholder:text-slate-500 outline-none focus:border-cyan-400"
                 required
               />
               <button
@@ -97,7 +97,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-black uppercase tracking-[0.22em] py-3.5 transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:brightness-110 text-white font-black uppercase tracking-[0.22em] py-3.5 transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading && <RefreshCw size={16} className="animate-spin" />}
             {loading ? 'Signing In...' : 'Login'}

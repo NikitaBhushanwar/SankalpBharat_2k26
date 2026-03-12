@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from 'next'
 import { Texturina } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/context/auth-context'
-import { ThemeProvider } from '@/context/theme-provider'
 import Navbar from '@/components/navbar'
 import CursorRevealBackground from '@/components/cursor-reveal-background'
 import FooterWrapper from '@/components/footer-wrapper'
@@ -26,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#10b981',
+  themeColor: '#06b6d4',
 };
 
 export default function RootLayout({
@@ -37,27 +36,32 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${texturina.className} antialiased transition-colors duration-300`}>
-  <ThemeProvider>
     <AuthProvider>
 
       <Loader />
-       <Navbar />
 
-      {/* Global cursor reveal background */}
+      {/* Background must be outside the glass container —
+          backdrop-filter creates a containing block that would trap position:fixed children */}
       <CursorRevealBackground />
 
-      <main className="relative z-10">
-        {children}
-      </main>
+      {/* ── Full-site glassmorphism container ── */}
+      <div className="glass-site-container flex flex-col">
 
-      <FooterWrapper />
+        <Navbar />
+
+        <main className="relative z-10 flex-1">
+          {children}
+        </main>
+
+        <FooterWrapper />
+
+      </div>
      
       <Analytics />
 
     </AuthProvider>
-  </ThemeProvider>
 </body>
       
-    </html>
+          </html>
   )
 }

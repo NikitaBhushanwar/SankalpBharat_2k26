@@ -197,11 +197,11 @@ export default function AdminProblemStatementsPage() {
 
   return (
     <section className="min-h-screen px-4 sm:px-6 lg:px-8 pt-28 pb-10">
-      <div className="max-w-6xl mx-auto rounded-3xl border border-orange-500/20 bg-slate-950/80 backdrop-blur-xl shadow-2xl p-4 sm:p-6 lg:p-8">
+      <div className="max-w-6xl mx-auto rounded-3xl border border-cyan-500/20 bg-slate-950/80 backdrop-blur-xl shadow-2xl p-4 sm:p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <button
             onClick={() => router.push('/admin/dashboard')}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-orange-400 transition"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-cyan-300 transition"
           >
             <ArrowLeft size={16} /> Back to Dashboard
           </button>
@@ -228,7 +228,7 @@ export default function AdminProblemStatementsPage() {
           <button
             onClick={() => void togglePublish()}
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
-              isLive ? 'bg-orange-500 text-white' : 'bg-slate-700 text-slate-200'
+              isLive ? 'bg-blue-500 text-slate-950' : 'bg-slate-700 text-slate-200'
             }`}
           >
             {isLive ? 'Unpublish' : 'Go Live'}
@@ -236,7 +236,7 @@ export default function AdminProblemStatementsPage() {
           <button
             onClick={() => void toggleDownloadPublish()}
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
-              isDownloadLive ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-200'
+              isDownloadLive ? 'bg-sky-500 text-slate-950' : 'bg-slate-700 text-slate-200'
             }`}
           >
             {isDownloadLive ? 'Hide Download PS' : 'Show Download PS'}
@@ -249,14 +249,14 @@ export default function AdminProblemStatementsPage() {
                 setForm(emptyForm)
               }
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 text-white text-sm font-black hover:brightness-110 transition"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
           >
             <Plus size={16} /> {showForm ? 'Close' : 'Add Problem Statement'}
           </button>
         </div>
 
         {showForm && (
-          <form onSubmit={onSave} className="grid grid-cols-1 gap-3 rounded-2xl border border-orange-500/20 bg-slate-900/80 p-4 mb-5">
+          <form onSubmit={onSave} className="grid grid-cols-1 gap-3 rounded-2xl border border-blue-500/20 bg-slate-900/80 p-4 mb-5">
             <input
               value={form.title}
               onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
@@ -298,7 +298,7 @@ export default function AdminProblemStatementsPage() {
               <button
                 disabled={loading}
                 type="submit"
-                className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-orange-500 text-white disabled:opacity-60"
+                className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-blue-500 text-slate-950 disabled:opacity-60"
               >
                 {editingId ? 'Update Statement' : 'Save Statement'}
               </button>
@@ -306,18 +306,18 @@ export default function AdminProblemStatementsPage() {
           </form>
         )}
 
-        <div className="rounded-2xl border border-orange-500/20 overflow-hidden">
+        <div className="rounded-2xl border border-blue-500/20 overflow-hidden">
           {items.length === 0 ? (
             <div className="p-10 text-center text-slate-400 font-semibold">No problem statements uploaded yet.</div>
           ) : (
             <div className="space-y-3 p-3 sm:p-4">
               {items.map((item, index) => (
-                <div key={item.id} className="rounded-xl border border-orange-500/20 bg-slate-900/60 p-4">
+                <div key={item.id} className="rounded-xl border border-blue-500/20 bg-slate-900/60 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs text-orange-300 font-bold uppercase tracking-wider mb-1">Statement {String(index + 1).padStart(2, '0')}</p>
+                      <p className="text-xs text-blue-300 font-bold uppercase tracking-wider mb-1">Statement {String(index + 1).padStart(2, '0')}</p>
                       <h3 className="text-lg font-bold text-white">{item.title}</h3>
-                      <p className="text-xs text-emerald-300 mt-1">Domain: {item.domain}</p>
+                      <p className="text-xs text-cyan-300 mt-1">Domain: {item.domain}</p>
                       <p className="text-xs text-slate-400 mt-1 break-all">PDF Link: {item.pdfLink || 'Not added yet'}</p>
                       <p className="text-sm text-slate-300 mt-2 leading-relaxed">{item.description}</p>
                     </div>

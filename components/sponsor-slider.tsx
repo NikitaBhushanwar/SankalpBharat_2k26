@@ -15,7 +15,7 @@ export default function SponsorSlider() {
         />
       </div>
 
-      <h2 className="relative z-10 text-sm sm:text-base font-black text-center mb-3 tracking-tight text-slate-900 dark:text-white uppercase">
+      <h2 className="relative z-10 text-sm sm:text-base font-black text-center mb-3 tracking-tight text-foreground uppercase">
         Sponsors
       </h2>
 
@@ -26,9 +26,9 @@ export default function SponsorSlider() {
                      shadow-2xl py-2 sm:py-3 group"
         >
           <div className="pointer-events-none absolute left-0 top-0 h-full w-14 sm:w-24
-                          bg-gradient-to-r from-white/90 dark:from-slate-900/60 to-transparent z-20" />
+                          bg-gradient-to-r from-background/90 to-transparent z-20" />
           <div className="pointer-events-none absolute right-0 top-0 h-full w-14 sm:w-24
-                          bg-gradient-to-l from-white/90 dark:from-slate-900/60 to-transparent z-20" />
+                          bg-gradient-to-l from-background/90 to-transparent z-20" />
 
           <div className="flex w-max sponsor-scroll-track gap-3 sm:gap-4 md:gap-5 px-2">
             {[...items, ...items].map((label, index) => (

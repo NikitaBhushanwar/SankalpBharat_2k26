@@ -60,7 +60,7 @@ export default function WinnersLive() {
   }, [])
 
   if (loading) {
-    return <div className="p-8 text-center text-slate-500 dark:text-slate-400">Loading winners...</div>
+    return <div className="p-8 text-center text-muted-foreground">Loading winners...</div>
   }
 
   if (error) {
@@ -68,21 +68,21 @@ export default function WinnersLive() {
   }
 
   if (winners.length === 0) {
-    return <div className="p-8 text-center text-slate-500 dark:text-slate-400">Winners have not been announced yet.</div>
+    return <div className="p-8 text-center text-muted-foreground">Winners have not been announced yet.</div>
   }
 
   if (!isLive) {
-    return <div className="p-8 text-center text-slate-500 dark:text-slate-400">Winners are not live yet.</div>
+    return <div className="p-8 text-center text-muted-foreground">Winners are not live yet.</div>
   }
 
   return (
     <div className="space-y-3">
       {winners.map((winner) => (
-        <div key={winner.id} className="rounded-xl border border-cyan-500/20 bg-white/80 dark:bg-teal-900/60 dark:backdrop-blur p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div key={winner.id} className="rounded-xl border border-primary/20 bg-card/75 backdrop-blur p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <p className="text-xs text-cyan-700 dark:text-cyan-300 font-bold uppercase tracking-wider">Rank #{winner.rank}</p>
-            <p className="text-xl font-bold text-slate-900 dark:text-white">{winner.teamName}</p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">{winner.title}</p>
+            <p className="text-xl font-bold text-foreground">{winner.teamName}</p>
+            <p className="text-sm text-muted-foreground">{winner.title}</p>
           </div>
           <p className="text-lg font-black text-cyan-700 dark:text-cyan-300">{winner.prizeAmount}</p>
         </div>

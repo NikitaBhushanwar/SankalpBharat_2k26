@@ -71,9 +71,9 @@ export default function ContactForm() {
   }
 
   return (
-    <section className="mt-8 sm:mt-10 rounded-2xl border border-border/50 bg-white/80 dark:bg-teal-900/60 dark:backdrop-blur p-6 sm:p-8">
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Send us a message</h2>
-      <p className="text-slate-600 dark:text-slate-300 mb-6">
+    <section className="mt-8 sm:mt-10 rounded-2xl border border-border/50 bg-card/75 backdrop-blur p-6 sm:p-8">
+      <h2 className="text-2xl font-bold text-foreground mb-2">Send us a message</h2>
+      <p className="text-muted-foreground mb-6">
         Fill out the form below and our team will get back to you soon.
       </p>
 
@@ -84,14 +84,14 @@ export default function ContactForm() {
             name="name"
             placeholder="Name"
             required
-            className="h-11 rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
+            className="h-11 rounded-xl border border-border/60 bg-background/80 px-4 text-foreground placeholder:text-muted-foreground outline-none focus:border-secondary"
           />
           <input
             type="email"
             name="email"
             placeholder="Email"
             required
-            className="h-11 rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
+            className="h-11 rounded-xl border border-border/60 bg-background/80 px-4 text-foreground placeholder:text-muted-foreground outline-none focus:border-secondary"
           />
         </div>
 
@@ -100,7 +100,7 @@ export default function ContactForm() {
           name="subject"
           placeholder="Subject"
           required
-          className="h-11 w-full rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
+          className="h-11 w-full rounded-xl border border-border/60 bg-background/80 px-4 text-foreground placeholder:text-muted-foreground outline-none focus:border-secondary"
         />
 
         <textarea
@@ -108,7 +108,7 @@ export default function ContactForm() {
           placeholder="Your message"
           required
           rows={5}
-          className="w-full rounded-xl border border-border/60 bg-slate-100/80 dark:bg-teal-900/80 px-4 py-3 text-slate-900 dark:text-slate-100 outline-none focus:border-emerald-500"
+          className="w-full rounded-xl border border-border/60 bg-background/80 px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:border-secondary"
         />
 
         {submitStatus && (
@@ -117,7 +117,7 @@ export default function ContactForm() {
             aria-live="polite"
             className={`rounded-xl border px-4 py-3 text-sm font-medium ${
               submitStatus.type === 'success'
-                ? 'border-emerald-400/50 bg-emerald-500/10 text-emerald-300'
+                ? 'border-cyan-400/50 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300'
                 : 'border-rose-400/50 bg-rose-500/10 text-rose-300'
             }`}
           >
@@ -128,7 +128,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex h-11 items-center justify-center rounded-xl bg-emerald-500 px-6 font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-70"
+          className="btn-modern inline-flex h-11 items-center justify-center rounded-xl px-6 font-semibold disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isSubmitting ? 'Sending...' : 'Send Message'}
         </button>

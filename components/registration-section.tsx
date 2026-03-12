@@ -25,7 +25,7 @@ export function RegistrationSection() {
           </div>
 
           {/* Content */}
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 text-balance">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">
             Ready to Innovate?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -35,11 +35,11 @@ export function RegistrationSection() {
           {/* Details */}
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {[
-              { label: 'Team Size', value: '4-6 Members' },
+              { label: 'Team Size', value: '2-6 Members' },
               { label: 'Registration Fee', value: '₹500 per Team' },
               { label: 'Registration Closes', value: '2 April 2026' },
             ].map((item) => (
-              <div key={item.label} className="text-center rounded-xl bg-white/50 dark:bg-teal-900/40 dark:backdrop-blur border border-border/40 p-3">
+              <div key={item.label} className="text-center rounded-xl bg-background/50 backdrop-blur border border-border/40 p-3">
                 <p className="text-xs font-mono text-secondary tracking-widest uppercase mb-2">{item.label}</p>
                 <p className="text-xl font-bold text-accent">{item.value}</p>
               </div>
@@ -51,7 +51,7 @@ export function RegistrationSection() {
             href={registrationLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-black uppercase tracking-wider bg-orange-500 text-white hover:bg-orange-400 transition mb-6"
+            className="btn-modern inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-black uppercase tracking-wider mb-6"
           >
             Register Your Team on Unstop
           </a>

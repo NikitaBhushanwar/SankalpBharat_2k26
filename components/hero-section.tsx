@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTheme } from "@/context/theme-provider";
 import SponsorSlider from "./sponsor-slider";
 import {
   Leaf,
@@ -22,7 +21,6 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ visible }: HeroSectionProps) {
-  const { theme } = useTheme();
   const registrationLink = useRegistrationLink();
   const [countdown, setCountdown] = useState({
     days: 0,
@@ -107,53 +105,59 @@ export function HeroSection({ visible }: HeroSectionProps) {
       </div>
 
       {/* ================= CONTENT ================= */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center">
         
-        <div className="mx-auto mt-0 w-[260px] sm:w-[340px] md:w-[440px] lg:w-[560px] xl:w-[680px]">
+        <div className="relative mx-auto -mt-4 sm:-mt-3 w-[220px] sm:w-[300px] md:w-[390px] lg:w-[500px] xl:w-[620px]">
+          <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-slate-950/45 blur-xl" />
+          <div className="pointer-events-none absolute -inset-x-3 -inset-y-2 -z-10 rounded-3xl bg-cyan-400/20 blur-2xl" />
           <img
-            src={theme === 'light' ? "/svpcet_logo_light.webp" : "/svpcet_logo.webp"}
+            src="/svpcet_logo.webp"
             alt="SVPCET Logo"
             className="w-full h-auto object-contain"
           />
         </div>
         
         <p
-          className="-mt-10 max-w-2xl mx-auto text-xs md:text-sm
-                     text-white-600 dark:text-white-400 leading-relaxed"
+          className="-mt-4 sm:-mt-10 max-w-2xl mx-auto text-xs md:text-sm
+                     text-foreground/80 leading-relaxed"
         >
          PRESENTS
         </p>
 
         <p
-          className="mt-0 max-w-3xl mx-auto text-base sm:text-2xl md:text-3xl
-                     text-slate-600 dark:text-slate-400 leading-relaxed"
+          className="mt-0 inline-flex max-w-3xl mx-auto rounded-xl bg-slate-950/35 px-3 py-1 text-base sm:text-2xl md:text-3xl
+                     text-muted-foreground leading-relaxed backdrop-blur-[2px]"
         >
-          <span className="mx-1 tracking-widest  font-extrabold bg-gradient-to-r from-red-800 via-orange-500 to-red-600 dark:from-red-800 via-orange-500 dark:to-red-600 bg-clip-text text-transparent">
+          <span className="mx-1 tracking-widest font-extrabold bg-gradient-to-r from-red-700 via-orange-400 to-red-500 dark:from-red-700 dark:via-orange-400 dark:to-red-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(251,146,60,0.7)]">
             NATIONAL  LEVEL  HACKATHON
           </span>
         </p>
 
-        <div className="mx-auto mt-0 max-w-[200px] overflow-visible">
+        <div className="relative mx-auto mt-0 max-w-[150px] sm:max-w-[190px] md:max-w-[220px] overflow-visible">
+          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-slate-950/45 blur-xl" />
+          <div className="pointer-events-none absolute -inset-2 -z-10 rounded-full bg-cyan-400/45 blur-2xl" />
           <img
             src="/sb_logo.webp"
             alt="Sankalp Bharat 2K26"
             className="w-full h-auto object-contain blue-glow"
           />
         </div>
-
-      <div className="mx-auto mt-0 max-w-[250px] ">
+        
+        <div className="relative mx-auto mt-0 max-w-[150px] sm:max-w-[190px] md:max-w-[220px] overflow-visible">
+          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-slate-950/45 blur-xl" />
+          <div className="pointer-events-none absolute -inset-2 -z-10 rounded-full bg-orange-400/45 blur-2xl" />
           <img
             src="/sb_name.webp"
             alt="Sankalp Bharat 2K26"
-            className="w-full h-auto object-contain"
+            className="w-full h-auto object-contain white-glow"
           />
         </div>
 
 
         {/* Description */}
         <p
-          className="mt-2 max-w-3xl mx-auto text-base sm:text-lg md:text-xl
-                     text-slate-600 dark:text-slate-400 leading-relaxed"
+          className="mt-2 max-w-3xl mx-auto px-2 py-1 text-xs sm:text-base md:text-lg
+                     text-foreground/90 leading-relaxed rounded-xl bg-slate-950/25 backdrop-blur-[2px]"
         >
           Innovating
           <span className="mx-1 font-semibold bg-gradient-to-r from-green-600 to-emerald-500 dark:from-green-400 dark:to-emerald-300 bg-clip-text text-transparent">
@@ -166,9 +170,9 @@ export function HeroSection({ visible }: HeroSectionProps) {
         </p>
 
         <div className="mt-3 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-5 py-2 sm:px-4 sm:py-1.5 rounded-full border border-blue-500/40 bg-white/85 dark:bg-teal-900/60 backdrop-blur mb-5">
+          <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-1.5 rounded-full border border-primary/40 bg-slate-950/70 backdrop-blur mb-5 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-            <span className="text-xs sm:text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-foreground tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
           </div>
 
           {countdown.isLive ? (
@@ -184,16 +188,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
             </div>
           )}
 
-          <div className="mt-6">
-            <a
-              href={registrationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-black uppercase tracking-wider bg-orange-500 text-white hover:bg-orange-400 transition"
-            >
-              Register
-            </a>
-          </div>
+         
         </div>
 
         {/* Sponsors placed within hero */}
@@ -202,7 +197,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
         </div>
 
         {/* Scroll Hint */}
-        <div className="mt-4 sm:mt-8 text-sm text-slate-400 dark:text-slate-500 animate-bounce">
+        <div className="mt-4 sm:mt-8 text-sm text-muted-foreground animate-bounce">
           Explore ↓
         </div>
       </div>
@@ -249,7 +244,7 @@ function CountdownCard({ value, label }: { value: number; label: string }) {
       <div className="text-2xl sm:text-xl md:text-2xl font-black text-orange-500 dark:text-orange-400 leading-none">
         {String(value).padStart(2, '0')}
       </div>
-      <div className="mt-1 text-[10px] sm:text-[9px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
+      <div className="mt-1 text-[10px] sm:text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
     </div>

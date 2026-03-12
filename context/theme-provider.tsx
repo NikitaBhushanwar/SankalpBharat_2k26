@@ -1,8 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 
-type Theme = 'light' | 'dark' | 'system';
+type Theme = 'dark';
 
 interface ThemeContextType {
   theme: Theme;
@@ -13,53 +13,16 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark');
-  const [isDark, setIsDark] = useState(true);
-
   useEffect(() => {
-    const initialTheme: Theme = 'dark';
-    setThemeState(initialTheme);
-    localStorage.setItem('theme', initialTheme);
-
-    // Function to update DOM
-    const updateTheme = (newTheme: Theme) => {
-      const html = document.documentElement;
-      let shouldBeDark = false;
-
-      shouldBeDark = newTheme !== 'light';
-
-      if (shouldBeDark) {
-        html.classList.add('dark');
-      } else {
-        html.classList.remove('dark');
-      }
-
-      setIsDark(shouldBeDark);
-    };
-
-    updateTheme(initialTheme);
+    document.documentElement.classList.add('dark');
   }, []);
 
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-    localStorage.setItem('theme', newTheme);
-
-    const html = document.documentElement;
-    let shouldBeDark = false;
-
-    shouldBeDark = newTheme !== 'light';
-
-    if (shouldBeDark) {
-      html.classList.add('dark');
-    } else {
-      html.classList.remove('dark');
-    }
-
-    setIsDark(shouldBeDark);
+  const setTheme = () => {
+    document.documentElement.classList.add('dark');
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, isDark }}>
+    <ThemeContext.Provider value={{ theme: 'dark', setTheme, isDark: true }}>
       {children}
     </ThemeContext.Provider>
   );

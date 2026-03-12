@@ -15,14 +15,14 @@ export function GuidelinesSection() {
           </div>
 
           <p className="text-xs font-mono text-accent tracking-widest uppercase mb-3">Rules & Guidelines</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Read Complete Participation Rules</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Read Complete Participation Rules</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
             To avoid confusion during registration and evaluation, please read the full rules, eligibility, submission standards, and judging framework before participating.
           </p>
 
           <Link
             href="/rules-guidelines"
-            className="inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-black uppercase tracking-wider bg-orange-500 text-white hover:bg-orange-400 transition"
+            className="btn-modern inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-black uppercase tracking-wider"
           >
             View Rules & Guidelines
           </Link>
