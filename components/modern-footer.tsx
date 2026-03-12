@@ -5,7 +5,7 @@ import { Mail, Phone, MapPin, Linkedin, Twitter, Instagram } from 'lucide-react'
 
 export default function ModernFooter() {
   return (
-    <footer id="contact" className="relative border-t border-gray-200 dark:border-slate-700 mt-20">
+    <footer id="contact" className="relative z-10 border-t border-cyan-500/20 dark:border-cyan-600/30 mt-20 bg-gradient-to-b from-transparent to-background/85 dark:to-slate-950/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand */}
@@ -22,7 +22,7 @@ export default function ModernFooter() {
                 alt="Sankalp Bharat"
               />
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-foreground/70 dark:text-foreground/75">
               Innovating sustainable technology for India's digital future.
             </p>
           </div>
@@ -38,7 +38,7 @@ export default function ModernFooter() {
                 { label: 'Admin', href: '/admin/login' },
               ].map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                  <Link href={link.href} className="text-foreground/70 dark:text-foreground/75 hover:text-primary dark:hover:text-secondary transition-colors duration-200">
                     {link.label}
                   </Link>
                 </li>
@@ -57,7 +57,7 @@ export default function ModernFooter() {
                 { label: 'Contact', href: '/contact-us' },
               ].map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                  <Link href={link.href} className="text-foreground/70 dark:text-foreground/75 hover:text-primary dark:hover:text-secondary transition-colors duration-200">
                     {link.label}
                   </Link>
                 </li>
@@ -69,20 +69,20 @@ export default function ModernFooter() {
           <div>
             <h3 className="font-semibold text-foreground mb-4">Get in Touch</h3>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <Mail className="w-4 h-4" />
-                <a href="mailto:sankalpbharat2k26@gmail.com" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors break-all">
-                  sankalpbharat2k26@gmail.com
+              <li className="flex items-center gap-2 text-foreground/75 dark:text-foreground/80">
+                <Mail className="w-4 h-4 text-primary" />
+                <a href="mailto:sankalpbharat@stvincentngp.edu.in" className="hover:text-primary dark:hover:text-secondary transition-colors duration-200 break-all">
+                  sankalpbharat@stvincentngp.edu.in
                 </a>
               </li>
-              <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <Phone className="w-4 h-4" />
-                <a href="tel:+917122582922" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+              <li className="flex items-center gap-2 text-foreground/75 dark:text-foreground/80">
+                <Phone className="w-4 h-4 text-primary" />
+                <a href="tel:+917122582922" className="hover:text-primary dark:hover:text-secondary transition-colors duration-200">
                   +91 712-2582922
                 </a>
               </li>
-              <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <MapPin className="w-4 h-4" />
+              <li className="flex items-center gap-2 text-foreground/75 dark:text-foreground/80">
+                <MapPin className="w-4 h-4 text-primary" />
                 <span>Nagpur, Maharashtra, India</span>
               </li>
             </ul>
@@ -90,7 +90,7 @@ export default function ModernFooter() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-200 dark:border-slate-700 pt-8">
+        <div className="border-t border-cyan-500/20 dark:border-cyan-600/30 pt-8">
           {/* Social Links */}
           <div className="flex justify-center gap-4 mb-6">
             {[
@@ -103,7 +103,7 @@ export default function ModernFooter() {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-lg glass-effect flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors card-hover"
+                className="w-10 h-10 rounded-lg glass-effect flex items-center justify-center text-foreground/60 dark:text-foreground/70 hover:text-primary dark:hover:text-secondary hover:bg-primary/10 transition-all duration-200 card-hover"
               >
                 <Icon className="w-5 h-5" />
               </a>
@@ -111,14 +111,14 @@ export default function ModernFooter() {
           </div>
 
           {/* Copyright */}
-          <div className="text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-center text-xs sm:text-sm text-foreground/70 dark:text-foreground/75">
             <p>&copy; 2026 Sankalp Bharat Hackathon. All rights reserved.</p>
             <div className="flex justify-center gap-4 mt-2 text-xs">
-              <a href="/privacy-policy" className="hover:text-foreground transition-colors">
+              <a href="/privacy-policy" className="hover:text-primary dark:hover:text-secondary transition-colors duration-200">
                 Privacy Policy
               </a>
               <span>•</span>
-              <a href="/terms-of-service" className="hover:text-foreground transition-colors">
+              <a href="/terms-of-service" className="hover:text-primary dark:hover:text-secondary transition-colors duration-200">
                 Terms of Service
               </a>
             </div>

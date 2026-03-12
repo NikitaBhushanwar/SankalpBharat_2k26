@@ -28,7 +28,7 @@ export function WinnersShowcase() {
         {/* Section header */}
         <div className="text-center mb-16">
           <p className="text-xs font-mono text-accent tracking-widest uppercase mb-4">Celebrating Excellence</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 text-balance">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">
             2026 Winners
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -40,7 +40,7 @@ export function WinnersShowcase() {
         <div className="space-y-8">
           {winners.length === 0 ? (
             <div className="glass-effect rounded-2xl p-10 md:p-12 text-center border border-border/50">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">Winners Not Announced Yet</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Winners Not Announced Yet</h3>
               <p className="text-muted-foreground">Official winners will appear here once results are published.</p>
             </div>
           ) : (
@@ -54,7 +54,7 @@ export function WinnersShowcase() {
                         <p className="text-xs font-mono text-secondary tracking-widest uppercase mb-2">
                           Position {winner.position}
                         </p>
-                        <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                        <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
                           {winner.teamName}
                         </h3>
                         <p className="text-lg text-accent font-semibold">{winner.title}</p>

@@ -153,13 +153,13 @@ export default function AnimatedList({
         ref={listRef}
         className={`max-h-[420px] overflow-y-auto p-2 sm:p-3 ${
           displayScrollbar
-            ? '[&::-webkit-scrollbar]:w-[8px] [&::-webkit-scrollbar-track]:bg-slate-950 [&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-[6px]'
+            ? '[&::-webkit-scrollbar]:w-[8px] [&::-webkit-scrollbar-track]:bg-background/40 [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-[6px]'
             : 'scrollbar-hide'
         }`}
         onScroll={handleScroll}
         style={{
           scrollbarWidth: displayScrollbar ? 'thin' : 'none',
-          scrollbarColor: '#334155 #020617',
+          scrollbarColor: 'var(--border) transparent',
         }}
       >
         {items.map((item, index) => {
@@ -181,10 +181,10 @@ export default function AnimatedList({
                 className={`p-3 sm:p-4 border rounded-xl transition-all duration-200 ${
                   isSelected
                     ? 'bg-emerald-500/15 border-emerald-400/50 shadow-[0_0_18px_rgba(16,185,129,0.2)]'
-                    : 'bg-slate-900/70 border-emerald-500/20'
+                    : 'bg-card/70 border-emerald-500/20'
                 } ${itemClassName}`}
               >
-                <p className="text-slate-100 text-sm sm:text-base m-0 leading-relaxed">{String(item)}</p>
+                <p className="text-foreground text-sm sm:text-base m-0 leading-relaxed">{String(item)}</p>
               </div>
             )}
           </AnimatedItem>
@@ -195,11 +195,11 @@ export default function AnimatedList({
       {showGradients && (
         <>
           <div
-            className="absolute top-0 left-0 right-0 h-[54px] bg-gradient-to-b from-slate-950 to-transparent pointer-events-none transition-opacity duration-300"
+            className="absolute top-0 left-0 right-0 h-[54px] bg-gradient-to-b from-background to-transparent pointer-events-none transition-opacity duration-300"
             style={{ opacity: topGradientOpacity }}
           />
           <div
-            className="absolute bottom-0 left-0 right-0 h-[72px] bg-gradient-to-t from-slate-950 to-transparent pointer-events-none transition-opacity duration-300"
+            className="absolute bottom-0 left-0 right-0 h-[72px] bg-gradient-to-t from-background to-transparent pointer-events-none transition-opacity duration-300"
             style={{ opacity: bottomGradientOpacity }}
           />
         </>

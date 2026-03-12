@@ -111,12 +111,12 @@ export default function LeaderboardLive() {
     if (rank === 1) return 'text-amber-600 dark:text-yellow-300'
     if (rank === 2) return 'text-cyan-700 dark:text-cyan-300'
     if (rank === 3) return 'text-fuchsia-700 dark:text-fuchsia-300'
-    return 'text-emerald-700 dark:text-emerald-400'
+    return 'text-sky-700 dark:text-sky-300'
   }
 
   const getContent = () => {
     if (loading) {
-      return <div className="p-8 text-center text-slate-500 dark:text-slate-400">Loading leaderboard...</div>
+      return <div className="p-8 text-center text-muted-foreground">Loading leaderboard...</div>
     }
 
     if (error) {
@@ -124,32 +124,32 @@ export default function LeaderboardLive() {
     }
 
     if (entries.length === 0) {
-      return <div className="p-8 text-center text-slate-500 dark:text-slate-400">No leaderboard entries published yet.</div>
+      return <div className="p-8 text-center text-muted-foreground">No leaderboard entries published yet.</div>
     }
 
     if (!isLive) {
-      return <div className="p-8 text-center text-slate-500 dark:text-slate-400">Leaderboard is not live yet.</div>
+      return <div className="p-8 text-center text-muted-foreground">Leaderboard is not live yet.</div>
     }
 
     return (
       <>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="glass-effect rounded-xl p-4">
-            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">Teams</p>
-            <p className="text-2xl font-black text-emerald-400">{entries.length}</p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Teams</p>
+            <p className="text-2xl font-black text-cyan-700 dark:text-cyan-300">{entries.length}</p>
           </div>
           <div className="glass-effect rounded-xl p-4">
-            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Score</p>
-            <p className="text-2xl font-black text-emerald-400">{totalScore}</p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Total Score</p>
+            <p className="text-2xl font-black text-cyan-700 dark:text-cyan-300">{totalScore}</p>
           </div>
           <div className="glass-effect rounded-xl p-4">
-            <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">Status</p>
-            <p className="text-2xl font-black text-emerald-400">{isLive ? 'Live' : 'Offline'}</p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Status</p>
+            <p className="text-2xl font-black text-cyan-700 dark:text-cyan-300">{isLive ? 'Live' : 'Offline'}</p>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-white/70 dark:bg-teal-950/40 dark:backdrop-blur p-2 sm:p-3">
-          <div className="hidden sm:grid grid-cols-12 px-4 py-2 mb-1 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+        <div className="rounded-2xl border border-secondary/20 bg-card/75 backdrop-blur p-2 sm:p-3">
+          <div className="hidden sm:grid grid-cols-12 px-4 py-2 mb-1 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
             <p className="col-span-1">#</p>
             <p className="col-span-3">Team</p>
             <p className="col-span-4">Project</p>
@@ -170,30 +170,30 @@ export default function LeaderboardLive() {
                 <div
                   className={`rounded-xl border p-3 sm:p-4 transition-all duration-200 ${
                     isSelected
-                      ? 'bg-emerald-500/15 border-emerald-400/50 shadow-[0_0_18px_rgba(16,185,129,0.2)]'
-                      : 'bg-white/90 dark:bg-teal-900/70 border-emerald-500/20'
+                      ? 'bg-cyan-500/15 border-cyan-400/50 shadow-[0_0_18px_rgba(6,182,212,0.2)]'
+                      : 'bg-background/85 border-secondary/20'
                   }`}
                 >
                   <div className="sm:grid sm:grid-cols-12 sm:items-center gap-2">
                     <div className="sm:col-span-1 flex items-center justify-between sm:justify-start">
                       <p className={`text-sm font-black ${getRankColor(entry.rank)}`}>#{entry.rank}</p>
-                      <p className="sm:hidden text-sm font-black text-emerald-300">{entry.score} pts</p>
+                      <p className="sm:hidden text-sm font-black text-cyan-700 dark:text-cyan-300">{entry.score} pts</p>
                     </div>
 
                     <div className="sm:col-span-3 mt-1 sm:mt-0">
-                      <p className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight">{entry.teamName}</p>
+                      <p className="text-sm sm:text-base font-bold text-foreground leading-tight">{entry.teamName}</p>
                     </div>
 
                     <div className="sm:col-span-4 mt-1 sm:mt-0">
-                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-tight">{entry.projectTitle}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-tight">{entry.projectTitle}</p>
                     </div>
 
                     <div className="hidden sm:block sm:col-span-2 text-right">
-                      <p className="text-sm font-black text-emerald-300">{entry.score} pts</p>
+                      <p className="text-sm font-black text-cyan-700 dark:text-cyan-300">{entry.score} pts</p>
                     </div>
 
                     <div className="sm:col-span-2 flex justify-end mt-2 sm:mt-0">
-                      <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700">
+                      <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold bg-background/80 text-foreground/85 border border-border">
                         {entry.members} members
                       </span>
                     </div>
@@ -216,7 +216,7 @@ export default function LeaderboardLive() {
         <button
           onClick={() => void fetchData('manual')}
           disabled={refreshing}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-500 text-slate-950 hover:brightness-110 transition disabled:opacity-60"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-cyan-500 text-slate-950 hover:brightness-110 transition disabled:opacity-60"
         >
           {refreshing ? 'Refreshing...' : 'Refresh'}
         </button>

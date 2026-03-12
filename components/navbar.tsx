@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
-import ThemeToggle from './theme-toggle';
 import { useRegistrationLink } from '@/lib/use-registration-link';
 
 const navLinks = [
@@ -20,32 +19,43 @@ export default function Navbar() {
   const isAdmin = pathname.startsWith('/admin');
   const [isOpen, setIsOpen] = useState(false);
   const registrationLink = useRegistrationLink();
+  const isActiveLink = (href: string) => {
+    if (href === '/') {
+      return pathname === '/';
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   /* ================= ADMIN NAVBAR ================= */
 
   if (isAdmin) {
     return (
-      <nav className="fixed inset-x-0 top-3 z-50 bg-white dark:bg-[rgba(4,59,56,0.89)] backdrop-blur px-6 py-2 flex justify-between items-center">
-        
-        <Link href="/" className="flex items-center gap-4" aria-label="Go to homepage">
-          {/* Bigger Logo */}
-          <div className="overflow-visible">
-            <img
-              src="/sb_logo.webp"
-              className="h-16 sm:h-18 lg:h-20 w-auto object-contain blue-glow"
-              alt="Logo"
-            />
+      <nav className="fixed inset-x-0 top-3 z-50">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="rounded-2xl border border-cyan-500/30 bg-slate-950/80 backdrop-blur-2xl shadow-[0_0_36px_rgba(6,182,212,0.16),0_8px_32px_rgba(0,0,0,0.42)] px-4 sm:px-6 py-2 flex justify-between items-center relative overflow-hidden">
+            <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-cyan-500/10 to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-blue-500/10 to-transparent" />
+
+            <Link href="/" className="flex items-center gap-4 min-w-0" aria-label="Go to homepage">
+              <div className="overflow-visible">
+                <img
+                  src="/sb_logo.webp"
+                  className="h-16 sm:h-18 lg:h-20 w-auto object-contain blue-glow"
+                  alt="Logo"
+                />
+              </div>
+
+              <img
+                src="/sb_name.webp"
+                className="h-10 sm:h-12 w-auto object-contain"
+                alt="Sankalp Bharat"
+              />
+            </Link>
+
           </div>
-
-          {/* Name */}
-          <img
-            src="/sb_name.webp"
-            className="h-10 sm:h-12 w-auto object-contain"
-            alt="Sankalp Bharat"
-          />
-        </Link>
-
-        <ThemeToggle />
+        </div>
       </nav>
     );
   }
@@ -55,17 +65,22 @@ export default function Navbar() {
   return (
     <nav className="fixed inset-x-0 top-3 z-50">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="rounded-2xl border border-white/20 bg-white/90 dark:bg-[rgba(4,59,56,0.89)] backdrop-blur-2xl shadow-2xl px-3 sm:px-6 py-2 flex items-center justify-between gap-3">
+        <div className="rounded-2xl border border-cyan-500/30 bg-slate-950/78 backdrop-blur-2xl shadow-[0_0_34px_rgba(6,182,212,0.14),0_8px_32px_rgba(0,0,0,0.42)] px-3 sm:px-6 py-2 flex items-center justify-between gap-3 relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-cyan-500/10 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-blue-500/10 to-transparent" />
+          <div className="pointer-events-none absolute -left-10 top-1/2 h-20 w-20 -translate-y-1/2 rounded-full bg-cyan-500/8 blur-2xl" />
+          <div className="pointer-events-none absolute -right-8 top-1/2 h-16 w-16 -translate-y-1/2 rounded-full bg-blue-500/8 blur-2xl" />
 
           {/* Logo Section */}
           <Link href="/" className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1" aria-label="Go to homepage">
-<div className="overflow-visible">
+            <div className="overflow-visible">
             <img
               src="/sb_logo.webp"
               className="h-10 sm:h-14 lg:h-16 w-auto object-contain flex-shrink-0 blue-glow"
               alt="Logo"
             />
-          </div>
+            </div>
 
             <div className="overflow-visible">
               <img
@@ -82,7 +97,11 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-black uppercase tracking-widest text-slate-500 hover:text-orange-500 transition"
+                className={`text-sm font-black uppercase tracking-widest transition-all duration-200 ${
+                  isActiveLink(link.href)
+                    ? 'text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.55)]'
+                    : 'text-slate-300/85 hover:text-cyan-300 hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]'
+                }`}
               >
                 {link.label}
               </Link>
@@ -91,22 +110,18 @@ export default function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
-
             <Link
               href={registrationLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-orange-500 text-white px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg hover:scale-105 transition"
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-[0_0_20px_rgba(6,182,212,0.38)] hover:shadow-[0_0_30px_rgba(6,182,212,0.55)] hover:scale-105 transition-all duration-200"
             >
               Register
             </Link>
 
            <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-[rgba(4,59,56,0.89)]"
+              className="md:hidden p-2 rounded-xl bg-background/80 border border-border/70"
               aria-label="Toggle mobile menu"
             >
               {isOpen ? <X size={20} /> : <Menu size={20} />}
@@ -116,21 +131,22 @@ export default function Navbar() {
         </div>
 
         {isOpen && (
-          <div className="md:hidden mt-2 rounded-2xl border border-white/20 bg-white/90 dark:bg-[rgba(4,59,56,0.89)] backdrop-blur-2xl shadow-2xl px-4 py-4 space-y-3">
+          <div className="md:hidden mt-2 rounded-2xl border border-cyan-500/25 bg-card/85 backdrop-blur-2xl shadow-[0_0_30px_rgba(6,182,212,0.1),0_8px_32px_rgba(0,0,0,0.5)] px-4 py-4 space-y-3">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="block text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-orange-500 transition"
+                className={`block text-sm font-black uppercase tracking-widest transition-all duration-200 ${
+                  isActiveLink(link.href)
+                    ? 'text-cyan-300'
+                    : 'text-slate-200/90 hover:text-cyan-300 hover:drop-shadow-[0_0_6px_rgba(6,182,212,0.7)]'
+                }`}
               >
                 {link.label}
               </Link>
             ))}
 
-            <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-start">
-              <ThemeToggle />
-            </div>
           </div>
         )}
       </div>

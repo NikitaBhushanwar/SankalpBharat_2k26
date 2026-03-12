@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 export default function RulesGuidelinesPage() {
   return (
     <main className="min-h-screen px-4 sm:px-6 lg:px-8 pt-28 pb-10">
-      <div className="max-w-6xl mx-auto rounded-3xl border border-orange-500/20 bg-white/80 dark:bg-teal-950/80 backdrop-blur-xl p-5 sm:p-7 lg:p-10">
+      <div className="max-w-6xl mx-auto rounded-3xl border border-cyan-500/20 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl p-5 sm:p-7 lg:p-10">
         <div className="mb-8 flex items-center justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-orange-400 transition"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-300 transition"
           >
             <ArrowLeft size={16} /> Back to Home
           </Link>
@@ -22,9 +22,9 @@ export default function RulesGuidelinesPage() {
 
         <div className="mb-10 text-center">
           <div className="flex justify-center mb-3">
-            <ShieldAlert className="w-8 h-8 text-orange-400" />
+            <ShieldAlert className="w-8 h-8 text-cyan-500 dark:text-cyan-300" />
           </div>
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-orange-400 mb-3">Official Rules</p>
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-300 mb-3">Official Rules</p>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white">Rules & Guidelines</h1>
           <p className="mt-3 text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
             Please read all rules carefully before participating. These guidelines apply to all teams across all rounds.

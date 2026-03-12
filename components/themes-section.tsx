@@ -39,7 +39,7 @@ export default function ThemesSection() {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="mb-14 text-center">
           <p className="text-xs font-mono text-accent tracking-widest uppercase mb-3">Mission Scope</p>
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white uppercase">Core Themes</h2>
+          <h2 className="text-4xl md:text-5xl font-black text-foreground uppercase">Core Themes</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -49,14 +49,14 @@ export default function ThemesSection() {
               className="glass-effect light-card rounded-2xl p-8 border border-slate-300/60 dark:border-border/50 card-hover"
             >
               <div className="flex items-center justify-between mb-6">
-                <span className="text-xs font-mono text-slate-500 dark:text-muted-foreground tracking-widest">THEME {theme.id}</span>
-                <div className="p-3 rounded-xl bg-white/90 dark:bg-teal-900/40 dark:backdrop-blur border border-slate-200 dark:border-teal-500/20 shadow-sm">
+                <span className="text-xs font-mono text-muted-foreground tracking-widest">THEME {theme.id}</span>
+                <div className="p-3 rounded-xl bg-background/80 backdrop-blur border border-border shadow-sm">
                   {theme.icon}
                 </div>
               </div>
 
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3">{theme.title}</h3>
-              <p className="text-slate-600 dark:text-muted-foreground leading-relaxed mb-6">{theme.description}</p>
+              <h3 className="text-2xl font-black text-foreground mb-3">{theme.title}</h3>
+              <p className="text-muted-foreground leading-relaxed mb-6">{theme.description}</p>
 
               <div className={`h-1 rounded-full bg-gradient-to-r ${theme.accent}`} />
             </div>
@@ -72,7 +72,7 @@ export default function ThemesSection() {
 
           <Link
             href="/problem-statements"
-            className="inline-flex mt-6 items-center justify-center rounded-full px-7 py-3 text-sm font-black uppercase tracking-wider bg-orange-500 text-white hover:bg-orange-400 transition"
+            className="btn-modern inline-flex mt-6 items-center justify-center rounded-full px-7 py-3 text-sm font-black uppercase tracking-wider"
           >
             View Problem Statements
           </Link>

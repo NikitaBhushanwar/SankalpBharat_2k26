@@ -615,11 +615,11 @@ export default function AdminDashboardPage() {
 
   return (
     <section className="min-h-screen px-4 sm:px-6 lg:px-8 pt-28 pb-10">
-      <div className="max-w-7xl mx-auto rounded-3xl border border-emerald-500/20 bg-slate-950/80 backdrop-blur-xl shadow-2xl p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto rounded-3xl border border-cyan-500/20 bg-slate-950/80 backdrop-blur-xl shadow-2xl p-4 sm:p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <button
             onClick={() => router.push('/')}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-emerald-400 transition"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-cyan-300 transition"
           >
             <ArrowLeft size={16} /> Back
           </button>
@@ -660,11 +660,11 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="mb-6 overflow-x-auto">
-          <div className="inline-flex min-w-full sm:min-w-0 rounded-xl bg-slate-900 border border-emerald-500/20 p-1 gap-1 whitespace-nowrap">
+          <div className="inline-flex min-w-full sm:min-w-0 rounded-xl bg-slate-900 border border-cyan-500/20 p-1 gap-1 whitespace-nowrap">
             <button
             onClick={() => setActiveTab('leaderboard')}
             className={`shrink-0 px-4 py-2 rounded-lg text-sm font-bold transition ${
-              activeTab === 'leaderboard' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300'
+              activeTab === 'leaderboard' ? 'bg-cyan-500 text-slate-950' : 'text-slate-300'
             }`}
           >
             <span className="inline-flex items-center gap-2 justify-center">
@@ -684,7 +684,7 @@ export default function AdminDashboardPage() {
             <button
             onClick={() => setActiveTab('problemStatements')}
             className={`shrink-0 px-4 py-2 rounded-lg text-sm font-bold transition ${
-              activeTab === 'problemStatements' ? 'bg-orange-500 text-slate-950' : 'text-slate-300'
+              activeTab === 'problemStatements' ? 'bg-blue-500 text-slate-950' : 'text-slate-300'
             }`}
           >
             <span className="inline-flex items-center gap-2 justify-center">
@@ -782,7 +782,7 @@ export default function AdminDashboardPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-emerald-500 text-slate-950 disabled:opacity-60"
+                className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-cyan-500 text-slate-950 disabled:opacity-60"
               >
                 Update Password
               </button>
@@ -796,7 +796,7 @@ export default function AdminDashboardPage() {
               <button
                 onClick={() => void togglePublish('leaderboard')}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
-                  publishState.leaderboard ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-200'
+                  publishState.leaderboard ? 'bg-cyan-500 text-slate-950' : 'bg-slate-700 text-slate-200'
                 }`}
               >
                 {publishState.leaderboard ? 'Unpublish' : 'Go Live'}
@@ -809,14 +809,14 @@ export default function AdminDashboardPage() {
                     setTeamForm(emptyTeamForm)
                   }
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
               >
                 <Plus size={16} /> {showTeamForm ? 'Close' : 'Add Team'}
               </button>
             </div>
 
             {showTeamForm && (
-              <form onSubmit={onSaveTeam} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 rounded-2xl border border-emerald-500/20 bg-slate-900/80 p-4">
+              <form onSubmit={onSaveTeam} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 rounded-2xl border border-cyan-500/20 bg-slate-900/80 p-4">
                 <input
                   value={teamForm.teamName}
                   onChange={(e) => setTeamForm((prev) => ({ ...prev, teamName: e.target.value }))}
@@ -861,7 +861,7 @@ export default function AdminDashboardPage() {
                   <button
                     disabled={loading}
                     type="submit"
-                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-emerald-500 text-slate-950 disabled:opacity-60"
+                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-cyan-500 text-slate-950 disabled:opacity-60"
                   >
                     {editingTeamId ? 'Update Team' : 'Save Team'}
                   </button>
@@ -869,7 +869,7 @@ export default function AdminDashboardPage() {
               </form>
             )}
 
-            <div className="rounded-2xl border border-emerald-500/20 overflow-hidden">
+            <div className="rounded-2xl border border-cyan-500/20 overflow-hidden">
               <div className="hidden md:grid grid-cols-12 bg-slate-900/90 text-slate-300 text-xs font-bold uppercase tracking-wider px-4 py-3">
                 <div className="col-span-1">#</div>
                 <div className="col-span-3">Team</div>
@@ -885,8 +885,8 @@ export default function AdminDashboardPage() {
                 <>
                   <div className="hidden md:block">
                     {sortedLeaderboard.map((entry) => (
-                      <div key={entry.id} className="grid grid-cols-12 px-4 py-4 border-t border-emerald-500/10 bg-slate-950/40 text-sm text-slate-200">
-                        <div className="col-span-1 font-bold text-emerald-400">{entry.rank}</div>
+                      <div key={entry.id} className="grid grid-cols-12 px-4 py-4 border-t border-cyan-500/10 bg-slate-950/40 text-sm text-slate-200">
+                        <div className="col-span-1 font-bold text-cyan-300">{entry.rank}</div>
                         <div className="col-span-3 font-semibold">{entry.teamName}</div>
                         <div className="col-span-4 text-slate-300">{entry.projectTitle}</div>
                         <div className="col-span-1 font-bold">{entry.score}</div>
@@ -920,10 +920,10 @@ export default function AdminDashboardPage() {
 
                   <div className="md:hidden space-y-3 p-3">
                     {sortedLeaderboard.map((entry) => (
-                      <div key={entry.id} className="rounded-xl border border-emerald-500/20 bg-slate-900/60 p-3">
+                      <div key={entry.id} className="rounded-xl border border-cyan-500/20 bg-slate-900/60 p-3">
                         <div className="flex justify-between items-start gap-2">
                           <div>
-                            <p className="text-xs text-emerald-400 font-bold">#{entry.rank}</p>
+                            <p className="text-xs text-cyan-300 font-bold">#{entry.rank}</p>
                             <p className="text-lg font-bold text-white">{entry.teamName}</p>
                             <p className="text-sm text-slate-400">{entry.projectTitle}</p>
                           </div>
@@ -1083,7 +1083,7 @@ export default function AdminDashboardPage() {
               <button
                 onClick={() => void togglePublish('problemStatements')}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
-                  publishState.problemStatements ? 'bg-orange-500 text-slate-950' : 'bg-slate-700 text-slate-200'
+                  publishState.problemStatements ? 'bg-blue-500 text-slate-950' : 'bg-slate-700 text-slate-200'
                 }`}
               >
                 {publishState.problemStatements ? 'Unpublish' : 'Go Live'}
@@ -1091,7 +1091,7 @@ export default function AdminDashboardPage() {
               <button
                 onClick={() => void togglePublish('problemStatementsDownload')}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
-                  publishState.problemStatementsDownload ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-200'
+                  publishState.problemStatementsDownload ? 'bg-sky-500 text-slate-950' : 'bg-slate-700 text-slate-200'
                 }`}
               >
                 {publishState.problemStatementsDownload ? 'Hide Download PS' : 'Show Download PS'}
@@ -1104,14 +1104,14 @@ export default function AdminDashboardPage() {
                     setProblemForm(emptyProblemForm)
                   }
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
               >
                 <Plus size={16} /> {showProblemForm ? 'Close' : 'Add Problem Statement'}
               </button>
             </div>
 
             {showProblemForm && (
-              <form onSubmit={onSaveProblem} className="grid grid-cols-1 gap-3 rounded-2xl border border-orange-500/20 bg-slate-900/80 p-4">
+              <form onSubmit={onSaveProblem} className="grid grid-cols-1 gap-3 rounded-2xl border border-blue-500/20 bg-slate-900/80 p-4">
                 <input
                   value={problemForm.title}
                   onChange={(e) => setProblemForm((prev) => ({ ...prev, title: e.target.value }))}
@@ -1153,7 +1153,7 @@ export default function AdminDashboardPage() {
                   <button
                     disabled={loading}
                     type="submit"
-                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-orange-500 text-slate-950 disabled:opacity-60"
+                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-blue-500 text-slate-950 disabled:opacity-60"
                   >
                     {editingProblemId ? 'Update Statement' : 'Save Statement'}
                   </button>
@@ -1161,18 +1161,18 @@ export default function AdminDashboardPage() {
               </form>
             )}
 
-            <div className="rounded-2xl border border-orange-500/20 overflow-hidden">
+            <div className="rounded-2xl border border-blue-500/20 overflow-hidden">
               {problemStatements.length === 0 ? (
                 <div className="p-10 text-center text-slate-400 font-semibold">No problem statements uploaded yet.</div>
               ) : (
                 <div className="space-y-3 p-3 sm:p-4">
                   {problemStatements.map((item, index) => (
-                    <div key={item.id} className="rounded-xl border border-orange-500/20 bg-slate-900/60 p-4">
+                    <div key={item.id} className="rounded-xl border border-blue-500/20 bg-slate-900/60 p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-xs text-orange-300 font-bold uppercase tracking-wider mb-1">Statement {String(index + 1).padStart(2, '0')}</p>
+                          <p className="text-xs text-blue-300 font-bold uppercase tracking-wider mb-1">Statement {String(index + 1).padStart(2, '0')}</p>
                           <h3 className="text-lg font-bold text-white">{item.title}</h3>
-                          <p className="text-xs text-emerald-300 mt-1">Domain: {item.domain}</p>
+                          <p className="text-xs text-cyan-300 mt-1">Domain: {item.domain}</p>
                           <p className="text-xs text-slate-400 mt-1 break-all">PDF Link: {item.pdfLink || 'Not added yet'}</p>
                           <p className="text-sm text-slate-300 mt-2 leading-relaxed">{item.description}</p>
                         </div>
