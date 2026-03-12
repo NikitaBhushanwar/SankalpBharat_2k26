@@ -114,7 +114,7 @@ export default function Navbar() {
               href={registrationLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-[0_0_20px_rgba(6,182,212,0.38)] hover:shadow-[0_0_30px_rgba(6,182,212,0.55)] hover:scale-105 transition-all duration-200"
+              className="bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 text-white px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-[0_0_20px_rgba(249,115,22,0.45)] hover:shadow-[0_0_30px_rgba(249,115,22,0.62)] hover:scale-105 transition-all duration-200"
             >
               Register
             </Link>

@@ -107,7 +107,9 @@ export function HeroSection({ visible }: HeroSectionProps) {
       {/* ================= CONTENT ================= */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center">
         
-        <div className="mx-auto -mt-4 sm:-mt-3 w-[220px] sm:w-[300px] md:w-[390px] lg:w-[500px] xl:w-[620px]">
+        <div className="relative mx-auto -mt-4 sm:-mt-3 w-[220px] sm:w-[300px] md:w-[390px] lg:w-[500px] xl:w-[620px]">
+          <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-slate-950/45 blur-xl" />
+          <div className="pointer-events-none absolute -inset-x-3 -inset-y-2 -z-10 rounded-3xl bg-cyan-400/20 blur-2xl" />
           <img
             src="/svpcet_logo.webp"
             alt="SVPCET Logo"
@@ -123,16 +125,17 @@ export function HeroSection({ visible }: HeroSectionProps) {
         </p>
 
         <p
-          className="mt-0 max-w-3xl mx-auto text-base sm:text-2xl md:text-3xl
-                     text-muted-foreground leading-relaxed"
+          className="mt-0 inline-flex max-w-3xl mx-auto rounded-xl bg-slate-950/35 px-3 py-1 text-base sm:text-2xl md:text-3xl
+                     text-muted-foreground leading-relaxed backdrop-blur-[2px]"
         >
-          <span className="mx-1 tracking-widest  font-extrabold bg-gradient-to-r from-red-800 via-orange-500 to-red-600 dark:from-red-800 via-orange-500 dark:to-red-600 bg-clip-text text-transparent">
+          <span className="mx-1 tracking-widest font-extrabold bg-gradient-to-r from-red-700 via-orange-400 to-red-500 dark:from-red-700 dark:via-orange-400 dark:to-red-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(251,146,60,0.7)]">
             NATIONAL  LEVEL  HACKATHON
           </span>
         </p>
 
         <div className="relative mx-auto mt-0 max-w-[150px] sm:max-w-[190px] md:max-w-[220px] overflow-visible">
-          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-cyan-400/35 blur-2xl" />
+          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-slate-950/45 blur-xl" />
+          <div className="pointer-events-none absolute -inset-2 -z-10 rounded-full bg-cyan-400/45 blur-2xl" />
           <img
             src="/sb_logo.webp"
             alt="Sankalp Bharat 2K26"
@@ -141,7 +144,8 @@ export function HeroSection({ visible }: HeroSectionProps) {
         </div>
         
         <div className="relative mx-auto mt-0 max-w-[150px] sm:max-w-[190px] md:max-w-[220px] overflow-visible">
-          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-orange-400/35 blur-2xl" />
+          <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-slate-950/45 blur-xl" />
+          <div className="pointer-events-none absolute -inset-2 -z-10 rounded-full bg-orange-400/45 blur-2xl" />
           <img
             src="/sb_name.webp"
             alt="Sankalp Bharat 2K26"
