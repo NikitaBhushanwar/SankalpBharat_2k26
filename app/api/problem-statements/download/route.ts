@@ -12,76 +12,169 @@ const getDriveFileId = (link: string) => {
   return null
 }
 
+type DownloadTarget = {
+  primary: string
+  fallback?: string
+}
+
+const toUrl = (raw: string) => {
+  const trimmed = raw.trim()
+  if (!trimmed) return null
+
+  try {
+    return new URL(trimmed)
+  } catch {
+    try {
+      return new URL(`https://${trimmed}`)
+    } catch {
+      return null
+    }
+  }
+}
+
+const normalizeHost = (host: string) => host.toLowerCase().replace(/^www\./, '')
+
+const getDownloadTarget = (link: string): DownloadTarget | null => {
+  const parsed = toUrl(link)
+  if (!parsed) return null
+
+  try {
+    const host = normalizeHost(parsed.hostname)
+
+    if (host === 'docs.google.com') {
+      const docId = parsed.pathname.match(/\/document\/d\/([^/]+)/)?.[1]
+      if (docId) {
+        return {
+          primary: `https://docs.google.com/document/d/${encodeURIComponent(docId)}/export?format=pdf`,
+          fallback: `https://docs.google.com/document/d/${encodeURIComponent(docId)}/view`,
+        }
+      }
+
+      const sheetId = parsed.pathname.match(/\/spreadsheets\/d\/([^/]+)/)?.[1]
+      if (sheetId) {
+        return {
+          primary: `https://docs.google.com/spreadsheets/d/${encodeURIComponent(sheetId)}/export?format=pdf`,
+          fallback: `https://docs.google.com/spreadsheets/d/${encodeURIComponent(sheetId)}/edit`,
+        }
+      }
+
+      const slideId = parsed.pathname.match(/\/presentation\/d\/([^/]+)/)?.[1]
+      if (slideId) {
+        return {
+          primary: `https://docs.google.com/presentation/d/${encodeURIComponent(slideId)}/export/pdf`,
+          fallback: `https://docs.google.com/presentation/d/${encodeURIComponent(slideId)}/edit`,
+        }
+      }
+    }
+
+    if (host === 'drive.google.com' || host === 'drive.usercontent.google.com') {
+      const fileId = getDriveFileId(parsed.toString())
+      if (fileId) {
+        return {
+          primary: `https://drive.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`,
+          fallback: `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/view`,
+        }
+      }
+    }
+
+    if (host.endsWith('dropbox.com')) {
+      const direct = new URL(parsed.toString())
+      direct.searchParams.set('dl', '1')
+      return {
+        primary: direct.toString(),
+        fallback: parsed.toString(),
+      }
+    }
+
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return {
+        primary: parsed.toString(),
+      }
+    }
+  } catch {
+    return null
+  }
+
+  return null
+}
+
+const canPreflight = (url: string) => {
+  try {
+    const parsed = new URL(url)
+    const host = normalizeHost(parsed.hostname)
+    return (
+      host.endsWith('google.com') ||
+      host.endsWith('googleusercontent.com') ||
+      host.endsWith('dropbox.com')
+    )
+  } catch {
+    return false
+  }
+}
+
+const textError = (message: string, status: number) =>
+  new NextResponse(message, {
+    status,
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
+  })
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = getSupabaseAdmin()
     const publishState = await readPublishState(supabase)
 
     if (!publishState.problemStatementsDownload) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Download is currently disabled by admin',
-        },
-        { status: 403 }
-      )
+      return textError('Download is currently disabled by admin', 403)
     }
 
     const link = request.nextUrl.searchParams.get('link')
 
     if (!link) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Missing PDF link',
-        },
-        { status: 400 }
-      )
+      return textError('Missing PDF link', 400)
     }
 
-    const fileId = getDriveFileId(link)
+    const downloadTarget = getDownloadTarget(link)
 
-    if (!fileId) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid Google Drive link',
-        },
-        { status: 400 }
-      )
+    if (!downloadTarget) {
+      return textError('Invalid download link', 400)
     }
 
-    const downloadUrl = `https://drive.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`
-    const driveResponse = await fetch(downloadUrl, {
-      redirect: 'follow',
-      cache: 'no-store',
-    })
+    if (downloadTarget.fallback && canPreflight(downloadTarget.primary)) {
+      try {
+        const preflight = await fetch(downloadTarget.primary, {
+          method: 'HEAD',
+          redirect: 'follow',
+          cache: 'no-store',
+        })
 
-    if (!driveResponse.ok || !driveResponse.body) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Failed to download file from Google Drive',
-        },
-        { status: 502 }
-      )
+        if (!preflight.ok) {
+          return NextResponse.redirect(downloadTarget.fallback, {
+            status: 302,
+            headers: {
+              'Cache-Control': 'no-store',
+            },
+          })
+        }
+      } catch {
+        return NextResponse.redirect(downloadTarget.fallback, {
+          status: 302,
+          headers: {
+            'Cache-Control': 'no-store',
+          },
+        })
+      }
     }
 
-    return new NextResponse(driveResponse.body, {
-      status: 200,
+    return NextResponse.redirect(downloadTarget.primary, {
+      status: 302,
       headers: {
-        'Content-Type': driveResponse.headers.get('content-type') || 'application/pdf',
-        'Content-Disposition': `attachment; filename="problem-statement-${fileId}.pdf"`,
         'Cache-Control': 'no-store',
       },
     })
   } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to process download',
-      },
-      { status: 500 }
-    )
+    return textError(error instanceof Error ? error.message : 'Failed to process download', 500)
   }
 }
