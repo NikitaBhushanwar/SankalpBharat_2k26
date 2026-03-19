@@ -119,7 +119,7 @@ export default function ModernFooter() {
           {/* Social Links */}
           <div className="flex justify-center gap-4 mb-6">
             {[
-              { icon: Linkedin, href: 'https://www.linkedin.com/school/svpcet/posts/?feedView=all', label: 'LinkedIn' },
+              { icon: Linkedin, href: 'https://www.linkedin.com/company/zenithforum/', label: 'LinkedIn' },
               { icon: XIcon, href: 'https://x.com/techpallottines', label: 'X' },
               { icon: Instagram, href: 'https://www.instagram.com/zenithforum?igsh=ZmlydWM3eG9kOHZz', label: 'Instagram' },
             ].map(({ icon: Icon, href, label }) => (

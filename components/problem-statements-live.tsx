@@ -139,7 +139,7 @@ export default function ProblemStatementsLive() {
                   : 'bg-background/50 text-muted-foreground border-border/70 pointer-events-none'
               }`}
             >
-              View PS
+              View Full PS
             </a>
             {isDownloadLive && (
               <a
@@ -148,7 +148,6 @@ export default function ProblemStatementsLive() {
                     ? `/api/problem-statements/download?link=${encodeURIComponent(item.pdfLink ?? '')}`
                     : '#'
                 }
-                download
                 className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition ${
                   hasPdf
                     ? 'btn-modern'
