@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: 'Official problem statements published for Sankalp Bharat Hackathon 2K26.',
 }
 
+const pitchDeckHref = '/PPT%20sankalp.pptx'
+
 export default function ProblemStatementsPage() {
   return (
     <main className="min-h-screen px-4 sm:px-6 lg:px-8 pt-28 pb-10">
@@ -30,6 +32,25 @@ export default function ProblemStatementsPage() {
     Problem statements are sourced from industry experts and research organizations, reflecting real-world challenges.
 
           </p>
+        </div>
+
+        <div className="glass-effect mb-8 rounded-2xl border border-border/50 p-4 sm:p-5 text-center">
+          <p className="text-sm sm:text-base text-foreground/90 leading-relaxed max-w-3xl mx-auto">
+            You can download the official PPT format by clicking the button below. Please use the same format for your submission.
+          </p>
+          <div className="mt-4 flex justify-center">
+            <a
+              href={pitchDeckHref}
+              download
+              className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-white transition hover:-translate-y-0.5"
+              style={{
+                background: 'linear-gradient(135deg, #0891b2 0%, #0284c7 55%, #1d4ed8 100%)',
+                boxShadow: '0 4px 15px rgba(14, 116, 144, 0.4)',
+              }}
+            >
+              Download
+            </a>
+          </div>
         </div>
 
         <ProblemStatementsLive />
