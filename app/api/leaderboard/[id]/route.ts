@@ -44,12 +44,13 @@ export async function PUT(
     await requireAdminSession(request, supabase)
     const { id } = await params
     const body = await request.json()
-    const { teamName, projectTitle, score, members } = body
+    const { teamName, projectTitle, score, members, isDisqualified } = body
 
     const updatePayload: {
       team_name?: string
       project_title?: string
       score?: number
+      is_disqualified?: boolean
       members?: number
     } = {}
 
@@ -75,6 +76,10 @@ export async function PUT(
         return NextResponse.json({ success: false, error: 'Invalid members' }, { status: 400 })
       }
       updatePayload.members = parsedMembers
+    }
+
+    if (isDisqualified !== undefined) {
+      updatePayload.is_disqualified = Boolean(isDisqualified)
     }
 
     const { data: updatedRow, error: updateError } = await supabase

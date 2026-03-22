@@ -9,6 +9,7 @@ interface LeaderboardEntry {
   teamName: string
   projectTitle: string
   score: number
+  isDisqualified: boolean
   members: number
 }
 
@@ -22,6 +23,8 @@ interface PublishState {
   leaderboard: boolean
   winners: boolean
   problemStatements: boolean
+  problemStatementsDownload: boolean
+  qualifiedTeams: boolean
 }
 
 export default function LeaderboardLive() {
@@ -105,7 +108,11 @@ export default function LeaderboardLive() {
     }
   }, [])
 
-  const totalScore = useMemo(() => entries.reduce((acc, item) => acc + item.score, 0), [entries])
+  const totalScore = useMemo(
+    () => entries.filter((item) => !item.isDisqualified).reduce((acc, item) => acc + item.score, 0),
+    [entries]
+  )
+  const disqualifiedCount = useMemo(() => entries.filter((item) => item.isDisqualified).length, [entries])
 
   const getRankColor = (rank: number) => {
     if (rank === 1) return 'text-amber-600 dark:text-yellow-300'
@@ -133,7 +140,7 @@ export default function LeaderboardLive() {
 
     return (
       <>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
           <div className="glass-effect rounded-xl p-4">
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Teams</p>
             <p className="text-2xl font-black text-cyan-700 dark:text-cyan-300">{entries.length}</p>
@@ -145,6 +152,10 @@ export default function LeaderboardLive() {
           <div className="glass-effect rounded-xl p-4">
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Status</p>
             <p className="text-2xl font-black text-cyan-700 dark:text-cyan-300">{isLive ? 'Live' : 'Offline'}</p>
+          </div>
+          <div className="glass-effect rounded-xl p-4">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Disqualified</p>
+            <p className="text-2xl font-black text-red-500 dark:text-red-300">{disqualifiedCount}</p>
           </div>
         </div>
 
@@ -176,12 +187,19 @@ export default function LeaderboardLive() {
                 >
                   <div className="sm:grid sm:grid-cols-12 sm:items-center gap-2">
                     <div className="sm:col-span-1 flex items-center justify-between sm:justify-start">
-                      <p className={`text-sm font-black ${getRankColor(entry.rank)}`}>#{entry.rank}</p>
+                      <p className={`text-sm font-black ${entry.isDisqualified ? 'text-red-500 dark:text-red-300' : getRankColor(entry.rank)}`}>
+                        {entry.isDisqualified ? 'DQ' : `#${entry.rank}`}
+                      </p>
                       <p className="sm:hidden text-sm font-black text-cyan-700 dark:text-cyan-300">{entry.score} pts</p>
                     </div>
 
                     <div className="sm:col-span-3 mt-1 sm:mt-0">
                       <p className="text-sm sm:text-base font-bold text-foreground leading-tight">{entry.teamName}</p>
+                      {entry.isDisqualified && (
+                        <span className="mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/20 text-red-500 dark:text-red-300 border border-red-500/40">
+                          Disqualified
+                        </span>
+                      )}
                     </div>
 
                     <div className="sm:col-span-4 mt-1 sm:mt-0">

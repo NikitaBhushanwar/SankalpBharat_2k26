@@ -17,9 +17,14 @@ export async function GET(request: NextRequest) {
       .select('*', { count: 'exact' })
 
     if (sortBy === 'score') {
-      query = query.order('score', { ascending: false })
+      query = query
+        .order('is_disqualified', { ascending: true })
+        .order('score', { ascending: false })
     } else {
-      query = query.order('rank', { ascending: true })
+      // Always keep disqualified teams at the bottom.
+      query = query
+        .order('is_disqualified', { ascending: true })
+        .order('rank', { ascending: true })
     }
 
     const parsedLimit = limit ? parseInt(limit, 10) : null
@@ -59,7 +64,7 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabaseAdmin()
     await requireAdminSession(request, supabase)
     const body = await request.json()
-    const { teamName, projectTitle, score, members } = body
+    const { teamName, projectTitle, score, members, isDisqualified } = body
 
     // Validation
     if (!teamName || !projectTitle || score === undefined || members === undefined) {
@@ -91,6 +96,7 @@ export async function POST(request: NextRequest) {
         team_name: String(teamName).trim(),
         project_title: String(projectTitle).trim(),
         score: parsedScore,
+        is_disqualified: Boolean(isDisqualified),
         members: parsedMembers,
         rank: 0,
       })

@@ -6,12 +6,30 @@ create table if not exists public.leaderboard_entries (
   team_name text not null,
   project_title text not null,
   score integer not null check (score >= 0),
+  is_disqualified boolean not null default false,
   members integer not null check (members >= 1),
   created_at timestamptz not null default now()
 );
 
+alter table public.leaderboard_entries
+  add column if not exists is_disqualified boolean not null default false;
+
 create index if not exists idx_leaderboard_rank on public.leaderboard_entries(rank);
 create index if not exists idx_leaderboard_score on public.leaderboard_entries(score desc);
+create index if not exists idx_leaderboard_disqualified on public.leaderboard_entries(is_disqualified);
+
+create table if not exists public.qualified_teams (
+  id uuid primary key default gen_random_uuid(),
+  team_name text not null,
+  logo_url text not null,
+  participant_names text[] not null,
+  college_name text not null,
+  created_at timestamptz not null default now(),
+  constraint qualified_teams_participants_count_check check (cardinality(participant_names) between 2 and 6)
+);
+
+create index if not exists idx_qualified_teams_team_name on public.qualified_teams(team_name);
+create index if not exists idx_qualified_teams_college_name on public.qualified_teams(college_name);
 
 create table if not exists public.winners (
   id uuid primary key default gen_random_uuid(),
@@ -34,16 +52,40 @@ create table if not exists public.problem_statements (
 );
 
 create table if not exists public.publish_state (
-  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload')),
+  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams')),
   is_live boolean not null default false,
   updated_at timestamptz not null default now()
 );
+
+alter table public.publish_state
+drop constraint if exists publish_state_section_check;
+
+alter table public.publish_state
+add constraint publish_state_section_check
+check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams'));
 
 create table if not exists public.site_settings (
   key text primary key,
   value_text text,
   updated_at timestamptz not null default now()
 );
+
+create table if not exists public.sponsors (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  logo_url text not null,
+  website_url text,
+  category text not null,
+  description text,
+  display_order integer not null default 0,
+  is_featured boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists idx_sponsors_display_order on public.sponsors(display_order);
+create index if not exists idx_sponsors_category on public.sponsors(category);
+create index if not exists idx_sponsors_featured on public.sponsors(is_featured);
 
 create table if not exists public.admin_users (
   id uuid primary key default gen_random_uuid(),
@@ -65,10 +107,32 @@ values
   ('leaderboard', false),
   ('winners', false),
   ('problemStatements', false),
-  ('problemStatementsDownload', false)
+  ('problemStatementsDownload', false),
+  ('qualifiedTeams', false)
 on conflict (section) do nothing;
 
 insert into public.site_settings(key, value_text)
 values
   ('registration_link', 'https://unstop.com/')
 on conflict (key) do nothing;
+
+insert into public.site_settings(key, value_text)
+values
+  ('navbar_show_leaderboard', 'true'),
+  ('navbar_show_winners', 'true'),
+  ('navbar_show_qualified_teams', 'true')
+on conflict (key) do nothing;
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'qualified-teams',
+  'qualified-teams',
+  true,
+  5242880,
+  array['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml']
+)
+on conflict (id) do update
+set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
