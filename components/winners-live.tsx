@@ -20,6 +20,8 @@ interface PublishState {
   leaderboard: boolean
   winners: boolean
   problemStatements: boolean
+  problemStatementsDownload: boolean
+  qualifiedTeams: boolean
 }
 
 export default function WinnersLive() {

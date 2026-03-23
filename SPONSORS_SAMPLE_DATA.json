@@ -1,0 +1,76 @@
+{
+  "sponsors": [
+    {
+      "name": "TechCorp Solutions",
+      "logoUrl": "https://via.placeholder.com/300x150?text=TechCorp",
+      "websiteUrl": "https://example.com/techcorp",
+      "category": "Gold",
+      "description": "Leading enterprise software solutions provider",
+      "displayOrder": 0,
+      "isFeatured": true
+    },
+    {
+      "name": "CloudInnovate",
+      "logoUrl": "https://via.placeholder.com/300x150?text=CloudInnovate",
+      "websiteUrl": "https://example.com/cloudinnovate",
+      "category": "Gold",
+      "description": "Cloud infrastructure and services partner",
+      "displayOrder": 1,
+      "isFeatured": true
+    },
+    {
+      "name": "DataFlow Systems",
+      "logoUrl": "https://via.placeholder.com/300x150?text=DataFlow",
+      "websiteUrl": "https://example.com/dataflow",
+      "category": "Silver",
+      "description": "Big data and analytics solutions",
+      "displayOrder": 2,
+      "isFeatured": false
+    },
+    {
+      "name": "SecureNet",
+      "logoUrl": "https://via.placeholder.com/300x150?text=SecureNet",
+      "websiteUrl": "https://example.com/securenet",
+      "category": "Silver",
+      "description": "Cybersecurity and network protection",
+      "displayOrder": 3,
+      "isFeatured": false
+    },
+    {
+      "name": "WebDev Pro",
+      "logoUrl": "https://via.placeholder.com/300x150?text=WebDevPro",
+      "websiteUrl": "https://example.com/webdevpro",
+      "category": "Bronze",
+      "description": "Web development and design services",
+      "displayOrder": 4,
+      "isFeatured": false
+    },
+    {
+      "name": "MobileFirst",
+      "logoUrl": "https://via.placeholder.com/300x150?text=MobileFirst",
+      "websiteUrl": "https://example.com/mobilefirst",
+      "category": "Technology",
+      "description": "Mobile app development framework",
+      "displayOrder": 5,
+      "isFeatured": false
+    },
+    {
+      "name": "DevZone Media",
+      "logoUrl": "https://via.placeholder.com/300x150?text=DevZone",
+      "websiteUrl": "https://example.com/devzone",
+      "category": "Media",
+      "description": "Technology journalism and coverage",
+      "displayOrder": 6,
+      "isFeatured": false
+    },
+    {
+      "name": "Startup Hub",
+      "logoUrl": "https://via.placeholder.com/300x150?text=StartupHub",
+      "websiteUrl": "https://example.com/startuphub",
+      "category": "Other",
+      "description": "Startup ecosystem and mentorship",
+      "displayOrder": 7,
+      "isFeatured": false
+    }
+  ]
+}
