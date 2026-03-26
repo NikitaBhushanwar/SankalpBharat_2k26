@@ -5,7 +5,7 @@ const timeline = [
     phase: '01',
     date: '5th March 2026 (Thursday)',
     title: 'Registration Starts',
-    description: 'Team size of 2-6 members, registration fee of ₹500 per team',
+    description: 'Teams of 2-6 members can register for free on Unstop.',
   },
   {
     phase: '02',
@@ -17,25 +17,55 @@ const timeline = [
     phase: '03',
     date: '2nd April 2026 (Thursday)',
     title: 'Registration Closes',
-    description: 'Final day for team registration (team size 2-6, registration fee ₹500 per team).',
+    description: 'Final day for team registration (team size 2-6 members).',
   },
   {
     phase: '04',
     date: '6th April 2026 (Monday)',
-    title: 'Submission Deadline',
-    description: 'Teams submit detailed PPT or poster of their proposed solution on Unstop.',
+    title: 'Round 1 - PPT Submission Deadline',
+    description: 'Teams submit detailed PPT of their proposed solution on Unstop.',
   },
-  {
+   {
     phase: '05',
-    date: '10th April 2026 (Friday)',
-    title: 'Round 1 Results Announced',
-    description: 'Top 10% teams (20 teams out of 200) are shortlisted for the offline finale.',
+    date: '8th April 2026 (Wednesday)',
+    title: 'Round 1 - Evaluation & Results',
+    description: 'Expert jury evaluates PPT submissions based on innovation, feasibility, and impact. Results announced on 8th April 2026.',
   },
   {
     phase: '06',
+    date: '8th April 2026 (Wednesday)',
+    title: 'Round 2 - Video Pitch Submission',
+    description: 'Teams shortlisted from Round 1 submit a video pitch of their solution on Unstop.',
+  },
+  {
+    phase: '07',
+    date: '10th April 2026 (Friday)',
+    title: 'Round 2 - Video Pitch Submission Deadline',
+    description: 'Final day for shortlisted teams to submit their video pitch on Unstop.',
+  },
+  {
+    phase: '08',
+    date: '11th April 2026 (Saturday)',
+    title: 'Pre-Hackathon Workshop',
+    description: 'Free online workshop by industry experts, followed by sessions on strategic approaches, provided exposure to new technologies, innovative strategies, and practical industry insights.',
+  },
+  {
+    phase: '09',
+    date: '11th April 2026 (Saturday)',
+    title: 'Round 2 - Evaluation & Results',
+    description: 'Expert jury evaluates video pitches based on clarity, creativity, and potential impact. Finalists announced on 11th April 2026.',
+  },
+  {
+    phase: '10',
+    date: '12th April 2026 (Sunday)',
+    title: 'PS declaration & PS explanation for the final round (Offline Grand Finale)',
+    description: 'Final problem statements for the onsite hackathon are declared, along with detailed explanations for finalists.',
+  },
+  {
+    phase: '11',
     date: '17th & 18th April 2026 (Friday & Saturday)',
     title: 'Offline Grand Finale',
-    description: '24-hour onsite hack, final submissions, and jury presentations for selected finalists.',
+    description: '24-hour onsite hackathon, final submissions, and jury presentations for selected finalists.',
   },
 ]
 
