@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ExternalLink, AlertCircle } from 'lucide-react'
+import { ExternalLink, AlertCircle, Globe } from 'lucide-react'
 import type { SponsorEntry } from '@/lib/admin-repository'
 
 interface SponsorsByCategory {
@@ -26,21 +26,16 @@ export default function SponsorGridByCategory() {
         setLoading(false)
       }
     }
-
     fetchSponsors()
   }, [])
 
-  // Group sponsors by category
   const groupedSponsors: SponsorsByCategory = sponsors.reduce((acc, sponsor) => {
     const category = sponsor.category || 'Partner'
-    if (!acc[category]) {
-      acc[category] = []
-    }
+    if (!acc[category]) acc[category] = []
     acc[category].push(sponsor)
     return acc
   }, {} as SponsorsByCategory)
 
-  // Define category order and styling (Platinum, Gold, Silver, Bronze first, then others alphabetically)
   const categoryOrder = ['Platinum', 'Gold', 'Silver', 'Bronze']
   const orderedCategories = [
     ...categoryOrder.filter((cat) => cat in groupedSponsors),
@@ -49,47 +44,42 @@ export default function SponsorGridByCategory() {
       .sort(),
   ]
 
-  const getCategoryColor = (category: string): { bg: string; border: string; text: string; badge: string; accent: string } => {
+  const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
       case 'platinum':
         return {
-          bg: 'bg-gradient-to-br from-slate-900 via-slate-850 to-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950',
-          border: 'border-slate-500 dark:border-slate-600',
-          text: 'text-slate-950 dark:text-slate-100',
           badge: 'bg-gradient-to-r from-slate-400 to-slate-300 text-slate-950 border border-slate-200',
           accent: 'text-slate-600 dark:text-slate-300',
+          cardBorder: 'border-slate-500/30',
+          glow: 'shadow-[0_0_30px_-10px_rgba(148,163,184,0.2)]'
         }
       case 'gold':
         return {
-          bg: 'bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100 dark:from-amber-950/40 dark:via-amber-900/30 dark:to-yellow-950/40',
-          border: 'border-amber-300 dark:border-amber-600',
-          text: 'text-amber-950 dark:text-amber-100',
           badge: 'bg-gradient-to-r from-amber-500 to-yellow-500 text-amber-950 border border-amber-300',
           accent: 'text-amber-700 dark:text-amber-200',
+          cardBorder: 'border-amber-500/20',
+          glow: 'shadow-[0_0_30px_-10px_rgba(245,158,11,0.2)]'
         }
       case 'silver':
         return {
-          bg: 'bg-gradient-to-br from-slate-100 via-slate-75 to-slate-50 dark:from-slate-800/50 dark:via-slate-750/50 dark:to-slate-900/50',
-          border: 'border-slate-300 dark:border-slate-600',
-          text: 'text-slate-950 dark:text-slate-100',
           badge: 'bg-gradient-to-r from-slate-400 to-slate-300 text-slate-900 border border-slate-300',
           accent: 'text-slate-600 dark:text-slate-400',
+          cardBorder: 'border-slate-400/20',
+          glow: 'shadow-none'
         }
       case 'bronze':
         return {
-          bg: 'bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 dark:from-orange-950/40 dark:via-orange-900/30 dark:to-amber-950/40',
-          border: 'border-orange-300 dark:border-orange-700',
-          text: 'text-orange-950 dark:text-orange-100',
           badge: 'bg-gradient-to-r from-orange-500 to-amber-500 text-orange-950 border border-orange-300',
           accent: 'text-orange-700 dark:text-orange-200',
+          cardBorder: 'border-orange-700/20',
+          glow: 'shadow-none'
         }
       default:
         return {
-          bg: 'bg-gradient-to-br from-cyan-50 via-blue-50 to-cyan-100 dark:from-cyan-950/40 dark:via-cyan-900/30 dark:to-blue-950/40',
-          border: 'border-cyan-300 dark:border-cyan-700',
-          text: 'text-cyan-950 dark:text-cyan-100',
           badge: 'bg-gradient-to-r from-cyan-500 to-blue-500 text-cyan-50 border border-cyan-300',
           accent: 'text-cyan-700 dark:text-cyan-200',
+          cardBorder: 'border-cyan-500/20',
+          glow: 'shadow-none'
         }
     }
   }
@@ -97,137 +87,80 @@ export default function SponsorGridByCategory() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500" />
-      </div>
-    )
-  }
-
-  if (sponsors.length === 0) {
-    return (
-      <div className="flex items-center justify-center gap-3 py-20 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-        <AlertCircle size={20} className="text-slate-400" />
-        <p className="text-slate-600 dark:text-slate-400 text-base font-medium">No sponsors yet</p>
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-cyan-500/20 border-t-cyan-500" />
       </div>
     )
   }
 
   return (
-    <div className="w-full space-y-16 py-6">
+    <div className="w-full space-y-24 py-12 px-4 max-w-7xl mx-auto">
       {orderedCategories.map((category) => {
         const categorySponsors = groupedSponsors[category]
         const colors = getCategoryColor(category)
 
         return (
           <section key={category} className="w-full">
-            {/* Category Header - Centered with Enhanced Styling */}
-            <div className="mb-8 sm:mb-10 text-center">
-              <div
-                className={`inline-block mb-3 sm:mb-4 px-6 sm:px-8 py-2 sm:py-3 rounded-full text-base sm:text-lg font-bold uppercase tracking-widest shadow-lg ${colors.badge}`}
-              >
+            {/* Category Header - PRESERVED ORIGINAL LOOK */}
+            <div className="mb-12 text-center">
+              <div className={`inline-block mb-4 px-8 py-3 rounded-full text-lg font-bold uppercase tracking-widest shadow-lg ${colors.badge}`}>
                 {category} Sponsor{categorySponsors.length !== 1 ? 's' : ''}
-              </div>
-              <div className="flex items-center justify-center gap-2 sm:gap-3 mt-2 sm:mt-3">
-                <div className="h-px flex-1 max-w-[80px] sm:max-w-[100px] bg-gradient-to-r from-transparent via-slate-400 to-transparent" />
-                <p className={`text-xs sm:text-sm font-semibold ${colors.accent}`}>
-                  {categorySponsors.length} {categorySponsors.length === 1 ? 'Organization' : 'Organizations'}
-                </p>
-                <div className="h-px flex-1 max-w-[80px] sm:max-w-[100px] bg-gradient-to-r from-transparent via-slate-400 to-transparent" />
               </div>
             </div>
 
-            {/* Sponsors List - Full Width Cards */}
-            <div className={`relative w-full space-y-4 rounded-none sm:rounded-3xl border-0 sm:border-2 ${colors.border} ${colors.bg} p-4 sm:p-8 overflow-hidden`}>
-              {/* Curved background accent */}
-              <div className="absolute inset-0 rounded-none sm:rounded-3xl opacity-40 pointer-events-none"
-                   style={{
-                     backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), 
-                                       radial-gradient(circle at 80% 80%, rgba(0,0,0,0.05) 0%, transparent 50%)`,
-                   }}
-              />
-              <div className="relative space-y-4">
+            {/* NEW CENTERED GRID LAYOUT */}
+            <div className="flex flex-wrap justify-center gap-8 lg:gap-10">
               {categorySponsors
                 .sort((a, b) => a.displayOrder - b.displayOrder)
                 .map((sponsor) => (
                   <div
                     key={sponsor.id}
-                    className={`relative flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 rounded-lg sm:rounded-xl border-0 sm:border border-white/20 dark:border-slate-700 bg-white dark:bg-slate-900/70 sm:hover:shadow-xl transition-all duration-300 group`}
+                    className={`group relative flex flex-col items-center w-full sm:w-[340px] p-8 rounded-[2.5rem] border ${colors.cardBorder} bg-slate-900/40 backdrop-blur-md ${colors.glow} transition-all duration-500 hover:-translate-y-2 hover:bg-slate-900/60 shadow-2xl`}
                   >
-                    {/* Logo - Left Side */}
-                    <div className="flex-shrink-0 w-full sm:w-48">
-                      <div className={`flex items-center justify-center h-36 sm:h-48 rounded-lg border-0 sm:border-2 ${colors.border} overflow-hidden shadow-sm sm:shadow-md dark:bg-slate-950/50 bg-white`}>
-                        {sponsor.websiteUrl ? (
-                          <a
-                            href={sponsor.websiteUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center w-full h-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                            title={`Visit ${sponsor.name}`}
-                          >
-                            <img
-                              src={sponsor.logoUrl}
-                              alt={sponsor.name}
-                              className="max-h-32 sm:max-h-40 max-w-[95%] object-contain"
-                              onError={(e) => {
-                                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="12" text-anchor="middle" dy=".3em" fill="%23999"%3ELogo%3C/text%3E%3C/svg%3E'
-                              }}
-                            />
-                          </a>
-                        ) : (
-                          <img
-                            src={sponsor.logoUrl}
-                            alt={sponsor.name}
-                            className="max-h-32 sm:max-h-40 max-w-[95%] object-contain"
-                            onError={(e) => {
-                              e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="12" text-anchor="middle" dy=".3em" fill="%23999"%3ELogo%3C/text%3E%3C/svg%3E'
-                            }}
-                          />
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Content - Right Side */}
-                    <div className="flex-1 flex flex-col gap-2 sm:gap-3">
-                      {/* Sponsor Name */}
-                      <div>
-                        <h3 className="font-bold text-base sm:text-xl text-slate-900 dark:text-white">
-                          {sponsor.name}
-                        </h3>
-                      </div>
-
-                      {/* Description */}
-                      {sponsor.description && (
-                        <div className="flex-1">
-                          <p className="text-xs sm:text-base text-slate-700 dark:text-slate-200 leading-relaxed line-clamp-3 sm:line-clamp-none">
-                            {sponsor.description}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Website Link */}
-                      {sponsor.websiteUrl && (
-                        <div className="pt-1 sm:pt-2">
-                          <a
-                            href={sponsor.websiteUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors group/link"
-                          >
-                            <span>Visit</span>
-                            <ExternalLink size={14} className="sm:w-4 w-3 transform group-hover/link:translate-x-0.5 transition-transform" />
-                          </a>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Featured Badge - Top Right */}
+                    {/* Featured Star */}
                     {sponsor.isFeatured && (
-                      <div className="absolute top-3 right-3 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs sm:text-sm font-bold rounded-full shadow-lg">
-                        ⭐ Featured
+                      <div className="absolute -top-2 -right-2 bg-amber-500 text-slate-950 p-2 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)] z-20">
+                        <span className="block text-xs font-black">★</span>
                       </div>
                     )}
+
+                    {/* Logo Area */}
+                    <div className="relative h-56 w-full flex items-center justify-center bg-white/[0.02] rounded-[2rem] overflow-hidden">
+    <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+    
+    <img
+      src={sponsor.logoUrl}
+      alt={sponsor.name}
+      className="h-full w-full object-contain p-6 relative z-10 transition-transform duration-500 group-hover:scale-110 filter drop-shadow-2xl"
+    />
+  </div>
+
+                    {/* Content Area */}
+                    <div className="text-center p-4 w-full">
+    <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-cyan-400 transition-colors truncate">
+      {sponsor.name}
+    </h3>
+                      
+                      {sponsor.description && (
+                        <p className="text-xs text-slate-400 font-medium leading-relaxed line-clamp-2 px-2">
+                          {sponsor.description}
+                        </p>
+                      )}
+
+                      {sponsor.websiteUrl && (
+      <div className="pt-3">
+        <a
+          href={sponsor.websiteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all group/link"
+        >
+          <Globe size={12} /> VISIT WEBSITE <ExternalLink size={10} className="group-hover/link:translate-x-1 transition-transform" />
+        </a>
+      </div>
+    )}
+                    </div>
                   </div>
                 ))}
-              </div>
             </div>
           </section>
         )
