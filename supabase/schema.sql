@@ -74,14 +74,26 @@ create table if not exists public.sponsors (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   logo_url text not null,
+  secondary_logo_url text,
   website_url text,
   category text not null,
+  title_primary text,
+  title_secondary text,
   description text,
   display_order integer not null default 0,
   is_featured boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.sponsors
+add column if not exists secondary_logo_url text;
+
+alter table public.sponsors
+add column if not exists title_primary text;
+
+alter table public.sponsors
+add column if not exists title_secondary text;
 
 create index if not exists idx_sponsors_display_order on public.sponsors(display_order);
 create index if not exists idx_sponsors_category on public.sponsors(category);

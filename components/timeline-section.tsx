@@ -23,7 +23,7 @@ const timeline = [
     phase: '04',
     date: '6th April 2026 (Monday)',
     title: 'Round 1 - PPT Submission Deadline',
-    description: 'Teams submit detailed PPT of their proposed solution on Unstop.',
+    description: 'Teams submit detailed PPT of their proposed solution on Unstop. Round 1 Registration for Sankalp Bharat - National Level Hackathon 2026 is now FREE to encourage wider participation based on industry partner recommendations.',
   },
    {
     phase: '05',

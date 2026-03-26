@@ -14,6 +14,7 @@ export function Loader() {
     window.setTimeout(() => {
       setIsVisible(false)
       setIsClosing(false)
+      window.dispatchEvent(new CustomEvent('sb-mobile-loader-complete'))
     }, 320)
   }
 

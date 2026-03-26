@@ -33,8 +33,11 @@ export default function SponsorSlider() {
           id: `placeholder-${i}`,
           name: 'Partner',
           logoUrl: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="12" text-anchor="middle" dy=".3em" fill="%23999"%3ELogo%3C/text%3E%3C/svg%3E',
+          secondaryLogoUrl: null,
           websiteUrl: null,
           category: 'Partner',
+          titlePrimary: null,
+          titleSecondary: null,
           description: null,
           displayOrder: 0,
           isFeatured: false,
@@ -60,7 +63,7 @@ export default function SponsorSlider() {
         <div
           className="relative overflow-hidden rounded-2xl sm:rounded-3xl
                      border border-border/50 glass-effect
-                     shadow-2xl py-3 sm:py-4 md:py-6 px-2 sm:px-4 group"
+                     shadow-2xl py-3 sm:py-4 md:py-6 px-2 sm:px-4"
         >
           {/* Gradient overlays */}
           <div className="pointer-events-none absolute left-0 top-0 h-full w-14 sm:w-24
@@ -84,41 +87,75 @@ export default function SponsorSlider() {
                   href={sponsors[0].websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center h-20 sm:h-24 md:h-32 w-auto
+                  className={`inline-flex items-center justify-center h-24 sm:h-28 md:h-36 w-full
                              px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4
                              rounded-lg sm:rounded-xl
                              border border-orange-500/30 bg-orange-500/10
                              hover:border-orange-500/60 hover:bg-orange-500/20
-                             transition-all duration-300 group/sponsor"
+                             transition-all duration-300 group/sponsor ${sponsors[0].secondaryLogoUrl ? 'max-w-[92vw] sm:max-w-[560px] md:max-w-[700px]' : 'max-w-[320px] sm:max-w-[420px]'}`}
                   title={sponsors[0].name}
                 >
-                  <img
-                    src={sponsors[0].logoUrl}
-                    alt={sponsors[0].name}
-                    className="max-h-full max-w-[150px] sm:max-w-[180px] md:max-w-[220px] object-contain"
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
-                    }}
-                  />
+                  <div className={`grid w-full items-center ${sponsors[0].secondaryLogoUrl ? 'grid-cols-2 gap-3 sm:gap-4' : 'grid-cols-1'}`}>
+                    <div className="h-16 sm:h-20 md:h-24 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-2 sm:px-3">
+                      <img
+                        src={sponsors[0].logoUrl}
+                        alt={`${sponsors[0].name} primary logo`}
+                        className="h-full w-full max-w-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
+                        }}
+                      />
+                    </div>
+                    {sponsors[0].secondaryLogoUrl && (
+                      <div className="h-16 sm:h-20 md:h-24 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-2 sm:px-3">
+                        <img
+                          src={sponsors[0].secondaryLogoUrl}
+                          alt={`${sponsors[0].name} secondary logo`}
+                          className="h-full w-full max-w-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </a>
               ) : (
                 <div
-                  className="inline-flex items-center justify-center h-20 sm:h-24 md:h-32 w-auto
+                  className={`inline-flex items-center justify-center h-24 sm:h-28 md:h-36 w-full
                              px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4
                              rounded-lg sm:rounded-xl
-                             border border-orange-500/30 bg-orange-500/10"
+                             border border-orange-500/30 bg-orange-500/10 ${sponsors[0].secondaryLogoUrl ? 'max-w-[92vw] sm:max-w-[560px] md:max-w-[700px]' : 'max-w-[320px] sm:max-w-[420px]'}`}
                   title={sponsors[0].name}
                 >
-                  <img
-                    src={sponsors[0].logoUrl}
-                    alt={sponsors[0].name}
-                    className="max-h-full max-w-[150px] sm:max-w-[180px] md:max-w-[220px] object-contain"
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
-                    }}
-                  />
+                  <div className={`grid w-full items-center ${sponsors[0].secondaryLogoUrl ? 'grid-cols-2 gap-3 sm:gap-4' : 'grid-cols-1'}`}>
+                    <div className="h-16 sm:h-20 md:h-24 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-2 sm:px-3">
+                      <img
+                        src={sponsors[0].logoUrl}
+                        alt={`${sponsors[0].name} primary logo`}
+                        className="h-full w-full max-w-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
+                        }}
+                      />
+                    </div>
+                    {sponsors[0].secondaryLogoUrl && (
+                      <div className="h-16 sm:h-20 md:h-24 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-2 sm:px-3">
+                        <img
+                          src={sponsors[0].secondaryLogoUrl}
+                          alt={`${sponsors[0].name} secondary logo`}
+                          className="h-full w-full max-w-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -128,46 +165,80 @@ export default function SponsorSlider() {
               {[...displaySponsors, ...displaySponsors].map((sponsor, index) => (
                 <div
                   key={`${sponsor.id}-${index}`}
-                  className="flex-shrink-0 h-20 sm:h-24 md:h-32 w-auto flex items-center justify-center"
+                  className="flex-shrink-0 h-20 sm:h-24 md:h-32 w-auto max-w-[86vw] sm:max-w-none flex items-center justify-center"
                 >
                   {sponsor.websiteUrl ? (
                     <a
                       href={sponsor.websiteUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="h-full w-auto px-2 sm:px-3 md:px-4 py-1 sm:py-2 flex items-center justify-center
+                      className={`h-full px-2 sm:px-3 md:px-4 py-1 sm:py-2 flex items-center justify-center
                                  rounded-lg sm:rounded-xl
                                  border border-orange-500/30 bg-orange-500/10
                                  hover:border-orange-500/60 hover:bg-orange-500/20
-                                 transition-all duration-300 group/sponsor"
+                                 transition-all duration-300 group/sponsor ${sponsor.secondaryLogoUrl ? 'w-[220px] sm:w-[280px] md:w-[340px]' : 'w-[130px] sm:w-[160px] md:w-[190px]'}`}
                       title={sponsor.name}
                     >
-                      <img
-                        src={sponsor.logoUrl}
-                        alt={sponsor.name}
-                        className="max-h-full max-w-[100px] sm:max-w-[120px] md:max-w-[140px] object-contain"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
-                        }}
-                      />
+                      <div className={`grid w-full items-center ${sponsor.secondaryLogoUrl ? 'grid-cols-2 gap-2 sm:gap-3' : 'grid-cols-1'}`}>
+                        <div className="h-14 sm:h-16 md:h-20 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-1 sm:px-2">
+                          <img
+                            src={sponsor.logoUrl}
+                            alt={`${sponsor.name} primary logo`}
+                            className="h-full w-full max-w-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
+                            }}
+                          />
+                        </div>
+                        {sponsor.secondaryLogoUrl && (
+                          <div className="h-14 sm:h-16 md:h-20 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-1 sm:px-2">
+                            <img
+                              src={sponsor.secondaryLogoUrl}
+                              alt={`${sponsor.name} secondary logo`}
+                              className="h-full w-full max-w-full object-contain"
+                              onError={(e) => {
+                                e.currentTarget.src =
+                                  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </a>
                   ) : (
                     <div
-                      className="h-full w-auto px-2 sm:px-3 md:px-4 py-1 sm:py-2 flex items-center justify-center
+                      className={`h-full px-2 sm:px-3 md:px-4 py-1 sm:py-2 flex items-center justify-center
                                  rounded-lg sm:rounded-xl
-                                 border border-orange-500/30 bg-orange-500/10"
+                                 border border-orange-500/30 bg-orange-500/10 ${sponsor.secondaryLogoUrl ? 'w-[220px] sm:w-[280px] md:w-[340px]' : 'w-[130px] sm:w-[160px] md:w-[190px]'}`}
                       title={sponsor.name}
                     >
-                      <img
-                        src={sponsor.logoUrl}
-                        alt={sponsor.name}
-                        className="max-h-full max-w-[100px] sm:max-w-[120px] md:max-w-[140px] object-contain"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
-                        }}
-                      />
+                      <div className={`grid w-full items-center ${sponsor.secondaryLogoUrl ? 'grid-cols-2 gap-2 sm:gap-3' : 'grid-cols-1'}`}>
+                        <div className="h-14 sm:h-16 md:h-20 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-1 sm:px-2">
+                          <img
+                            src={sponsor.logoUrl}
+                            alt={`${sponsor.name} primary logo`}
+                            className="h-full w-full max-w-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
+                            }}
+                          />
+                        </div>
+                        {sponsor.secondaryLogoUrl && (
+                          <div className="h-14 sm:h-16 md:h-20 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-1 sm:px-2">
+                            <img
+                              src={sponsor.secondaryLogoUrl}
+                              alt={`${sponsor.name} secondary logo`}
+                              className="h-full w-full max-w-full object-contain"
+                              onError={(e) => {
+                                e.currentTarget.src =
+                                  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="10" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Logo%3C/text%3E%3C/svg%3E'
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

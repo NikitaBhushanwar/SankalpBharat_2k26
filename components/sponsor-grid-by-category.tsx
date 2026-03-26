@@ -36,7 +36,15 @@ export default function SponsorGridByCategory() {
     return acc
   }, {} as SponsorsByCategory)
 
-  const categoryOrder = ['Platinum', 'Gold', 'Silver', 'Bronze']
+  const categoryOrder = [
+    'Title Sponsors',
+    'Co Powered By Sponsors',
+    'Powered By Sponsor',
+    'Platinum',
+    'Gold',
+    'Silver',
+    'Bronze',
+  ]
   const orderedCategories = [
     ...categoryOrder.filter((cat) => cat in groupedSponsors),
     ...Object.keys(groupedSponsors)
@@ -46,6 +54,27 @@ export default function SponsorGridByCategory() {
 
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
+      case 'title sponsors':
+        return {
+          badge: 'bg-gradient-to-r from-red-500 to-rose-500 text-white border border-rose-300',
+          accent: 'text-rose-700 dark:text-rose-200',
+          cardBorder: 'border-rose-500/20',
+          glow: 'shadow-[0_0_30px_-10px_rgba(244,63,94,0.3)]'
+        }
+      case 'co powered by sponsors':
+        return {
+          badge: 'bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 border border-amber-300',
+          accent: 'text-orange-700 dark:text-orange-200',
+          cardBorder: 'border-orange-500/20',
+          glow: 'shadow-[0_0_30px_-10px_rgba(245,158,11,0.25)]'
+        }
+      case 'powered by sponsor':
+        return {
+          badge: 'bg-gradient-to-r from-cyan-500 to-blue-500 text-cyan-50 border border-cyan-300',
+          accent: 'text-cyan-700 dark:text-cyan-200',
+          cardBorder: 'border-cyan-500/20',
+          glow: 'shadow-[0_0_30px_-10px_rgba(6,182,212,0.25)]'
+        }
       case 'platinum':
         return {
           badge: 'bg-gradient-to-r from-slate-400 to-slate-300 text-slate-950 border border-slate-200',
@@ -84,6 +113,11 @@ export default function SponsorGridByCategory() {
     }
   }
 
+  const getSectionHeading = (category: string, count: number) => {
+    if (/sponsor/i.test(category)) return category
+    return `${category} Sponsor${count !== 1 ? 's' : ''}`
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -103,7 +137,7 @@ export default function SponsorGridByCategory() {
             {/* Category Header - PRESERVED ORIGINAL LOOK */}
             <div className="mb-12 text-center">
               <div className={`inline-block mb-4 px-8 py-3 rounded-full text-lg font-bold uppercase tracking-widest shadow-lg ${colors.badge}`}>
-                {category} Sponsor{categorySponsors.length !== 1 ? 's' : ''}
+                {getSectionHeading(category, categorySponsors.length)}
               </div>
             </div>
 
@@ -124,21 +158,48 @@ export default function SponsorGridByCategory() {
                     )}
 
                     {/* Logo Area */}
-                    <div className="relative h-56 w-full flex items-center justify-center bg-white/[0.02] rounded-[2rem] overflow-hidden">
-    <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-    
-    <img
-      src={sponsor.logoUrl}
-      alt={sponsor.name}
-      className="h-full w-full object-contain p-6 relative z-10 transition-transform duration-500 group-hover:scale-110 filter drop-shadow-2xl"
-    />
-  </div>
+                    <div className="relative h-56 w-full bg-white/[0.02] rounded-[2rem] overflow-hidden p-4">
+                      <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                      <div className={`relative z-10 grid h-full w-full gap-3 ${sponsor.secondaryLogoUrl ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                        <div className="flex items-center justify-center">
+                          <img
+                            src={sponsor.logoUrl}
+                            alt={`${sponsor.name} primary logo`}
+                            className="h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105 filter drop-shadow-2xl"
+                          />
+                        </div>
+                        {sponsor.secondaryLogoUrl && (
+                          <div className="flex items-center justify-center border-l border-white/10">
+                            <img
+                              src={sponsor.secondaryLogoUrl}
+                              alt={`${sponsor.name} secondary logo`}
+                              className="h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105 filter drop-shadow-2xl"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
                     {/* Content Area */}
                     <div className="text-center p-4 w-full">
     <h3 className="text-xl font-bold text-white tracking-tight group-hover:text-cyan-400 transition-colors truncate">
       {sponsor.name}
     </h3>
+
+                      {(sponsor.titlePrimary || sponsor.titleSecondary) && (
+                        <div className="mt-3 mb-2 flex flex-wrap items-center justify-center gap-2">
+                          {sponsor.titlePrimary && (
+                            <span className="px-2 py-1 rounded-full text-[10px] font-black tracking-wide uppercase bg-red-500/20 text-red-300 border border-red-500/30">
+                              {sponsor.titlePrimary}
+                            </span>
+                          )}
+                          {sponsor.titleSecondary && (
+                            <span className="px-2 py-1 rounded-full text-[10px] font-black tracking-wide uppercase bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                              {sponsor.titleSecondary}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       
                       {sponsor.description && (
                         <p className="text-xs text-slate-400 font-medium leading-relaxed line-clamp-2 px-2">

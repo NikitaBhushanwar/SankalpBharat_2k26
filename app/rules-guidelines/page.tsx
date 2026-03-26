@@ -29,6 +29,9 @@ export default function RulesGuidelinesPage() {
           <p className="mt-3 text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
             Please read all rules carefully before participating. These guidelines apply to all teams across all rounds.
           </p>
+          <p className="mt-3 text-slate-700 dark:text-slate-200 max-w-3xl mx-auto font-semibold">
+            Round 1 Registration for Sankalp Bharat - National Level Hackathon 2026 is now FREE to encourage wider participation based on industry partner recommendations.
+          </p>
         </div>
 
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
