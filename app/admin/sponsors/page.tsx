@@ -412,13 +412,13 @@ export default function SponsorsPage() {
                         required
                       >
                         <option value="">Select a category</option>
+                        <option value="Title">Title Sponsor</option>
+                        <option value="Powered By">Powered By</option>
+                        <option value="Co Powered By">Co Powered By</option>
+                        <option value="Platinum">Platinum</option>
                         <option value="Gold">Gold</option>
                         <option value="Silver">Silver</option>
                         <option value="Bronze">Bronze</option>
-                        <option value="Platinum">Platinum</option>
-                        <option value="Title Sponsors">Title Sponsors</option>
-                        <option value="Co Powered By Sponsors">Co Powered By Sponsors</option>
-                        <option value="Powered By Sponsor">Powered By Sponsor</option>
                         <option value="Technology Partner">Technology Partner</option>
                         <option value="Media Partner">Media Partner</option>
                         <option value="Community Partner">Community Partner</option>
@@ -476,7 +476,7 @@ export default function SponsorsPage() {
                     type="text"
                     value={formData.titlePrimary || ''}
                     onChange={(e) => setFormData({ ...formData, titlePrimary: e.target.value || null })}
-                    placeholder="e.g., Title Sponsors"
+                    placeholder="e.g., Powered By"
                     className="w-full px-3 sm:px-4 py-2 text-sm rounded-lg border border-border/50 bg-background/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>

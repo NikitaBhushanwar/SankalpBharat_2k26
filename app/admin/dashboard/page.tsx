@@ -1856,13 +1856,13 @@ export default function AdminDashboardPage() {
                   required
                 >
                   <option value="">Select Tier (required)</option>
+                  <option value="Title">Title Sponsor</option>
+                  <option value="Powered By">Powered By</option>
+                  <option value="Co Powered By">Co Powered By</option>
                   <option value="Platinum">Platinum</option>
                   <option value="Gold">Gold</option>
                   <option value="Silver">Silver</option>
                   <option value="Bronze">Bronze</option>
-                  <option value="Title Sponsors">Title Sponsors</option>
-                  <option value="Co Powered By Sponsors">Co Powered By Sponsors</option>
-                  <option value="Powered By Sponsor">Powered By Sponsor</option>
                   <option value="Custom">Custom</option>
                 </select>
 
@@ -2022,7 +2022,7 @@ export default function AdminDashboardPage() {
                       <div className="mt-3 flex justify-end gap-2">
                         <button
                           onClick={() => {
-                            const predefinedCategories = ['Platinum', 'Gold', 'Silver', 'Bronze', 'Title Sponsors', 'Co Powered By Sponsors', 'Powered By Sponsor']
+                            const predefinedCategories = ['Title', 'Powered By', 'Co Powered By', 'Platinum', 'Gold', 'Silver', 'Bronze']
                             const isCustom = !predefinedCategories.includes(sponsor.category)
                             
                             setEditingSponsorId(sponsor.id)

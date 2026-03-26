@@ -87,7 +87,7 @@ export default function SponsorSlider() {
                   href={sponsors[0].websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex items-center justify-center h-24 sm:h-28 md:h-36 w-full
+                  className={`inline-flex items-center justify-center ${sponsors[0].secondaryLogoUrl ? 'h-40 sm:h-28 md:h-36' : 'h-24 sm:h-28 md:h-36'} w-full
                              px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4
                              rounded-lg sm:rounded-xl
                              border border-orange-500/30 bg-orange-500/10
@@ -95,7 +95,7 @@ export default function SponsorSlider() {
                              transition-all duration-300 group/sponsor ${sponsors[0].secondaryLogoUrl ? 'max-w-[92vw] sm:max-w-[560px] md:max-w-[700px]' : 'max-w-[320px] sm:max-w-[420px]'}`}
                   title={sponsors[0].name}
                 >
-                  <div className={`grid w-full items-center ${sponsors[0].secondaryLogoUrl ? 'grid-cols-2 gap-3 sm:gap-4' : 'grid-cols-1'}`}>
+                  <div className={`grid w-full items-center ${sponsors[0].secondaryLogoUrl ? 'grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4' : 'grid-cols-1'}`}>
                     <div className="h-16 sm:h-20 md:h-24 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-2 sm:px-3">
                       <img
                         src={sponsors[0].logoUrl}
@@ -124,13 +124,13 @@ export default function SponsorSlider() {
                 </a>
               ) : (
                 <div
-                  className={`inline-flex items-center justify-center h-24 sm:h-28 md:h-36 w-full
+                  className={`inline-flex items-center justify-center ${sponsors[0].secondaryLogoUrl ? 'h-40 sm:h-28 md:h-36' : 'h-24 sm:h-28 md:h-36'} w-full
                              px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4
                              rounded-lg sm:rounded-xl
                              border border-orange-500/30 bg-orange-500/10 ${sponsors[0].secondaryLogoUrl ? 'max-w-[92vw] sm:max-w-[560px] md:max-w-[700px]' : 'max-w-[320px] sm:max-w-[420px]'}`}
                   title={sponsors[0].name}
                 >
-                  <div className={`grid w-full items-center ${sponsors[0].secondaryLogoUrl ? 'grid-cols-2 gap-3 sm:gap-4' : 'grid-cols-1'}`}>
+                  <div className={`grid w-full items-center ${sponsors[0].secondaryLogoUrl ? 'grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4' : 'grid-cols-1'}`}>
                     <div className="h-16 sm:h-20 md:h-24 min-w-0 rounded-lg border border-orange-500/30 bg-slate-900/60 flex items-center justify-center px-2 sm:px-3">
                       <img
                         src={sponsors[0].logoUrl}
