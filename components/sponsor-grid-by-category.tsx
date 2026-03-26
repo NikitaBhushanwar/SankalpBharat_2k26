@@ -36,7 +36,15 @@ export default function SponsorGridByCategory() {
     return acc
   }, {} as SponsorsByCategory)
 
-  const categoryOrder = ['Platinum', 'Gold', 'Silver', 'Bronze']
+  const categoryOrder = [
+    'Title Sponsors',
+    'Co Powered By Sponsors',
+    'Powered By Sponsor',
+    'Platinum',
+    'Gold',
+    'Silver',
+    'Bronze',
+  ]
   const orderedCategories = [
     ...categoryOrder.filter((cat) => cat in groupedSponsors),
     ...Object.keys(groupedSponsors)
@@ -46,6 +54,27 @@ export default function SponsorGridByCategory() {
 
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
+      case 'title sponsors':
+        return {
+          badge: 'bg-gradient-to-r from-red-500 to-rose-500 text-white border border-rose-300',
+          accent: 'text-rose-700 dark:text-rose-200',
+          cardBorder: 'border-rose-500/20',
+          glow: 'shadow-[0_0_30px_-10px_rgba(244,63,94,0.3)]'
+        }
+      case 'co powered by sponsors':
+        return {
+          badge: 'bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 border border-amber-300',
+          accent: 'text-orange-700 dark:text-orange-200',
+          cardBorder: 'border-orange-500/20',
+          glow: 'shadow-[0_0_30px_-10px_rgba(245,158,11,0.25)]'
+        }
+      case 'powered by sponsor':
+        return {
+          badge: 'bg-gradient-to-r from-cyan-500 to-blue-500 text-cyan-50 border border-cyan-300',
+          accent: 'text-cyan-700 dark:text-cyan-200',
+          cardBorder: 'border-cyan-500/20',
+          glow: 'shadow-[0_0_30px_-10px_rgba(6,182,212,0.25)]'
+        }
       case 'platinum':
         return {
           badge: 'bg-gradient-to-r from-slate-400 to-slate-300 text-slate-950 border border-slate-200',
@@ -77,6 +106,11 @@ export default function SponsorGridByCategory() {
           glow: 'shadow-none'
         }
     }
+  }
+
+  const getSectionHeading = (category: string, count: number) => {
+    if (/sponsor/i.test(category)) return category
+    return `${category} Sponsor${count !== 1 ? 's' : ''}`
   }
 
   if (loading) {

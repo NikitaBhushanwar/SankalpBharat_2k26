@@ -18,17 +18,22 @@ export default function SponsorsPage() {
   const [error, setError] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [uploading, setUploading] = useState(false)
+  const [uploadingPrimary, setUploadingPrimary] = useState(false)
+  const [uploadingSecondary, setUploadingSecondary] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [primaryPreviewUrl, setPrimaryPreviewUrl] = useState<string | null>(null)
+  const [secondaryPreviewUrl, setSecondaryPreviewUrl] = useState<string | null>(null)
   const [showCustomCategory, setShowCustomCategory] = useState(false)
   const [customCategoryInput, setCustomCategoryInput] = useState('')
   const [formData, setFormData] = useState<Omit<SponsorEntry, 'id'>>({
     name: '',
     logoUrl: '',
+    secondaryLogoUrl: null,
     websiteUrl: null,
     category: '',
+    titlePrimary: null,
+    titleSecondary: null,
     description: null,
     displayOrder: 0,
     isFeatured: false,
@@ -184,13 +189,17 @@ export default function SponsorsPage() {
     setFormData({
       name: sponsor.name,
       logoUrl: sponsor.logoUrl,
+      secondaryLogoUrl: sponsor.secondaryLogoUrl,
       websiteUrl: sponsor.websiteUrl,
       category: sponsor.category,
+      titlePrimary: sponsor.titlePrimary,
+      titleSecondary: sponsor.titleSecondary,
       description: sponsor.description,
       displayOrder: sponsor.displayOrder,
       isFeatured: sponsor.isFeatured,
     })
-    setPreviewUrl(sponsor.logoUrl)
+    setPrimaryPreviewUrl(sponsor.logoUrl)
+    setSecondaryPreviewUrl(sponsor.secondaryLogoUrl)
     setEditingId(sponsor.id)
     setShowForm(true)
   }
@@ -199,21 +208,29 @@ export default function SponsorsPage() {
     setFormData({
       name: '',
       logoUrl: '',
+      secondaryLogoUrl: null,
       websiteUrl: null,
       category: '',
+      titlePrimary: null,
+      titleSecondary: null,
       description: null,
       displayOrder: 0,
       isFeatured: false,
     })
     setEditingId(null)
-    setPreviewUrl(null)
+    setPrimaryPreviewUrl(null)
+    setSecondaryPreviewUrl(null)
   }
 
-  const handleImageUpload = async (file: File) => {
+  const handleImageUpload = async (file: File, target: 'primary' | 'secondary') => {
     if (!file) return
 
     try {
-      setUploading(true)
+      if (target === 'primary') {
+        setUploadingPrimary(true)
+      } else {
+        setUploadingSecondary(true)
+      }
       setError(null)
 
       const formDataToSend = new FormData()
@@ -227,19 +244,31 @@ export default function SponsorsPage() {
       const result = await response.json()
 
       if (result.success) {
-        setFormData({ ...formData, logoUrl: result.data.url })
-        setPreviewUrl(result.data.url)
+        setFormData((prev) =>
+          target === 'primary'
+            ? { ...prev, logoUrl: result.data.url }
+            : { ...prev, secondaryLogoUrl: result.data.url }
+        )
+        if (target === 'primary') {
+          setPrimaryPreviewUrl(result.data.url)
+        } else {
+          setSecondaryPreviewUrl(result.data.url)
+        }
       } else {
         setError(result.error || 'Failed to upload image')
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to upload image')
     } finally {
-      setUploading(false)
+      if (target === 'primary') {
+        setUploadingPrimary(false)
+      } else {
+        setUploadingSecondary(false)
+      }
     }
   }
 
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>, target: 'primary' | 'secondary') => {
     const file = e.target.files?.[0]
     if (file) {
       // Clear any previous error when user selects new file
@@ -250,12 +279,16 @@ export default function SponsorsPage() {
       // Show preview immediately
       const reader = new FileReader()
       reader.onloadend = () => {
-        setPreviewUrl(reader.result as string)
+        if (target === 'primary') {
+          setPrimaryPreviewUrl(reader.result as string)
+        } else {
+          setSecondaryPreviewUrl(reader.result as string)
+        }
       }
       reader.readAsDataURL(file)
 
       // Upload file
-      handleImageUpload(file)
+      handleImageUpload(file, target)
     }
   }
 
@@ -383,6 +416,9 @@ export default function SponsorsPage() {
                         <option value="Silver">Silver</option>
                         <option value="Bronze">Bronze</option>
                         <option value="Platinum">Platinum</option>
+                        <option value="Title Sponsors">Title Sponsors</option>
+                        <option value="Co Powered By Sponsors">Co Powered By Sponsors</option>
+                        <option value="Powered By Sponsor">Powered By Sponsor</option>
                         <option value="Technology Partner">Technology Partner</option>
                         <option value="Media Partner">Media Partner</option>
                         <option value="Community Partner">Community Partner</option>
@@ -431,20 +467,68 @@ export default function SponsorsPage() {
                   )}
                 </div>
 
-                {/* Logo Upload */}
+                {/* Sponsor Titles */}
                 <div>
                   <label className="block text-xs sm:text-sm font-semibold text-foreground mb-2">
-                    Logo Image * (PNG, JPG, or SVG - Max 5MB)
+                    Title 1
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.titlePrimary || ''}
+                    onChange={(e) => setFormData({ ...formData, titlePrimary: e.target.value || null })}
+                    placeholder="e.g., Title Sponsors"
+                    className="w-full px-3 sm:px-4 py-2 text-sm rounded-lg border border-border/50 bg-background/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-foreground mb-2">
+                    Title 2
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.titleSecondary || ''}
+                    onChange={(e) => setFormData({ ...formData, titleSecondary: e.target.value || null })}
+                    placeholder="Optional second title"
+                    className="w-full px-3 sm:px-4 py-2 text-sm rounded-lg border border-border/50 bg-background/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                {/* Primary Logo Upload */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-foreground mb-2">
+                    Primary Logo Image * (PNG, JPG, or SVG - Max 5MB)
                   </label>
                   <div className="relative">
                     <input
                       type="file"
                       accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
-                      onChange={handleFileInputChange}
-                      disabled={uploading}
+                      onChange={(e) => handleFileInputChange(e, 'primary')}
+                      disabled={uploadingPrimary}
                       className="w-full px-4 py-2 rounded-lg border border-border/50 bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
-                    {uploading && (
+                    {uploadingPrimary && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-lg">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Secondary Logo Upload */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-foreground mb-2">
+                    Secondary Logo Image (Optional)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                      onChange={(e) => handleFileInputChange(e, 'secondary')}
+                      disabled={uploadingSecondary}
+                      className="w-full px-4 py-2 rounded-lg border border-border/50 bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+                    {uploadingSecondary && (
                       <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-lg">
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500" />
                       </div>
@@ -511,29 +595,63 @@ export default function SponsorsPage() {
               </div>
 
               {/* Logo Preview */}
-              {previewUrl && (
+              {(primaryPreviewUrl || secondaryPreviewUrl) && (
                 <div className="p-3 sm:p-4 bg-background/30 border border-orange-500/30 rounded-lg">
                   <div className="flex items-center justify-between mb-3">
                     <label className="block text-xs sm:text-sm font-semibold text-foreground">
                       Logo Preview
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPreviewUrl(null)
-                        setFormData({ ...formData, logoUrl: '' })
-                      }}
-                      className="p-1 hover:bg-red-500/20 rounded transition-colors"
-                    >
-                      <X size={16} className="text-red-500" />
-                    </button>
                   </div>
-                  <div className="h-48 bg-background/50 rounded-lg p-4 flex items-center justify-center border border-border/30">
-                    <img
-                      src={previewUrl}
-                      alt="Logo preview"
-                      className="max-h-full max-w-full object-contain"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {primaryPreviewUrl && (
+                      <div>
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-muted-foreground">Primary Logo</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPrimaryPreviewUrl(null)
+                              setFormData({ ...formData, logoUrl: '' })
+                            }}
+                            className="p-1 hover:bg-red-500/20 rounded transition-colors"
+                          >
+                            <X size={16} className="text-red-500" />
+                          </button>
+                        </div>
+                        <div className="h-40 bg-background/50 rounded-lg p-4 flex items-center justify-center border border-border/30">
+                          <img
+                            src={primaryPreviewUrl}
+                            alt="Primary logo preview"
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {secondaryPreviewUrl && (
+                      <div>
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-muted-foreground">Secondary Logo</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSecondaryPreviewUrl(null)
+                              setFormData({ ...formData, secondaryLogoUrl: null })
+                            }}
+                            className="p-1 hover:bg-red-500/20 rounded transition-colors"
+                          >
+                            <X size={16} className="text-red-500" />
+                          </button>
+                        </div>
+                        <div className="h-40 bg-background/50 rounded-lg p-4 flex items-center justify-center border border-border/30">
+                          <img
+                            src={secondaryPreviewUrl}
+                            alt="Secondary logo preview"
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -542,7 +660,7 @@ export default function SponsorsPage() {
               <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-700/60">
                 <button
                   type="submit"
-                  disabled={submitting || uploading}
+                  disabled={submitting || uploadingPrimary || uploadingSecondary}
                   className="flex-1 px-4 py-2.5 text-sm sm:text-base rounded-xl bg-blue-500 text-slate-950 font-black hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {submitting ? (
@@ -588,21 +706,52 @@ export default function SponsorsPage() {
                   className="p-4 sm:p-6 bg-gradient-to-br from-background to-background/50 border border-border/50 rounded-xl glass-effect hover:border-orange-500/30 transition-all duration-300 group"
                 >
                   {/* Logo */}
-                  <div className="mb-4 h-40 sm:h-48 bg-background/50 rounded-lg p-3 sm:p-4 flex items-center justify-center border border-border/30">
-                    <img
-                      src={sponsor.logoUrl}
-                      alt={sponsor.name}
-                      className="max-w-full max-h-full object-contain"
-                      onError={(e) => {
-                        e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect fill="%23f0f0f0" width="100" height="100"/%3E%3Ctext x="50" y="50" font-size="14" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Image%3C/text%3E%3C/svg%3E'
-                      }}
-                    />
+                  <div className="mb-4 h-40 sm:h-48 bg-background/50 rounded-lg p-3 sm:p-4 border border-border/30">
+                    <div className={`grid h-full w-full gap-3 ${sponsor.secondaryLogoUrl ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                      <div className="flex items-center justify-center">
+                        <img
+                          src={sponsor.logoUrl}
+                          alt={`${sponsor.name} primary logo`}
+                          className="max-w-full max-h-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect fill="%23f0f0f0" width="100" height="100"/%3E%3Ctext x="50" y="50" font-size="14" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Image%3C/text%3E%3C/svg%3E'
+                          }}
+                        />
+                      </div>
+                      {sponsor.secondaryLogoUrl && (
+                        <div className="flex items-center justify-center border-l border-border/30 pl-2">
+                          <img
+                            src={sponsor.secondaryLogoUrl}
+                            alt={`${sponsor.name} secondary logo`}
+                            className="max-w-full max-h-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect fill="%23f0f0f0" width="100" height="100"/%3E%3Ctext x="50" y="50" font-size="14" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Image%3C/text%3E%3C/svg%3E'
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Content */}
                   <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 line-clamp-2">
                     {sponsor.name}
                   </h3>
+
+                  {(sponsor.titlePrimary || sponsor.titleSecondary) && (
+                    <div className="mb-3 flex flex-wrap gap-2">
+                      {sponsor.titlePrimary && (
+                        <span className="px-2 py-1 rounded text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/30">
+                          {sponsor.titlePrimary}
+                        </span>
+                      )}
+                      {sponsor.titleSecondary && (
+                        <span className="px-2 py-1 rounded text-xs font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                          {sponsor.titleSecondary}
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   <div className="space-y-2 mb-4 text-xs sm:text-sm">
                     <div>

@@ -7,6 +7,7 @@ import Navbar from '@/components/navbar'
 import CursorRevealBackground from '@/components/cursor-reveal-background'
 import FooterWrapper from '@/components/footer-wrapper'
 import { Loader } from '@/components/loader'
+import RegistrationPolicyPopup from '@/components/registration-policy-popup'
 import './globals.css'
 
 const texturina = Texturina({
@@ -39,6 +40,7 @@ export default function RootLayout({
     <AuthProvider>
 
       <Loader />
+        <RegistrationPolicyPopup />
 
       {/* Background must be outside the glass container —
           backdrop-filter creates a containing block that would trap position:fixed children */}
