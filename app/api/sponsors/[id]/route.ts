@@ -99,9 +99,9 @@ export async function DELETE(
 
     const { data: sponsorRow, error: sponsorError } = await supabase
       .from('sponsors')
-      .select('logo_url')
+      .select('*')
       .eq('id', id)
-      .maybeSingle<{ logo_url: string | null }>()
+      .maybeSingle<{ logo_url: string | null; secondary_logo_url?: string | null }>()
 
     if (sponsorError) {
       throw new Error(sponsorError.message)
@@ -117,12 +117,15 @@ export async function DELETE(
       )
     }
 
-    const storagePath = getSponsorsStoragePathFromUrl(sponsorRow.logo_url)
+    const storagePaths = [
+      getSponsorsStoragePathFromUrl(sponsorRow.logo_url),
+      getSponsorsStoragePathFromUrl(sponsorRow.secondary_logo_url),
+    ].filter((path): path is string => Boolean(path))
 
-    if (storagePath) {
+    if (storagePaths.length > 0) {
       const { error: removeImageError } = await supabase.storage
         .from('sponsors')
-        .remove([storagePath])
+        .remove(storagePaths)
 
       // Do not block sponsor deletion for non-critical storage failures.
       if (removeImageError) {

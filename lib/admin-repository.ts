@@ -305,8 +305,11 @@ export interface SponsorEntry {
   id: string
   name: string
   logoUrl: string
+  secondaryLogoUrl: string | null
   websiteUrl: string | null
   category: string
+  titlePrimary: string | null
+  titleSecondary: string | null
   description: string | null
   displayOrder: number
   isFeatured: boolean
@@ -324,8 +327,11 @@ interface SponsorRow {
   id: string
   name: string
   logo_url: string
+  secondary_logo_url: string | null
   website_url: string | null
   category: string
+  title_primary: string | null
+  title_secondary: string | null
   description: string | null
   display_order: number
   is_featured: boolean
@@ -346,8 +352,11 @@ export const mapSponsorRow = (row: SponsorRow): SponsorEntry => ({
   id: row.id,
   name: row.name,
   logoUrl: row.logo_url,
+  secondaryLogoUrl: row.secondary_logo_url,
   websiteUrl: row.website_url,
   category: row.category,
+  titlePrimary: row.title_primary,
+  titleSecondary: row.title_secondary,
   description: row.description,
   displayOrder: row.display_order,
   isFeatured: row.is_featured,
@@ -398,8 +407,11 @@ export async function createSponsor(
     .insert({
       name: sponsor.name,
       logo_url: sponsor.logoUrl,
+      secondary_logo_url: sponsor.secondaryLogoUrl,
       website_url: sponsor.websiteUrl,
       category: sponsor.category,
+      title_primary: sponsor.titlePrimary,
+      title_secondary: sponsor.titleSecondary,
       description: sponsor.description,
       display_order: sponsor.displayOrder,
       is_featured: sponsor.isFeatured,
@@ -423,8 +435,11 @@ export async function updateSponsor(
 
   if (sponsor.name !== undefined) updateData.name = sponsor.name
   if (sponsor.logoUrl !== undefined) updateData.logo_url = sponsor.logoUrl
+  if (sponsor.secondaryLogoUrl !== undefined) updateData.secondary_logo_url = sponsor.secondaryLogoUrl
   if (sponsor.websiteUrl !== undefined) updateData.website_url = sponsor.websiteUrl
   if (sponsor.category !== undefined) updateData.category = sponsor.category
+  if (sponsor.titlePrimary !== undefined) updateData.title_primary = sponsor.titlePrimary
+  if (sponsor.titleSecondary !== undefined) updateData.title_secondary = sponsor.titleSecondary
   if (sponsor.description !== undefined) updateData.description = sponsor.description
   if (sponsor.displayOrder !== undefined) updateData.display_order = sponsor.displayOrder
   if (sponsor.isFeatured !== undefined) updateData.is_featured = sponsor.isFeatured

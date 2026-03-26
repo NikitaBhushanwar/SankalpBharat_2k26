@@ -45,8 +45,11 @@ export async function POST(request: NextRequest) {
     const {
       name,
       logoUrl,
+      secondaryLogoUrl,
       websiteUrl,
       category,
+      titlePrimary,
+      titleSecondary,
       description,
       displayOrder,
       isFeatured,
@@ -65,8 +68,11 @@ export async function POST(request: NextRequest) {
     const sponsor = await createSponsor(supabase, {
       name,
       logoUrl,
+      secondaryLogoUrl: secondaryLogoUrl || null,
       websiteUrl: websiteUrl || null,
       category,
+      titlePrimary: titlePrimary || null,
+      titleSecondary: titleSecondary || null,
       description: description || null,
       displayOrder: displayOrder || 0,
       isFeatured: isFeatured || false,

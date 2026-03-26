@@ -32,11 +32,17 @@ export function RegistrationSection() {
             Register your team for Sankalp Bharat 2K26 and build high-impact solutions for Environment, Sustainability, and Agriculture.
           </p>
 
+          <div className="mb-8 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-left">
+            <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+              Round 1 Registration for Sankalp Bharat - National Level Hackathon 2026 is now FREE to encourage wider participation based on industry partner recommendations.
+            </p>
+          </div>
+
           {/* Details */}
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {[
               { label: 'Team Size', value: '2-6 Members' },
-              { label: 'Registration Fee', value: '₹500 per Team' },
+              { label: 'Round 1 Registration', value: 'FREE' },
               { label: 'Registration Closes', value: '2 April 2026' },
             ].map((item) => (
               <div key={item.label} className="text-center rounded-xl bg-background/50 backdrop-blur border border-border/40 p-3">

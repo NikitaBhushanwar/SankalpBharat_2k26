@@ -106,9 +106,12 @@ const emptyProblemForm = {
 const emptySponsorForm = {
   name: '',
   logoUrl: '',
+  secondaryLogoUrl: '',
   websiteUrl: '',
   category: '',
   customTierName: '',
+  titlePrimary: '',
+  titleSecondary: '',
   description: '',
   displayOrder: '0',
   isFeatured: false,
@@ -171,9 +174,11 @@ export default function AdminDashboardPage() {
   const [qualifiedTeamForm, setQualifiedTeamForm] = useState(emptyQualifiedTeamForm)
   const [sponsorForm, setSponsorForm] = useState(emptySponsorForm)
   const [accessForm, setAccessForm] = useState(emptyAccessForm)
-  const [sponsorPreviewUrl, setSponsorPreviewUrl] = useState<string | null>(null)
+  const [sponsorPrimaryPreviewUrl, setSponsorPrimaryPreviewUrl] = useState<string | null>(null)
+  const [sponsorSecondaryPreviewUrl, setSponsorSecondaryPreviewUrl] = useState<string | null>(null)
   const [qualifiedTeamPreviewUrl, setQualifiedTeamPreviewUrl] = useState<string | null>(null)
-  const [sponsorUploading, setSponsorUploading] = useState(false)
+  const [sponsorUploadingPrimary, setSponsorUploadingPrimary] = useState(false)
+  const [sponsorUploadingSecondary, setSponsorUploadingSecondary] = useState(false)
   const [qualifiedTeamUploading, setQualifiedTeamUploading] = useState(false)
   const [passwordForm, setPasswordForm] = useState(emptyPasswordForm)
   const [showPasswordForm, setShowPasswordForm] = useState(false)
@@ -321,7 +326,8 @@ export default function AdminDashboardPage() {
   const resetSponsorForm = () => {
     setEditingSponsorId(null)
     setSponsorForm(emptySponsorForm)
-    setSponsorPreviewUrl(null)
+    setSponsorPrimaryPreviewUrl(null)
+    setSponsorSecondaryPreviewUrl(null)
     setShowSponsorForm(false)
   }
 
@@ -467,8 +473,11 @@ export default function AdminDashboardPage() {
       const payload = {
         name: sponsorForm.name.trim(),
         logoUrl: sponsorForm.logoUrl.trim(),
+        secondaryLogoUrl: sponsorForm.secondaryLogoUrl.trim() || null,
         websiteUrl: sponsorForm.websiteUrl.trim() || null,
         category: finalCategory,
+        titlePrimary: sponsorForm.titlePrimary.trim() || null,
+        titleSecondary: sponsorForm.titleSecondary.trim() || null,
         description: sponsorForm.description.trim() || null,
         displayOrder: Number(sponsorForm.displayOrder) || 0,
         isFeatured: sponsorForm.isFeatured,
@@ -586,11 +595,15 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const onUploadSponsorLogo = async (file: File) => {
+  const onUploadSponsorLogo = async (file: File, target: 'primary' | 'secondary') => {
     if (!file) return
 
     try {
-      setSponsorUploading(true)
+      if (target === 'primary') {
+        setSponsorUploadingPrimary(true)
+      } else {
+        setSponsorUploadingSecondary(true)
+      }
       setError(null)
 
       const uploadData = new FormData()
@@ -606,26 +619,39 @@ export default function AdminDashboardPage() {
         throw new Error(json.error || 'Failed to upload sponsor logo')
       }
 
-      setSponsorForm((prev) => ({ ...prev, logoUrl: json.data.url }))
-      setSponsorPreviewUrl(json.data.url)
+      if (target === 'primary') {
+        setSponsorForm((prev) => ({ ...prev, logoUrl: json.data.url }))
+        setSponsorPrimaryPreviewUrl(json.data.url)
+      } else {
+        setSponsorForm((prev) => ({ ...prev, secondaryLogoUrl: json.data.url }))
+        setSponsorSecondaryPreviewUrl(json.data.url)
+      }
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : 'Failed to upload sponsor logo')
     } finally {
-      setSponsorUploading(false)
+      if (target === 'primary') {
+        setSponsorUploadingPrimary(false)
+      } else {
+        setSponsorUploadingSecondary(false)
+      }
     }
   }
 
-  const onSponsorFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onSponsorFileChange = (e: React.ChangeEvent<HTMLInputElement>, target: 'primary' | 'secondary') => {
     const file = e.target.files?.[0]
     if (!file) return
 
     const reader = new FileReader()
     reader.onloadend = () => {
-      setSponsorPreviewUrl(reader.result as string)
+      if (target === 'primary') {
+        setSponsorPrimaryPreviewUrl(reader.result as string)
+      } else {
+        setSponsorSecondaryPreviewUrl(reader.result as string)
+      }
     }
     reader.readAsDataURL(file)
 
-    void onUploadSponsorLogo(file)
+    void onUploadSponsorLogo(file, target)
   }
 
   const onUploadQualifiedTeamLogo = async (file: File) => {
@@ -1804,7 +1830,8 @@ export default function AdminDashboardPage() {
                   if (editingSponsorId) {
                     setEditingSponsorId(null)
                     setSponsorForm(emptySponsorForm)
-                    setSponsorPreviewUrl(null)
+                    setSponsorPrimaryPreviewUrl(null)
+                    setSponsorSecondaryPreviewUrl(null)
                   }
                 }}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
@@ -1833,8 +1860,25 @@ export default function AdminDashboardPage() {
                   <option value="Gold">Gold</option>
                   <option value="Silver">Silver</option>
                   <option value="Bronze">Bronze</option>
+                  <option value="Title Sponsors">Title Sponsors</option>
+                  <option value="Co Powered By Sponsors">Co Powered By Sponsors</option>
+                  <option value="Powered By Sponsor">Powered By Sponsor</option>
                   <option value="Custom">Custom</option>
                 </select>
+
+                <input
+                  value={sponsorForm.titlePrimary}
+                  onChange={(e) => setSponsorForm((prev) => ({ ...prev, titlePrimary: e.target.value }))}
+                  placeholder="Title 1 (optional)"
+                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                />
+
+                <input
+                  value={sponsorForm.titleSecondary}
+                  onChange={(e) => setSponsorForm((prev) => ({ ...prev, titleSecondary: e.target.value }))}
+                  placeholder="Title 2 (optional)"
+                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                />
 
                 {sponsorForm.category === 'Custom' && (
                   <input
@@ -1850,12 +1894,23 @@ export default function AdminDashboardPage() {
                   <input
                     type="file"
                     accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
-                    onChange={onSponsorFileChange}
-                    disabled={sponsorUploading}
+                    onChange={(e) => onSponsorFileChange(e, 'primary')}
+                    disabled={sponsorUploadingPrimary}
                     className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white file:mr-3 file:rounded-lg file:border-0 file:bg-amber-500 file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-950"
                     required={!editingSponsorId}
                   />
-                  {sponsorUploading && <p className="mt-1 text-xs text-amber-300">Uploading logo...</p>}
+                  {sponsorUploadingPrimary && <p className="mt-1 text-xs text-amber-300">Uploading primary logo...</p>}
+                </div>
+
+                <div>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                    onChange={(e) => onSponsorFileChange(e, 'secondary')}
+                    disabled={sponsorUploadingSecondary}
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white file:mr-3 file:rounded-lg file:border-0 file:bg-amber-500 file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-950"
+                  />
+                  {sponsorUploadingSecondary && <p className="mt-1 text-xs text-amber-300">Uploading secondary logo...</p>}
                 </div>
 
                 <input
@@ -1892,11 +1947,20 @@ export default function AdminDashboardPage() {
                   className="md:col-span-2 rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
                 />
 
-                {sponsorPreviewUrl && (
+                {(sponsorPrimaryPreviewUrl || sponsorSecondaryPreviewUrl) && (
                   <div className="md:col-span-2 rounded-xl border border-amber-500/20 bg-slate-950/70 p-3">
                     <p className="mb-2 text-xs font-bold uppercase tracking-wider text-amber-300">Logo Preview</p>
-                    <div className="h-36 rounded-lg border border-slate-700 bg-slate-900 flex items-center justify-center p-3">
-                      <img src={sponsorPreviewUrl} alt="Sponsor preview" className="max-h-full max-w-full object-contain" />
+                    <div className={`h-36 rounded-lg border border-slate-700 bg-slate-900 p-3 grid gap-3 ${sponsorSecondaryPreviewUrl ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                      {sponsorPrimaryPreviewUrl && (
+                        <div className="flex items-center justify-center">
+                          <img src={sponsorPrimaryPreviewUrl} alt="Sponsor primary preview" className="max-h-full max-w-full object-contain" />
+                        </div>
+                      )}
+                      {sponsorSecondaryPreviewUrl && (
+                        <div className="flex items-center justify-center border-l border-slate-700">
+                          <img src={sponsorSecondaryPreviewUrl} alt="Sponsor secondary preview" className="max-h-full max-w-full object-contain" />
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1910,7 +1974,7 @@ export default function AdminDashboardPage() {
                     Cancel
                   </button>
                   <button
-                    disabled={loading || sponsorUploading}
+                    disabled={loading || sponsorUploadingPrimary || sponsorUploadingSecondary}
                     type="submit"
                     className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-amber-500 text-slate-950 disabled:opacity-60"
                   >
@@ -1927,31 +1991,56 @@ export default function AdminDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-3 sm:p-4">
                   {sponsors.map((sponsor) => (
                     <div key={sponsor.id} className="rounded-xl border border-amber-500/20 bg-slate-900/60 p-4">
-                      <div className="h-28 rounded-lg border border-slate-700 bg-slate-950 flex items-center justify-center p-3 mb-3">
-                        <img src={sponsor.logoUrl} alt={sponsor.name} className="max-h-full max-w-full object-contain" />
+                      <div className={`h-28 rounded-lg border border-slate-700 bg-slate-950 p-3 mb-3 grid gap-3 ${sponsor.secondaryLogoUrl ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                        <div className="flex items-center justify-center">
+                          <img src={sponsor.logoUrl} alt={`${sponsor.name} primary logo`} className="max-h-full max-w-full object-contain" />
+                        </div>
+                        {sponsor.secondaryLogoUrl && (
+                          <div className="flex items-center justify-center border-l border-slate-700">
+                            <img src={sponsor.secondaryLogoUrl} alt={`${sponsor.name} secondary logo`} className="max-h-full max-w-full object-contain" />
+                          </div>
+                        )}
                       </div>
                       <p className="text-lg font-bold text-white line-clamp-1">{sponsor.name}</p>
+                      {(sponsor.titlePrimary || sponsor.titleSecondary) && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {sponsor.titlePrimary && (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30">
+                              {sponsor.titlePrimary}
+                            </span>
+                          )}
+                          {sponsor.titleSecondary && (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                              {sponsor.titleSecondary}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <p className="text-xs text-amber-300 mt-1">{sponsor.category}</p>
                       <p className="text-xs text-slate-400 mt-1">Order: {sponsor.displayOrder}</p>
                       {sponsor.description && <p className="text-sm text-slate-300 mt-2 line-clamp-2">{sponsor.description}</p>}
                       <div className="mt-3 flex justify-end gap-2">
                         <button
                           onClick={() => {
-                            const predefinedCategories = ['Platinum', 'Gold', 'Silver', 'Bronze']
+                            const predefinedCategories = ['Platinum', 'Gold', 'Silver', 'Bronze', 'Title Sponsors', 'Co Powered By Sponsors', 'Powered By Sponsor']
                             const isCustom = !predefinedCategories.includes(sponsor.category)
                             
                             setEditingSponsorId(sponsor.id)
                             setSponsorForm({
                               name: sponsor.name,
                               logoUrl: sponsor.logoUrl,
+                              secondaryLogoUrl: sponsor.secondaryLogoUrl ?? '',
                               websiteUrl: sponsor.websiteUrl ?? '',
                               category: isCustom ? 'Custom' : sponsor.category,
                               customTierName: isCustom ? sponsor.category : '',
+                              titlePrimary: sponsor.titlePrimary ?? '',
+                              titleSecondary: sponsor.titleSecondary ?? '',
                               description: sponsor.description ?? '',
                               displayOrder: String(sponsor.displayOrder),
                               isFeatured: sponsor.isFeatured,
                             })
-                            setSponsorPreviewUrl(sponsor.logoUrl)
+                            setSponsorPrimaryPreviewUrl(sponsor.logoUrl)
+                            setSponsorSecondaryPreviewUrl(sponsor.secondaryLogoUrl ?? null)
                             setShowSponsorForm(true)
                           }}
                           className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
