@@ -36,25 +36,13 @@ export default function SponsorGridByCategory() {
     return acc
   }, {} as SponsorsByCategory)
 
-  const categoryOrder = [
-    'Title',
-    'Title Sponsors',
-    'Powered By',
-    'Powered By Sponsor',
-    'Co Powered By',
-    'Co Powered By Sponsors',
-    'Platinum',
-    'Gold',
-    'Silver',
-    'Bronze',
-    'Custom',
-  ]
-  const orderedCategories = [
-    ...categoryOrder.filter((cat) => cat in groupedSponsors),
-    ...Object.keys(groupedSponsors)
-      .filter((cat) => !categoryOrder.includes(cat))
-      .sort(),
-  ]
+  const orderedCategories = Object.keys(groupedSponsors).sort((a, b) => {
+    const minA = Math.min(...groupedSponsors[a].map((sponsor) => sponsor.displayOrder))
+    const minB = Math.min(...groupedSponsors[b].map((sponsor) => sponsor.displayOrder))
+
+    if (minA !== minB) return minA - minB
+    return a.localeCompare(b)
+  })
 
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
@@ -67,6 +55,7 @@ export default function SponsorGridByCategory() {
           glow: 'shadow-[0_0_30px_-10px_rgba(244,63,94,0.3)]'
         }
       case 'co powered by':
+      case 'co-powered by':
       case 'co powered by sponsors':
         return {
           badge: 'bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 border border-amber-300',
@@ -121,9 +110,9 @@ export default function SponsorGridByCategory() {
     clean = clean.replace(/\bSponsor\s+Sponsor\b/gi, 'Sponsor')
     clean = clean.replace(/^Title Sponsors?$/i, 'Title Sponsor')
     clean = clean.replace(/^Powered By Sponsors?$/i, 'Powered By')
-    clean = clean.replace(/^Co Powered By Sponsors?$/i, 'Co Powered By')
+    clean = clean.replace(/^Co[- ]Powered By Sponsors?$/i, 'Co-Powered By')
 
-    if (/^(title sponsor|powered by|co powered by)$/i.test(clean)) return clean
+    if (/^(title sponsor|powered by|co[- ]powered by)$/i.test(clean)) return clean
 
     if (/^title$/i.test(clean)) return 'Title Sponsor'
 
@@ -144,16 +133,10 @@ export default function SponsorGridByCategory() {
       {orderedCategories.map((category) => {
         const categorySponsors = groupedSponsors[category]
         const colors = getCategoryColor(category)
+        const categoryLabel = getSectionHeading(category, 1)
 
         return (
           <section key={category} className="w-full">
-            {/* Category Header */}
-            <div className="mb-8 md:mb-12 text-center">
-              <div className={`inline-block mb-4 px-6 md:px-8 py-2 md:py-3 rounded-full text-base md:text-lg font-bold uppercase tracking-widest shadow-lg ${colors.badge}`}>
-                {getSectionHeading(category, categorySponsors.length)}
-              </div>
-            </div>
-
             {/* Grid Layout - Changed to better handle small screens */}
             <div className="flex flex-wrap justify-center gap-4 sm:gap-8 lg:gap-10">
               {categorySponsors
@@ -164,6 +147,12 @@ export default function SponsorGridByCategory() {
                       <h3 className="text-lg md:text-xl font-bold text-white tracking-tight group-hover:text-cyan-400 transition-colors truncate">
                         {sponsor.name}
                       </h3>
+
+                      <div className="mt-2">
+                        <span className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] md:text-xs font-black uppercase tracking-[0.18em] ${colors.badge}`}>
+                          {categoryLabel}
+                        </span>
+                      </div>
 
                       {(sponsor.titlePrimary || sponsor.titleSecondary) && (
                         <div className="mt-2 flex flex-wrap items-center justify-center gap-2">

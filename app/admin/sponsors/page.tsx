@@ -414,7 +414,7 @@ export default function SponsorsPage() {
                         <option value="">Select a category</option>
                         <option value="Title">Title Sponsor</option>
                         <option value="Powered By">Powered By</option>
-                        <option value="Co Powered By">Co Powered By</option>
+                        <option value="Co Powered By">Co-Powered By</option>
                         <option value="Platinum">Platinum</option>
                         <option value="Gold">Gold</option>
                         <option value="Silver">Silver</option>
