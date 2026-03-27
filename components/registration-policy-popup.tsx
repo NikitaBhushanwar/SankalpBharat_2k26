@@ -80,7 +80,7 @@ export default function RegistrationPolicyPopup() {
             onClick={closePopup}
             className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider text-slate-950 transition hover:brightness-110"
           >
-            Understood
+            Ok
           </button>
         </div>
       </div>

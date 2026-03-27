@@ -144,18 +144,21 @@ export default function SponsorGridByCategory() {
                 .map((sponsor) => {
                   const detailsBlock = (
                     <div className="text-center p-3 md:p-4 w-full">
-                      <h3 className="text-lg md:text-xl font-bold text-white tracking-tight group-hover:text-cyan-400 transition-colors truncate">
-                        {sponsor.name}
-                      </h3>
-
-                      <div className="mt-2">
+                      
+                       <div className="mt-3">
                         <span className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] md:text-xs font-black uppercase tracking-[0.18em] ${colors.badge}`}>
                           {categoryLabel}
                         </span>
                       </div>
+                      
+                      <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors truncate">
+                        {sponsor.name}
+                      </h3>
+
+                     
 
                       {(sponsor.titlePrimary || sponsor.titleSecondary) && (
-                        <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+                        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                           {sponsor.titlePrimary && (
                             <span className="px-2 py-1 rounded-full text-[10px] font-black tracking-wide uppercase bg-red-500/20 text-red-300 border border-red-500/30">
                               {sponsor.titlePrimary}
@@ -197,8 +200,11 @@ export default function SponsorGridByCategory() {
                       <div key={sponsor.id} className="w-full">
                         {/* Desktop: one larger card with both logos */}
                         <div
-                          className={`hidden md:flex group relative flex-col items-center w-full max-w-[760px] mx-auto p-8 rounded-[2.5rem] border ${colors.cardBorder} bg-slate-900/40 backdrop-blur-md ${colors.glow} transition-all duration-500 hover:-translate-y-2 hover:bg-slate-900/60 shadow-2xl`}
+                          className={`hidden md:flex group relative flex-col items-center w-full max-w-[760px] mx-auto p-8 rounded-[2.5rem] border-2 ${colors.cardBorder} bg-slate-900/40 backdrop-blur-md ${colors.glow} transition-all duration-500 hover:-translate-y-2 hover:bg-slate-900/60 shadow-2xl ring-1 ring-white/10 hover:ring-cyan-300/30`}
                         >
+                          <div className="pointer-events-none absolute inset-[3px] rounded-[2.3rem] border border-white/10 opacity-70" />
+                          <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.14),transparent_45%)]" />
+
                           {sponsor.isFeatured && (
                             <div className="absolute -top-2 -right-2 bg-amber-500 text-slate-950 p-2 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)] z-20">
                               <span className="block text-xs font-black">★</span>
@@ -227,8 +233,11 @@ export default function SponsorGridByCategory() {
 
                         {/* Mobile: one card with both logos */}
                         <div
-                          className={`md:hidden group relative flex flex-col items-center w-full p-4 rounded-[1.5rem] border ${colors.cardBorder} bg-slate-900/40 backdrop-blur-md shadow-2xl`}
+                          className={`md:hidden group relative flex flex-col items-center w-full p-4 rounded-[1.5rem] border-2 ${colors.cardBorder} bg-slate-900/40 backdrop-blur-md shadow-2xl ring-1 ring-white/10`}
                         >
+                          <div className="pointer-events-none absolute inset-[2px] rounded-[1.35rem] border border-white/10 opacity-70" />
+                          <div className="pointer-events-none absolute inset-0 rounded-[1.5rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_45%)]" />
+
                           {sponsor.isFeatured && (
                             <div className="absolute top-2 right-2 bg-amber-500 text-slate-950 p-1.5 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)] z-20">
                               <span className="block text-[10px] font-black">★</span>
@@ -261,8 +270,11 @@ export default function SponsorGridByCategory() {
                   return (
                     <div
                       key={sponsor.id}
-                      className={`group relative flex flex-col items-center w-full sm:w-[340px] p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border ${colors.cardBorder} bg-slate-900/40 backdrop-blur-md ${colors.glow} transition-all duration-500 md:hover:-translate-y-2 md:hover:bg-slate-900/60 shadow-2xl`}
+                      className={`group relative flex flex-col items-center w-full sm:w-[340px] p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border-2 ${colors.cardBorder} bg-slate-900/40 backdrop-blur-md ${colors.glow} transition-all duration-500 md:hover:-translate-y-2 md:hover:bg-slate-900/60 shadow-2xl ring-1 ring-white/10 hover:ring-cyan-300/30`}
                     >
+                      <div className="pointer-events-none absolute inset-[2px] md:inset-[3px] rounded-[1.35rem] md:rounded-[2.3rem] border border-white/10 opacity-70" />
+                      <div className="pointer-events-none absolute inset-0 rounded-[1.5rem] md:rounded-[2.5rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.14),transparent_45%)]" />
+
                       {sponsor.isFeatured && (
                         <div className="absolute top-2 right-2 md:-top-2 md:-right-2 bg-amber-500 text-slate-950 p-1.5 md:p-2 rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)] z-20">
                           <span className="block text-[10px] md:text-xs font-black">★</span>
