@@ -43,7 +43,7 @@ export function RegistrationSection() {
             {[
               { label: 'Team Size', value: '2-6 Members' },
               { label: 'Round 1 Registration', value: 'FREE' },
-              { label: 'Registration Closes', value: '2 April 2026' },
+              { label: 'Registration Closes', value: '6th April 2026, 5:00 PM (IST)' },
             ].map((item) => (
               <div key={item.label} className="text-center rounded-xl bg-background/50 backdrop-blur border border-border/40 p-3">
                 <p className="text-xs font-mono text-secondary tracking-widest uppercase mb-2">{item.label}</p>
