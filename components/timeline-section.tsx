@@ -15,13 +15,13 @@ const timeline = [
   },
   {
     phase: '03',
-    date: '2nd April 2026 (Thursday)',
+    date: '6th April 2026 (Monday), 5:00 PM (IST)',
     title: 'Registration Closes',
     description: 'Final day for team registration (team size 2-6 members).',
   },
   {
     phase: '04',
-    date: '6th April 2026 (Monday)',
+    date: '6th April 2026 (Monday), 11:59 PM (IST)',
     title: 'Round 1 - PPT Submission Deadline',
     description: 'Teams submit detailed PPT of their proposed solution on Unstop. Round 1 Registration for Sankalp Bharat - National Level Hackathon 2026 is now FREE to encourage wider participation based on industry partner recommendations.',
   },
