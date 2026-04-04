@@ -8,6 +8,7 @@ import CursorRevealBackground from '@/components/cursor-reveal-background'
 import FooterWrapper from '@/components/footer-wrapper'
 import { Loader } from '@/components/loader'
 import RegistrationPolicyPopup from '@/components/registration-policy-popup'
+import VisitTracker from '@/components/visit-tracker'
 import './globals.css'
 
 const texturina = Texturina({
@@ -41,6 +42,7 @@ export default function RootLayout({
 
       <Loader />
         <RegistrationPolicyPopup />
+        <VisitTracker />
 
       {/* Background must be outside the glass container —
           backdrop-filter creates a containing block that would trap position:fixed children */}

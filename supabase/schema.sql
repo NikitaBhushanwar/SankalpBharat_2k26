@@ -135,6 +135,16 @@ values
   ('navbar_show_qualified_teams', 'true')
 on conflict (key) do nothing;
 
+create table if not exists public.website_visitors (
+  visitor_id text primary key,
+  visit_count integer not null default 0 check (visit_count >= 0),
+  first_visited_at timestamptz not null default now(),
+  last_visited_at timestamptz not null default now(),
+  last_path text not null default '/'
+);
+
+create index if not exists idx_website_visitors_last_visited_at on public.website_visitors(last_visited_at desc);
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'qualified-teams',

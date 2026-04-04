@@ -71,6 +71,10 @@ interface PublishState {
   qualifiedTeams: boolean
 }
 
+interface VisitStatsData {
+  totalVisits: number
+}
+
 interface AdminAccessUser {
   id: string
   email: string
@@ -137,6 +141,36 @@ const emptyPasswordForm = {
   confirmPassword: '',
 }
 
+function CountUpNumber({ value, duration = 900 }: { value: number; duration?: number }) {
+  const [display, setDisplay] = useState(0)
+
+  useEffect(() => {
+    const target = Math.max(0, Math.floor(value))
+    if (target === 0) {
+      setDisplay(0)
+      return
+    }
+
+    const start = performance.now()
+    let raf = 0
+
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplay(Math.floor(target * eased))
+
+      if (progress < 1) {
+        raf = window.requestAnimationFrame(tick)
+      }
+    }
+
+    raf = window.requestAnimationFrame(tick)
+    return () => window.cancelAnimationFrame(raf)
+  }, [value, duration])
+
+  return <>{display.toLocaleString()}</>
+}
+
 const defaultRegistrationLink = 'https://unstop.com/'
 
 export default function AdminDashboardPage() {
@@ -200,6 +234,9 @@ export default function AdminDashboardPage() {
     problemStatementsDownload: false,
     qualifiedTeams: false,
   })
+  const [visitStats, setVisitStats] = useState<VisitStatsData>({
+    totalVisits: 23875,
+  })
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -227,13 +264,14 @@ export default function AdminDashboardPage() {
     setError(null)
 
     try {
-      const [leaderboardRes, winnersRes, problemStatementsRes, qualifiedTeamsRes, sponsorsRes, publishRes] = await Promise.all([
+      const [leaderboardRes, winnersRes, problemStatementsRes, qualifiedTeamsRes, sponsorsRes, publishRes, visitStatsRes] = await Promise.all([
         fetch('/api/leaderboard?sortBy=rank', { cache: 'no-store' }),
         fetch('/api/winners', { cache: 'no-store' }),
         fetch('/api/problem-statements', { cache: 'no-store' }),
         fetch('/api/qualified-teams', { cache: 'no-store' }),
         fetch('/api/sponsors', { cache: 'no-store' }),
         fetch('/api/publish-state', { cache: 'no-store' }),
+        fetch('/api/analytics/visit-stats', { cache: 'no-store' }),
       ])
 
       const leaderboardJson = (await leaderboardRes.json()) as ApiResponse<LeaderboardEntry[]>
@@ -242,6 +280,7 @@ export default function AdminDashboardPage() {
       const qualifiedTeamsJson = (await qualifiedTeamsRes.json()) as ApiResponse<QualifiedTeamEntry[]>
       const sponsorsJson = (await sponsorsRes.json()) as ApiResponse<SponsorEntry[]>
       const publishJson = (await publishRes.json()) as ApiResponse<PublishState>
+      const visitStatsJson = (await visitStatsRes.json()) as ApiResponse<VisitStatsData>
 
       if (!leaderboardRes.ok || !leaderboardJson.success) {
         throw new Error(leaderboardJson.error || 'Failed to fetch leaderboard')
@@ -270,6 +309,9 @@ export default function AdminDashboardPage() {
       setSponsors(sponsorsJson.data ?? [])
       if (publishJson.success && publishJson.data) {
         setPublishState(publishJson.data)
+      }
+      if (visitStatsRes.ok && visitStatsJson.success && visitStatsJson.data) {
+        setVisitStats(visitStatsJson.data)
       }
 
       if (user?.isSuperAdmin) {
@@ -1037,6 +1079,14 @@ export default function AdminDashboardPage() {
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white">Admin Dashboard</h1>
           <p className="text-sm text-slate-400 mt-1">Manage leaderboard, winners, and problem statements in real-time.</p>
+        </div>
+
+        <div className="mb-6 flex justify-center">
+          <div className="w-full max-w-md rounded-2xl border border-cyan-500/25 bg-slate-900/80 p-4 text-center">
+            <p className="text-[11px] uppercase tracking-wider text-cyan-300 font-bold">Total Visits</p>
+            <p className="mt-2 text-2xl font-black text-white"><CountUpNumber value={visitStats.totalVisits} /></p>
+            <p className="mt-1 text-xs text-slate-400">Live tracked website visits</p>
+          </div>
         </div>
 
         <div className="mb-6 overflow-x-auto">
