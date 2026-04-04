@@ -8,7 +8,6 @@ import CursorRevealBackground from '@/components/cursor-reveal-background'
 import FooterWrapper from '@/components/footer-wrapper'
 import { Loader } from '@/components/loader'
 import RegistrationPolicyPopup from '@/components/registration-policy-popup'
-import WhatsAppCommunityFab from '@/components/whatsapp-community-fab'
 import './globals.css'
 
 const texturina = Texturina({
@@ -42,7 +41,6 @@ export default function RootLayout({
 
       <Loader />
         <RegistrationPolicyPopup />
-        <WhatsAppCommunityFab />
 
       {/* Background must be outside the glass container —
           backdrop-filter creates a containing block that would trap position:fixed children */}
