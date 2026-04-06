@@ -38,6 +38,30 @@ export function useNavbarVisibility() {
     }
 
     void fetchVisibility()
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === 'sb_navbar_visibility_updated_at') {
+        void fetchVisibility()
+      }
+    }
+
+    let channel: BroadcastChannel | null = null
+
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      channel = new BroadcastChannel('sb_admin_updates')
+      channel.onmessage = (event) => {
+        if (event.data?.type === 'navbar-visibility-updated') {
+          void fetchVisibility()
+        }
+      }
+    }
+
+    window.addEventListener('storage', handleStorage)
+
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      channel?.close()
+    }
   }, [])
 
   return visibility

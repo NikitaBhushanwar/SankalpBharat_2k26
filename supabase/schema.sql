@@ -51,6 +51,18 @@ create table if not exists public.problem_statements (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.announcements (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  message text not null,
+  tag text not null default 'Update',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists idx_announcements_created_at on public.announcements(created_at desc);
+create index if not exists idx_announcements_updated_at on public.announcements(updated_at desc);
+
 create table if not exists public.publish_state (
   section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams')),
   is_live boolean not null default false,

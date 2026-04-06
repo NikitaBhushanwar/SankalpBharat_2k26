@@ -32,6 +32,15 @@ export interface ProblemStatementEntry {
   pdfLink: string
 }
 
+export interface AnnouncementEntry {
+  id: string
+  title: string
+  message: string
+  tag: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface PublishState {
   leaderboard: boolean
   winners: boolean
@@ -77,6 +86,15 @@ interface ProblemStatementRow {
   created_at: string
 }
 
+interface AnnouncementRow {
+  id: string
+  title: string
+  message: string
+  tag: string | null
+  created_at: string
+  updated_at: string
+}
+
 interface PublishStateRow {
   section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'qualifiedTeams'
   is_live: boolean
@@ -112,6 +130,94 @@ export const mapProblemStatementRow = (row: ProblemStatementRow): ProblemStateme
   description: row.description,
   pdfLink: row.pdf_link ?? '',
 })
+
+export const mapAnnouncementRow = (row: AnnouncementRow): AnnouncementEntry => ({
+  id: row.id,
+  title: row.title,
+  message: row.message,
+  tag: row.tag?.trim() || 'Update',
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+})
+
+export async function readAnnouncements(supabase: SupabaseClient, limit?: number): Promise<AnnouncementEntry[]> {
+  let query = supabase
+    .from('announcements')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .order('updated_at', { ascending: false })
+
+  if (typeof limit === 'number' && Number.isFinite(limit) && limit > 0) {
+    query = query.limit(limit)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return (data as AnnouncementRow[] | null)?.map(mapAnnouncementRow) ?? []
+}
+
+export async function createAnnouncement(
+  supabase: SupabaseClient,
+  announcement: Omit<AnnouncementEntry, 'id' | 'createdAt' | 'updatedAt'>
+) {
+  const { data, error } = await supabase
+    .from('announcements')
+    .insert({
+      title: announcement.title,
+      message: announcement.message,
+      tag: announcement.tag,
+    })
+    .select('*')
+    .single<AnnouncementRow>()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return mapAnnouncementRow(data)
+}
+
+export async function updateAnnouncement(
+  supabase: SupabaseClient,
+  id: string,
+  announcement: Partial<Omit<AnnouncementEntry, 'id' | 'createdAt' | 'updatedAt'>>
+) {
+  const updateData: Record<string, unknown> = {
+    updated_at: new Date().toISOString(),
+  }
+
+  if (announcement.title !== undefined) updateData.title = announcement.title
+  if (announcement.message !== undefined) updateData.message = announcement.message
+  if (announcement.tag !== undefined) updateData.tag = announcement.tag
+
+  const { data, error } = await supabase
+    .from('announcements')
+    .update(updateData)
+    .eq('id', id)
+    .select('*')
+    .single<AnnouncementRow>()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return mapAnnouncementRow(data)
+}
+
+export async function deleteAnnouncement(supabase: SupabaseClient, id: string) {
+  const { error } = await supabase
+    .from('announcements')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
 
 export async function recomputeLeaderboardRanks(supabase: SupabaseClient) {
   const { data, error } = await supabase

@@ -60,7 +60,7 @@ export function HeroSection({ visible }: HeroSectionProps) {
       id="hackathon-2k26"
       className={`
         relative min-h-[86vh] sm:min-h-screen flex items-start justify-center overflow-hidden
-        transition-all duration-700 pt-20 sm:pt-15
+        transition-all duration-700 pt-32 sm:pt-28
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none"}
       `}
     >

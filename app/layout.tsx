@@ -4,6 +4,7 @@ import { Texturina } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/context/auth-context'
 import Navbar from '@/components/navbar'
+import AnnouncementTicker from '@/components/announcement-ticker'
 import CursorRevealBackground from '@/components/cursor-reveal-background'
 import FooterWrapper from '@/components/footer-wrapper'
 import { Loader } from '@/components/loader'
@@ -52,6 +53,7 @@ export default function RootLayout({
       <div className="glass-site-container flex flex-col">
 
         <Navbar />
+        <AnnouncementTicker />
 
         <main className="relative z-10 flex-1">
           {children}
