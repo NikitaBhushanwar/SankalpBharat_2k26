@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function SponsorsPage() {
   return (
-    <main className="min-h-screen px-4 sm:px-6 lg:px-8 pt-28 pb-10">
+    <main className="min-h-screen px-4 sm:px-6 lg:px-8 pt-36 pb-10">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <Link

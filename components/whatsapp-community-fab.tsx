@@ -11,14 +11,35 @@ export default function WhatsAppCommunityFab() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        aria-label="Join WhatsApp community"
-        className="fixed bottom-5 right-5 z-[115] inline-flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-[0_12px_28px_rgba(16,185,129,0.45)] transition hover:scale-105 hover:brightness-110"
-      >
-        <Image src="/whatsapp-svg.svg" alt="WhatsApp" width={28} height={28} priority />
-      </button>
+      <section className="px-4 sm:px-6 lg:px-8 mt-3 sm:mt-4 mb-6 sm:mb-8">
+        <div className="mx-auto max-w-5xl rounded-2xl border border-blue-600/25 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 p-2.5 sm:p-3.5 shadow-[0_12px_26px_rgba(2,6,23,0.38)]">
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            aria-label="Join WhatsApp community"
+            className="w-full rounded-xl border border-white/8 bg-white/5 px-3 py-2.5 text-left transition hover:bg-white/8 sm:px-4 sm:py-3"
+          >
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/15 ring-1 ring-emerald-400/30 shadow-[0_0_16px_rgba(16,185,129,0.16)] sm:h-14 sm:w-14">
+                  <Image src="/whatsapp-svg.svg" alt="WhatsApp" width={38} height={38} priority className="h-9 w-9 sm:h-10 sm:w-10" />
+                </span>
+
+                <span className="min-w-0">
+                  <span className="block text-sm sm:text-base font-black text-white leading-tight">Join the WhatsApp Community</span>
+                  <span className="mt-0.5 block text-[11px] sm:text-xs text-slate-300 leading-snug">
+                    All announcements, reminders, and event updates happen here.
+                  </span>
+                </span>
+              </div>
+
+              <span className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-1.5 text-xs sm:text-sm font-black text-slate-950 transition hover:brightness-110 sm:shrink-0 sm:ml-auto">
+                Join Now
+              </span>
+            </div>
+          </button>
+        </div>
+      </section>
 
       {isOpen ? (
         <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-950/65 p-3 sm:p-4">

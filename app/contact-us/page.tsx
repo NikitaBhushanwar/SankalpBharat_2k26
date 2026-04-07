@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ContactUsPage() {
   return (
-    <main className="min-h-screen overflow-x-hidden px-3 sm:px-6 lg:px-8 pt-28 pb-10">
+    <main className="min-h-screen overflow-x-hidden px-3 sm:px-6 lg:px-8 pt-36 pb-10">
       <div className="w-full max-w-5xl mx-auto overflow-hidden rounded-3xl border border-cyan-500/20 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl p-4 sm:p-7 lg:p-10">
         <div className="mb-8">
           <Link

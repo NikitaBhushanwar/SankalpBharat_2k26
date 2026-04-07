@@ -644,10 +644,12 @@ html {
   }
 }
 
+
 .sponsor-scroll-track {
   animation: sponsor-scroll 35s linear infinite;
   will-change: transform;
 }
+
 
 .group:hover .sponsor-scroll-track {
   animation-play-state: paused;
@@ -661,18 +663,21 @@ html {
   .sponsor-scroll-track {
     animation-duration: 18s;
   }
+
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
   .sponsor-scroll-track {
     animation-duration: 25s;
   }
+
 }
 
 @media (min-width: 1025px) {
   .sponsor-scroll-track {
     animation-duration: 35s;
   }
+
 }
 
 .revealContainer{

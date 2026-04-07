@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   FileText,
   LogOut,
+  Megaphone,
   Trophy,
   Medal,
   Users,
@@ -19,7 +20,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
-import type { QualifiedTeamEntry, SponsorEntry } from '@/lib/admin-repository'
+import type { AnnouncementEntry, QualifiedTeamEntry, SponsorEntry } from '@/lib/admin-repository'
 
 interface LeaderboardEntry {
   id: string
@@ -71,6 +72,10 @@ interface PublishState {
   qualifiedTeams: boolean
 }
 
+interface VisitStatsData {
+  totalVisits: number
+}
+
 interface AdminAccessUser {
   id: string
   email: string
@@ -101,6 +106,12 @@ const emptyProblemForm = {
   domain: '',
   description: '',
   pdfLink: '',
+}
+
+const emptyAnnouncementForm = {
+  title: '',
+  message: '',
+  tag: 'Update',
 }
 
 const emptySponsorForm = {
@@ -137,13 +148,43 @@ const emptyPasswordForm = {
   confirmPassword: '',
 }
 
+function CountUpNumber({ value, duration = 900 }: { value: number; duration?: number }) {
+  const [display, setDisplay] = useState(0)
+
+  useEffect(() => {
+    const target = Math.max(0, Math.floor(value))
+    if (target === 0) {
+      setDisplay(0)
+      return
+    }
+
+    const start = performance.now()
+    let raf = 0
+
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplay(Math.floor(target * eased))
+
+      if (progress < 1) {
+        raf = window.requestAnimationFrame(tick)
+      }
+    }
+
+    raf = window.requestAnimationFrame(tick)
+    return () => window.cancelAnimationFrame(raf)
+  }, [value, duration])
+
+  return <>{display.toLocaleString()}</>
+}
+
 const defaultRegistrationLink = 'https://unstop.com/'
 
 export default function AdminDashboardPage() {
   const router = useRouter()
   const { isAuthenticated, logout, user } = useAuth()
 
-  const [activeTab, setActiveTab] = useState<'leaderboard' | 'winners' | 'problemStatements' | 'qualifiedTeams' | 'sponsors' | 'access'>('leaderboard')
+  const [activeTab, setActiveTab] = useState<'leaderboard' | 'winners' | 'problemStatements' | 'qualifiedTeams' | 'sponsors' | 'announcements' | 'access'>('leaderboard')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -152,6 +193,7 @@ export default function AdminDashboardPage() {
   const [problemStatements, setProblemStatements] = useState<ProblemStatementEntry[]>([])
   const [qualifiedTeams, setQualifiedTeams] = useState<QualifiedTeamEntry[]>([])
   const [sponsors, setSponsors] = useState<SponsorEntry[]>([])
+  const [announcements, setAnnouncements] = useState<AnnouncementEntry[]>([])
   const [adminUsers, setAdminUsers] = useState<AdminAccessUser[]>([])
 
   const [showTeamForm, setShowTeamForm] = useState(false)
@@ -159,6 +201,7 @@ export default function AdminDashboardPage() {
   const [showProblemForm, setShowProblemForm] = useState(false)
   const [showQualifiedTeamForm, setShowQualifiedTeamForm] = useState(false)
   const [showSponsorForm, setShowSponsorForm] = useState(false)
+  const [showAnnouncementForm, setShowAnnouncementForm] = useState(false)
   const [showAccessForm, setShowAccessForm] = useState(false)
 
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null)
@@ -166,6 +209,7 @@ export default function AdminDashboardPage() {
   const [editingProblemId, setEditingProblemId] = useState<string | null>(null)
   const [editingQualifiedTeamId, setEditingQualifiedTeamId] = useState<string | null>(null)
   const [editingSponsorId, setEditingSponsorId] = useState<string | null>(null)
+  const [editingAnnouncementId, setEditingAnnouncementId] = useState<string | null>(null)
   const [editingAccessId, setEditingAccessId] = useState<string | null>(null)
 
   const [teamForm, setTeamForm] = useState(emptyTeamForm)
@@ -173,6 +217,7 @@ export default function AdminDashboardPage() {
   const [problemForm, setProblemForm] = useState(emptyProblemForm)
   const [qualifiedTeamForm, setQualifiedTeamForm] = useState(emptyQualifiedTeamForm)
   const [sponsorForm, setSponsorForm] = useState(emptySponsorForm)
+  const [announcementForm, setAnnouncementForm] = useState(emptyAnnouncementForm)
   const [accessForm, setAccessForm] = useState(emptyAccessForm)
   const [sponsorPrimaryPreviewUrl, setSponsorPrimaryPreviewUrl] = useState<string | null>(null)
   const [sponsorSecondaryPreviewUrl, setSponsorSecondaryPreviewUrl] = useState<string | null>(null)
@@ -200,6 +245,9 @@ export default function AdminDashboardPage() {
     problemStatementsDownload: false,
     qualifiedTeams: false,
   })
+  const [visitStats, setVisitStats] = useState<VisitStatsData>({
+    totalVisits: 23875,
+  })
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -222,18 +270,32 @@ export default function AdminDashboardPage() {
     localStorage.setItem('sb_leaderboard_updated_at', updateAt)
   }
 
+  const notifyAnnouncementsUpdated = () => {
+    const updateAt = String(Date.now())
+
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      const channel = new BroadcastChannel('sb_admin_updates')
+      channel.postMessage({ type: 'announcements-updated', updatedAt: updateAt })
+      channel.close()
+    }
+
+    localStorage.setItem('sb_announcements_updated_at', updateAt)
+  }
+
   const loadData = async () => {
     setLoading(true)
     setError(null)
 
     try {
-      const [leaderboardRes, winnersRes, problemStatementsRes, qualifiedTeamsRes, sponsorsRes, publishRes] = await Promise.all([
+      const [leaderboardRes, winnersRes, problemStatementsRes, qualifiedTeamsRes, sponsorsRes, announcementsRes, publishRes, visitStatsRes] = await Promise.all([
         fetch('/api/leaderboard?sortBy=rank', { cache: 'no-store' }),
         fetch('/api/winners', { cache: 'no-store' }),
         fetch('/api/problem-statements', { cache: 'no-store' }),
         fetch('/api/qualified-teams', { cache: 'no-store' }),
         fetch('/api/sponsors', { cache: 'no-store' }),
+        fetch('/api/announcements', { cache: 'no-store' }),
         fetch('/api/publish-state', { cache: 'no-store' }),
+        fetch('/api/analytics/visit-stats', { cache: 'no-store' }),
       ])
 
       const leaderboardJson = (await leaderboardRes.json()) as ApiResponse<LeaderboardEntry[]>
@@ -241,7 +303,9 @@ export default function AdminDashboardPage() {
       const problemStatementsJson = (await problemStatementsRes.json()) as ApiResponse<ProblemStatementEntry[]>
       const qualifiedTeamsJson = (await qualifiedTeamsRes.json()) as ApiResponse<QualifiedTeamEntry[]>
       const sponsorsJson = (await sponsorsRes.json()) as ApiResponse<SponsorEntry[]>
+      const announcementsJson = (await announcementsRes.json()) as ApiResponse<AnnouncementEntry[]>
       const publishJson = (await publishRes.json()) as ApiResponse<PublishState>
+      const visitStatsJson = (await visitStatsRes.json()) as ApiResponse<VisitStatsData>
 
       if (!leaderboardRes.ok || !leaderboardJson.success) {
         throw new Error(leaderboardJson.error || 'Failed to fetch leaderboard')
@@ -263,13 +327,21 @@ export default function AdminDashboardPage() {
         throw new Error(sponsorsJson.error || 'Failed to fetch sponsors')
       }
 
+      if (!announcementsRes.ok || !announcementsJson.success) {
+        throw new Error(announcementsJson.error || 'Failed to fetch announcements')
+      }
+
       setLeaderboard(leaderboardJson.data ?? [])
       setWinners(winnersJson.data ?? [])
       setProblemStatements(problemStatementsJson.data ?? [])
       setQualifiedTeams(qualifiedTeamsJson.data ?? [])
       setSponsors(sponsorsJson.data ?? [])
+      setAnnouncements(announcementsJson.data ?? [])
       if (publishJson.success && publishJson.data) {
         setPublishState(publishJson.data)
+      }
+      if (visitStatsRes.ok && visitStatsJson.success && visitStatsJson.data) {
+        setVisitStats(visitStatsJson.data)
       }
 
       if (user?.isSuperAdmin) {
@@ -702,6 +774,12 @@ export default function AdminDashboardPage() {
     setShowProblemForm(false)
   }
 
+  const resetAnnouncementForm = () => {
+    setEditingAnnouncementId(null)
+    setAnnouncementForm(emptyAnnouncementForm)
+    setShowAnnouncementForm(false)
+  }
+
   const onSaveProblem = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
@@ -752,6 +830,62 @@ export default function AdminDashboardPage() {
       await loadData()
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : 'Failed to delete problem statement')
+      setLoading(false)
+    }
+  }
+
+  const onSaveAnnouncement = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    try {
+      const payload = {
+        title: announcementForm.title.trim(),
+        message: announcementForm.message.trim(),
+        tag: announcementForm.tag.trim() || 'Update',
+      }
+
+      const endpoint = editingAnnouncementId ? `/api/announcements/${editingAnnouncementId}` : '/api/announcements'
+      const method = editingAnnouncementId ? 'PUT' : 'POST'
+
+      const response = await fetch(endpoint, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      const json = (await response.json()) as ApiResponse<AnnouncementEntry>
+
+      if (!response.ok || !json.success) {
+        throw new Error(json.error || 'Failed to save announcement')
+      }
+
+      notifyAnnouncementsUpdated()
+      await loadData()
+      resetAnnouncementForm()
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Failed to save announcement')
+      setLoading(false)
+    }
+  }
+
+  const onDeleteAnnouncement = async (id: string) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch(`/api/announcements/${id}`, { method: 'DELETE' })
+      const json = (await response.json()) as ApiResponse<null>
+
+      if (!response.ok || !json.success) {
+        throw new Error(json.error || 'Failed to delete announcement')
+      }
+
+      notifyAnnouncementsUpdated()
+      await loadData()
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Failed to delete announcement')
       setLoading(false)
     }
   }
@@ -961,6 +1095,14 @@ export default function AdminDashboardPage() {
       }
 
       setNavbarVisibility(json.data)
+
+      const updateAt = String(Date.now())
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        const channel = new BroadcastChannel('sb_admin_updates')
+        channel.postMessage({ type: 'navbar-visibility-updated', updatedAt: updateAt })
+        channel.close()
+      }
+      localStorage.setItem('sb_navbar_visibility_updated_at', updateAt)
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : 'Failed to update navbar visibility')
     } finally {
@@ -1039,6 +1181,14 @@ export default function AdminDashboardPage() {
           <p className="text-sm text-slate-400 mt-1">Manage leaderboard, winners, and problem statements in real-time.</p>
         </div>
 
+        <div className="mb-6 flex justify-center">
+          <div className="w-full max-w-md rounded-2xl border border-cyan-500/25 bg-slate-900/80 p-4 text-center">
+            <p className="text-[11px] uppercase tracking-wider text-cyan-300 font-bold">Total Visits</p>
+            <p className="mt-2 text-2xl font-black text-white"><CountUpNumber value={visitStats.totalVisits} /></p>
+            <p className="mt-1 text-xs text-slate-400">Live tracked website visits</p>
+          </div>
+        </div>
+
         <div className="mb-6 overflow-x-auto">
           <div className="inline-flex min-w-full sm:min-w-0 rounded-xl bg-slate-900 border border-cyan-500/20 p-1 gap-1 whitespace-nowrap">
             <button
@@ -1089,6 +1239,16 @@ export default function AdminDashboardPage() {
             >
               <span className="inline-flex items-center gap-2 justify-center">
                 <Sparkles size={16} /> Sponsors
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('announcements')}
+              className={`shrink-0 px-4 py-2 rounded-lg text-sm font-bold transition ${
+                activeTab === 'announcements' ? 'bg-cyan-500 text-slate-950' : 'text-slate-300'
+              }`}
+            >
+              <span className="inline-flex items-center gap-2 justify-center">
+                <Megaphone size={16} /> Announcements
               </span>
             </button>
             {user?.isSuperAdmin && (
@@ -2053,6 +2213,117 @@ export default function AdminDashboardPage() {
                         >
                           <Trash2 size={14} />
                         </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'announcements' && (
+          <div className="space-y-4">
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setShowAnnouncementForm((prev) => !prev)
+                  if (editingAnnouncementId) {
+                    resetAnnouncementForm()
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
+              >
+                <Plus size={16} /> {showAnnouncementForm ? 'Close' : 'Add Announcement'}
+              </button>
+            </div>
+
+            {showAnnouncementForm && (
+              <form onSubmit={onSaveAnnouncement} className="grid grid-cols-1 gap-3 rounded-2xl border border-cyan-500/20 bg-slate-900/80 p-4">
+                <input
+                  value={announcementForm.title}
+                  onChange={(e) => setAnnouncementForm((prev) => ({ ...prev, title: e.target.value }))}
+                  placeholder="Announcement title"
+                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                  required
+                />
+                <input
+                  value={announcementForm.tag}
+                  onChange={(e) => setAnnouncementForm((prev) => ({ ...prev, tag: e.target.value }))}
+                  placeholder="Tag (e.g. New, Urgent, Update)"
+                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                  required
+                />
+                <textarea
+                  value={announcementForm.message}
+                  onChange={(e) => setAnnouncementForm((prev) => ({ ...prev, message: e.target.value }))}
+                  placeholder="Full announcement message"
+                  rows={5}
+                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                  required
+                />
+
+                <div className="flex gap-2 justify-end">
+                  <button
+                    type="button"
+                    onClick={resetAnnouncementForm}
+                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-700 text-slate-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    disabled={loading}
+                    type="submit"
+                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-cyan-500 text-slate-950 disabled:opacity-60"
+                  >
+                    {editingAnnouncementId ? 'Update Announcement' : 'Save Announcement'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            <div className="rounded-2xl border border-cyan-500/20 overflow-hidden">
+              {announcements.length === 0 ? (
+                <div className="p-10 text-center text-slate-400 font-semibold">No announcements added yet.</div>
+              ) : (
+                <div className="space-y-3 p-3 sm:p-4">
+                  {announcements.map((item) => (
+                    <div key={item.id} className="rounded-xl border border-cyan-500/20 bg-slate-900/60 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs rounded-full bg-cyan-500/15 border border-cyan-500/25 text-cyan-200 px-2 py-0.5 font-bold uppercase tracking-wider">
+                              {item.tag}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                              {new Date(item.createdAt).toLocaleString('en-IN')}
+                            </span>
+                          </div>
+                          <h3 className="text-lg font-bold text-white mt-2">{item.title}</h3>
+                          <p className="text-sm text-slate-300 mt-2 leading-relaxed">{item.message}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingAnnouncementId(item.id)
+                              setAnnouncementForm({
+                                title: item.title,
+                                tag: item.tag,
+                                message: item.message,
+                              })
+                              setShowAnnouncementForm(true)
+                            }}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => void onDeleteAnnouncement(item.id)}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/40"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}

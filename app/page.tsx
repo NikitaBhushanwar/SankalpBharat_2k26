@@ -7,11 +7,13 @@ import ThemesSection from '@/components/themes-section';
 import { TimelineSection } from '@/components/timeline-section';
 import { GuidelinesSection } from '@/components/guidelines-section';
 import { RegistrationSection } from '@/components/registration-section';
+import WhatsAppCommunityFab from '@/components/whatsapp-community-fab';
 
 export default function Home() {
   return (
     <main className="min-h-screen">
       <HeroSection visible />
+      <WhatsAppCommunityFab />
       <AboutSection />
       <ThemesSection />
       <TimelineSection />
