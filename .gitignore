@@ -13,3 +13,4 @@ build/
 coverage/
 *.log
 *.tsbuildinfo
+AGENT_WEBSITE_GUIDE.md
