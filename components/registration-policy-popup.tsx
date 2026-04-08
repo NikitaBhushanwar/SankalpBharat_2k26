@@ -58,7 +58,7 @@ export default function RegistrationPolicyPopup() {
       >
         <div className="mb-3 relative">
           <h2 id="round-policy-title" className="text-center text-lg sm:text-xl font-black text-red-600 dark:text-red-400">
-            Important Registration Update
+            Qualified Teams Are Live
           </h2>
           <button
             type="button"
@@ -71,7 +71,7 @@ export default function RegistrationPolicyPopup() {
         </div>
 
         <p className="text-sm sm:text-base font-semibold text-emerald-700 dark:text-emerald-300">
-          Round 1 Registration for Sankalp Bharat - National Level Hackathon 2026 is now FREE to encourage wider participation based on industry partner recommendations.
+          Qualified teams are now live and can be viewed in the Qualified Teams section. Check the latest list to see the updated entries.
         </p>
 
         <div className="mt-5 flex justify-end">
