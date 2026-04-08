@@ -20,16 +20,34 @@ create index if not exists idx_leaderboard_disqualified on public.leaderboard_en
 
 create table if not exists public.qualified_teams (
   id uuid primary key default gen_random_uuid(),
+  team_id text not null unique,
   team_name text not null,
-  logo_url text not null,
-  participant_names text[] not null,
+  logo_url text not null default '',
+  participant_names text[] not null default '{}',
   college_name text not null,
-  created_at timestamptz not null default now(),
-  constraint qualified_teams_participants_count_check check (cardinality(participant_names) between 2 and 6)
+  sequence_no integer not null default 0 check (sequence_no >= 0),
+  created_at timestamptz not null default now()
 );
 
+alter table public.qualified_teams
+  alter column logo_url set default '';
+
+alter table public.qualified_teams
+  add column if not exists sequence_no integer not null default 0;
+
+alter table public.qualified_teams
+  add column if not exists team_id text not null default '';
+
+alter table public.qualified_teams
+  alter column participant_names set default '{}';
+
+alter table public.qualified_teams
+  drop constraint if exists qualified_teams_participants_count_check;
+
 create index if not exists idx_qualified_teams_team_name on public.qualified_teams(team_name);
+create unique index if not exists idx_qualified_teams_team_id on public.qualified_teams(team_id) where team_id <> '';
 create index if not exists idx_qualified_teams_college_name on public.qualified_teams(college_name);
+create index if not exists idx_qualified_teams_sequence_no on public.qualified_teams(sequence_no);
 
 create table if not exists public.winners (
   id uuid primary key default gen_random_uuid(),

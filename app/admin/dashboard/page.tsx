@@ -129,9 +129,9 @@ const emptySponsorForm = {
 }
 
 const emptyQualifiedTeamForm = {
+  sequenceNo: '0',
+  teamId: '',
   teamName: '',
-  logoUrl: '',
-  participantNamesText: '',
   collegeName: '',
 }
 
@@ -221,10 +221,8 @@ export default function AdminDashboardPage() {
   const [accessForm, setAccessForm] = useState(emptyAccessForm)
   const [sponsorPrimaryPreviewUrl, setSponsorPrimaryPreviewUrl] = useState<string | null>(null)
   const [sponsorSecondaryPreviewUrl, setSponsorSecondaryPreviewUrl] = useState<string | null>(null)
-  const [qualifiedTeamPreviewUrl, setQualifiedTeamPreviewUrl] = useState<string | null>(null)
   const [sponsorUploadingPrimary, setSponsorUploadingPrimary] = useState(false)
   const [sponsorUploadingSecondary, setSponsorUploadingSecondary] = useState(false)
-  const [qualifiedTeamUploading, setQualifiedTeamUploading] = useState(false)
   const [passwordForm, setPasswordForm] = useState(emptyPasswordForm)
   const [showPasswordForm, setShowPasswordForm] = useState(false)
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
@@ -406,7 +404,6 @@ export default function AdminDashboardPage() {
   const resetQualifiedTeamForm = () => {
     setEditingQualifiedTeamId(null)
     setQualifiedTeamForm(emptyQualifiedTeamForm)
-    setQualifiedTeamPreviewUrl(null)
     setShowQualifiedTeamForm(false)
   }
 
@@ -606,24 +603,19 @@ export default function AdminDashboardPage() {
     setError(null)
 
     try {
-      const participantNames = qualifiedTeamForm.participantNamesText
-        .split('\n')
-        .map((name) => name.trim())
-        .filter(Boolean)
-
-      if (participantNames.length < 2 || participantNames.length > 6) {
-        throw new Error('Participant names must be between 2 and 6')
-      }
-
       const payload = {
+        sequenceNo: Number(qualifiedTeamForm.sequenceNo || 0),
+        teamId: qualifiedTeamForm.teamId.trim(),
         teamName: qualifiedTeamForm.teamName.trim(),
-        logoUrl: qualifiedTeamForm.logoUrl.trim(),
-        participantNames,
         collegeName: qualifiedTeamForm.collegeName.trim(),
       }
 
-      if (!payload.logoUrl) {
-        throw new Error('Please upload team logo before saving')
+      if (!Number.isInteger(payload.sequenceNo) || payload.sequenceNo < 0) {
+        throw new Error('Sr No must be a non-negative integer')
+      }
+
+      if (!payload.teamId) {
+        throw new Error('Team ID is required')
       }
 
       const endpoint = editingQualifiedTeamId ? `/api/qualified-teams/${editingQualifiedTeamId}` : '/api/qualified-teams'
@@ -724,48 +716,6 @@ export default function AdminDashboardPage() {
     reader.readAsDataURL(file)
 
     void onUploadSponsorLogo(file, target)
-  }
-
-  const onUploadQualifiedTeamLogo = async (file: File) => {
-    if (!file) return
-
-    try {
-      setQualifiedTeamUploading(true)
-      setError(null)
-
-      const uploadData = new FormData()
-      uploadData.append('file', file)
-
-      const response = await fetch('/api/qualified-teams/upload', {
-        method: 'POST',
-        body: uploadData,
-      })
-
-      const json = (await response.json()) as ApiResponse<{ url: string }>
-      if (!response.ok || !json.success || !json.data?.url) {
-        throw new Error(json.error || 'Failed to upload team logo')
-      }
-
-      setQualifiedTeamForm((prev) => ({ ...prev, logoUrl: json.data.url }))
-      setQualifiedTeamPreviewUrl(json.data.url)
-    } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : 'Failed to upload team logo')
-    } finally {
-      setQualifiedTeamUploading(false)
-    }
-  }
-
-  const onQualifiedTeamFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setQualifiedTeamPreviewUrl(reader.result as string)
-    }
-    reader.readAsDataURL(file)
-
-    void onUploadQualifiedTeamLogo(file)
   }
 
   const resetProblemForm = () => {
@@ -1127,7 +1077,7 @@ export default function AdminDashboardPage() {
   )
 
   const sortedQualifiedTeams = useMemo(
-    () => [...qualifiedTeams].sort((a, b) => a.teamName.localeCompare(b.teamName)),
+    () => [...qualifiedTeams].sort((a, b) => a.sequenceNo - b.sequenceNo || a.teamName.localeCompare(b.teamName)),
     [qualifiedTeams]
   )
 
@@ -1859,51 +1809,52 @@ export default function AdminDashboardPage() {
 
             {showQualifiedTeamForm && (
               <form onSubmit={onSaveQualifiedTeam} className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-2xl border border-emerald-500/20 bg-slate-900/80 p-4">
-                <input
-                  value={qualifiedTeamForm.teamName}
-                  onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, teamName: e.target.value }))}
-                  placeholder="Team name"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-
-                <input
-                  value={qualifiedTeamForm.collegeName}
-                  onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, collegeName: e.target.value }))}
-                  placeholder="College name"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-
-                <div>
+                <label className="space-y-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Sr No</span>
                   <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
-                    onChange={onQualifiedTeamFileChange}
-                    disabled={qualifiedTeamUploading}
-                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500 file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-950"
-                    required={!editingQualifiedTeamId}
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={qualifiedTeamForm.sequenceNo}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, sequenceNo: e.target.value }))}
+                    placeholder="Sequence number"
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                    required
                   />
-                  {qualifiedTeamUploading && <p className="mt-1 text-xs text-emerald-300">Uploading logo...</p>}
-                </div>
+                </label>
 
-                <textarea
-                  value={qualifiedTeamForm.participantNamesText}
-                  onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, participantNamesText: e.target.value }))}
-                  placeholder={'Participant names (one per line)\nMinimum 2, maximum 6'}
-                  rows={5}
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
+                <label className="space-y-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Team Name</span>
+                  <input
+                    value={qualifiedTeamForm.teamName}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, teamName: e.target.value }))}
+                    placeholder="Enter team name"
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                    required
+                  />
+                </label>
 
-                {qualifiedTeamPreviewUrl && (
-                  <div className="md:col-span-2 rounded-xl border border-emerald-500/20 bg-slate-950/70 p-3">
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-emerald-300">Logo Preview</p>
-                    <div className="h-36 rounded-lg border border-slate-700 bg-slate-900 flex items-center justify-center p-3">
-                      <img src={qualifiedTeamPreviewUrl} alt="Qualified team preview" className="max-h-full max-w-full object-contain" />
-                    </div>
-                  </div>
-                )}
+                <label className="space-y-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">College Name</span>
+                  <input
+                    value={qualifiedTeamForm.collegeName}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, collegeName: e.target.value }))}
+                    placeholder="Enter college name"
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                    required
+                  />
+                </label>
+
+                <label className="space-y-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Team ID</span>
+                  <input
+                    value={qualifiedTeamForm.teamId}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, teamId: e.target.value }))}
+                    placeholder="Enter team ID"
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                    required
+                  />
+                </label>
 
                 <div className="md:col-span-2 flex justify-end gap-2">
                   <button
@@ -1914,7 +1865,7 @@ export default function AdminDashboardPage() {
                     Cancel
                   </button>
                   <button
-                    disabled={loading || qualifiedTeamUploading}
+                    disabled={loading}
                     type="submit"
                     className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-emerald-500 text-slate-950 disabled:opacity-60"
                   >
@@ -1931,35 +1882,20 @@ export default function AdminDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-3 sm:p-4">
                   {sortedQualifiedTeams.map((team) => (
                     <div key={team.id} className="rounded-xl border border-emerald-500/20 bg-slate-900/60 p-4">
-                      <div className="h-28 rounded-lg border border-slate-700 bg-slate-950 flex items-center justify-center p-3 mb-3">
-                        <img src={team.logoUrl} alt={team.teamName} className="max-h-full max-w-full object-contain" />
-                      </div>
-                      <p className="text-lg font-bold text-white line-clamp-1">{team.teamName}</p>
-                      <p className="text-xs text-emerald-300 mt-1 line-clamp-1">{team.collegeName}</p>
-                      <p className="text-xs text-slate-400 mt-1">Members: {team.participantNames.length}</p>
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {team.participantNames.slice(0, 3).map((name, index) => (
-                          <span key={`${team.id}-member-${index}`} className="text-[10px] rounded-full bg-slate-800 border border-slate-700 px-2 py-0.5 text-slate-300">
-                            {name}
-                          </span>
-                        ))}
-                        {team.participantNames.length > 3 && (
-                          <span className="text-[10px] rounded-full bg-slate-800 border border-slate-700 px-2 py-0.5 text-slate-300">
-                            +{team.participantNames.length - 3} more
-                          </span>
-                        )}
-                      </div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-emerald-300">Sr No: {team.sequenceNo}</p>
+                      <p className="text-lg font-bold text-white line-clamp-1 mt-1">{team.teamName}</p>
+                      <p className="text-sm text-emerald-300/90 mt-1 line-clamp-1">{team.collegeName}</p>
+                      <p className="text-xs text-slate-400 mt-2 uppercase tracking-wide">Team ID: {team.teamId}</p>
                       <div className="mt-3 flex justify-end gap-2">
                         <button
                           onClick={() => {
                             setEditingQualifiedTeamId(team.id)
                             setQualifiedTeamForm({
+                              sequenceNo: String(team.sequenceNo),
+                              teamId: team.teamId,
                               teamName: team.teamName,
-                              logoUrl: team.logoUrl,
-                              participantNamesText: team.participantNames.join('\n'),
                               collegeName: team.collegeName,
                             })
-                            setQualifiedTeamPreviewUrl(team.logoUrl)
                             setShowQualifiedTeamForm(true)
                           }}
                           className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"

@@ -5,10 +5,11 @@ import { Search } from 'lucide-react'
 
 interface QualifiedTeamEntry {
   id: string
+  teamId: string
   teamName: string
-  logoUrl: string
-  participantNames: string[]
+  logoUrl?: string
   collegeName: string
+  sequenceNo: number
 }
 
 interface ApiResponse<T> {
@@ -28,7 +29,6 @@ interface PublishState {
 export default function QualifiedTeamsLive() {
   const [teams, setTeams] = useState<QualifiedTeamEntry[]>([])
   const [search, setSearch] = useState('')
-  const [activeCardId, setActiveCardId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isLive, setIsLive] = useState(false)
@@ -69,8 +69,8 @@ export default function QualifiedTeamsLive() {
     return teams.filter((team) => {
       const teamMatch = team.teamName.toLowerCase().includes(query)
       const collegeMatch = team.collegeName.toLowerCase().includes(query)
-      const participantMatch = team.participantNames.some((name) => name.toLowerCase().includes(query))
-      return teamMatch || collegeMatch || participantMatch
+      const idMatch = team.teamId.toLowerCase().includes(query)
+      return teamMatch || collegeMatch || idMatch
     })
   }, [teams, search])
 
@@ -93,7 +93,7 @@ export default function QualifiedTeamsLive() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by team, participant, or college"
+          placeholder="Search by team, college, or team id"
           className="w-full rounded-xl border border-cyan-500/30 bg-slate-900/70 pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-400"
         />
       </div>
@@ -105,49 +105,28 @@ export default function QualifiedTeamsLive() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredTeams.map((team) => (
-            <div key={team.id} className="group [perspective:1000px]">
-              <button
-                type="button"
-                onClick={() => setActiveCardId((prev) => (prev === team.id ? null : team.id))}
-                className={`relative h-[360px] w-full rounded-2xl transition-transform duration-500 [transform-style:preserve-3d] text-left ${
-                  activeCardId === team.id ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'
-                }`}
-              >
-                <div className="absolute inset-0 rounded-2xl border border-cyan-500/20 bg-slate-900/80 p-5 [backface-visibility:hidden]">
-                  <div className="h-44 rounded-xl border border-slate-700 bg-slate-950 flex items-center justify-center p-4 mb-4">
-                    <img
-                      src={team.logoUrl}
-                      alt={team.teamName}
-                      className="max-h-full max-w-full object-contain"
-                      onError={(e) => {
-                        e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80"%3E%3Crect fill="%23f0f0f0" width="120" height="80"/%3E%3Ctext x="60" y="40" font-size="12" text-anchor="middle" dy=".3em" fill="%23999"%3ELogo%3C/text%3E%3C/svg%3E'
-                      }}
-                    />
-                  </div>
-                  <h3 className="text-xl font-black text-white mb-2 line-clamp-2">{team.teamName}</h3>
-                  <p className="text-sm text-slate-400 line-clamp-2">{team.collegeName}</p>
-                  <p className="mt-3 text-xs uppercase tracking-wider text-cyan-300 font-bold">
-                    <span className="hidden sm:inline">Hover to see members</span>
-                    <span className="sm:hidden">Tap to see details</span>
-                  </p>
+            <div key={team.id} className="relative rounded-[1.5rem] border border-cyan-500/20 bg-slate-900/80 p-5 shadow-[0_18px_60px_rgba(2,6,23,0.32)] overflow-hidden">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(6,182,212,0.12),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(52,211,153,0.08),transparent_30%)]" />
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent" />
+
+              <div className="relative space-y-4">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300 font-bold">Team Name</p>
+                  <h3 className="mt-2 text-[1.45rem] sm:text-[1.65rem] font-black leading-[1.04] text-white line-clamp-2">
+                    {team.teamName}
+                  </h3>
                 </div>
 
-                <div className="absolute inset-0 rounded-2xl border border-cyan-400/30 bg-gradient-to-br from-cyan-950/80 to-slate-900/90 p-5 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-                  <h4 className="text-xs uppercase tracking-widest text-cyan-300 font-bold mb-2">Team Members</h4>
-                  <ul className="space-y-2 mb-4">
-                    {team.participantNames.map((name, index) => (
-                      <li key={`${team.id}-${name}-${index}`} className="text-sm text-slate-100 rounded-lg bg-slate-800/70 border border-slate-700 px-3 py-2">
-                        {name}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-auto">
-                    <p className="text-xs uppercase tracking-widest text-cyan-300 font-bold mb-1">College</p>
-                    <p className="text-sm text-slate-200">{team.collegeName}</p>
-                  </div>
-                  <p className="mt-3 text-xs uppercase tracking-wider text-cyan-300 font-bold sm:hidden">Tap again to flip back</p>
+                <div className="rounded-[1.15rem] border border-slate-700 bg-slate-950/70 px-4 py-3">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300 font-bold">College Name</p>
+                  <p className="mt-2 text-base font-semibold text-slate-100 line-clamp-2">{team.collegeName}</p>
                 </div>
-              </button>
+
+                <div className="rounded-[1.15rem] border border-slate-700 bg-slate-950/70 px-4 py-3">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300 font-bold">Team ID</p>
+                  <p className="mt-2 text-sm font-mono text-slate-200 break-all">{team.teamId}</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>

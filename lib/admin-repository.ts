@@ -423,10 +423,11 @@ export interface SponsorEntry {
 
 export interface QualifiedTeamEntry {
   id: string
+  teamId: string
   teamName: string
-  logoUrl: string
-  participantNames: string[]
+  logoUrl?: string
   collegeName: string
+  sequenceNo: number
 }
 
 interface SponsorRow {
@@ -447,10 +448,11 @@ interface SponsorRow {
 
 interface QualifiedTeamRow {
   id: string
+  team_id: string | null
   team_name: string
-  logo_url: string
-  participant_names: string[]
+  logo_url: string | null
   college_name: string
+  sequence_no: number | null
   created_at: string
 }
 
@@ -470,10 +472,11 @@ export const mapSponsorRow = (row: SponsorRow): SponsorEntry => ({
 
 export const mapQualifiedTeamRow = (row: QualifiedTeamRow): QualifiedTeamEntry => ({
   id: row.id,
+  teamId: row.team_id ?? '',
   teamName: row.team_name,
-  logoUrl: row.logo_url,
-  participantNames: row.participant_names,
+  logoUrl: row.logo_url ?? '',
   collegeName: row.college_name,
+  sequenceNo: row.sequence_no ?? 0,
 })
 
 export async function readAllSponsors(supabase: SupabaseClient): Promise<SponsorEntry[]> {
@@ -579,6 +582,7 @@ export async function readAllQualifiedTeams(supabase: SupabaseClient): Promise<Q
   const { data, error } = await supabase
     .from('qualified_teams')
     .select('*')
+    .order('sequence_no', { ascending: true })
     .order('team_name', { ascending: true })
 
   if (error) {
@@ -595,10 +599,11 @@ export async function createQualifiedTeam(
   const { data, error } = await supabase
     .from('qualified_teams')
     .insert({
+      team_id: team.teamId,
       team_name: team.teamName,
-      logo_url: team.logoUrl,
-      participant_names: team.participantNames,
+      logo_url: team.logoUrl?.trim() || '',
       college_name: team.collegeName,
+      sequence_no: team.sequenceNo,
     })
     .select()
     .single<QualifiedTeamRow>()
@@ -617,10 +622,11 @@ export async function updateQualifiedTeam(
 ) {
   const updateData: Record<string, unknown> = {}
 
+  if (team.teamId !== undefined) updateData.team_id = team.teamId
   if (team.teamName !== undefined) updateData.team_name = team.teamName
-  if (team.logoUrl !== undefined) updateData.logo_url = team.logoUrl
-  if (team.participantNames !== undefined) updateData.participant_names = team.participantNames
+  if (team.logoUrl !== undefined) updateData.logo_url = team.logoUrl.trim() || ''
   if (team.collegeName !== undefined) updateData.college_name = team.collegeName
+  if (team.sequenceNo !== undefined) updateData.sequence_no = team.sequenceNo
 
   const { data, error } = await supabase
     .from('qualified_teams')

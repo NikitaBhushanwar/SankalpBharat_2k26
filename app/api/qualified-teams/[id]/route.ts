@@ -16,32 +16,6 @@ interface ApiResponse<T> {
 const isValidRouteId = (id: unknown): id is string =>
   typeof id === 'string' && id.trim().length > 0 && id !== 'undefined' && id !== 'null'
 
-const sanitizeParticipants = (value: unknown): string[] => {
-  if (!Array.isArray(value)) return []
-  return value
-    .map((item) => String(item).trim())
-    .filter((item) => item.length > 0)
-}
-
-const getQualifiedTeamsStoragePathFromUrl = (url?: string | null): string | null => {
-  if (!url || typeof url !== 'string') {
-    return null
-  }
-
-  const publicMarker = '/storage/v1/object/public/qualified-teams/'
-  const publicMarkerIndex = url.indexOf(publicMarker)
-
-  if (publicMarkerIndex !== -1) {
-    return decodeURIComponent(url.slice(publicMarkerIndex + publicMarker.length))
-  }
-
-  if (!url.includes('://') && !url.startsWith('data:')) {
-    return url
-  }
-
-  return null
-}
-
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -64,6 +38,20 @@ export async function PUT(
 
     const updatePayload: Partial<Omit<QualifiedTeamEntry, 'id'>> = {}
 
+    if (body.teamId !== undefined) {
+      const teamId = String(body.teamId).trim()
+      if (!teamId) {
+        return NextResponse.json<ApiResponse<null>>(
+          {
+            success: false,
+            error: 'Team ID cannot be empty',
+          },
+          { status: 400 }
+        )
+      }
+      updatePayload.teamId = teamId
+    }
+
     if (body.teamName !== undefined) {
       updatePayload.teamName = String(body.teamName).trim()
     }
@@ -76,18 +64,18 @@ export async function PUT(
       updatePayload.collegeName = String(body.collegeName).trim()
     }
 
-    if (body.participantNames !== undefined) {
-      const participantNames = sanitizeParticipants(body.participantNames)
-      if (participantNames.length < 2 || participantNames.length > 6) {
+    if (body.sequenceNo !== undefined) {
+      const sequenceNo = Number(body.sequenceNo)
+      if (!Number.isInteger(sequenceNo) || sequenceNo < 0) {
         return NextResponse.json<ApiResponse<null>>(
           {
             success: false,
-            error: 'Participants must be between 2 and 6',
+            error: 'Sequence number must be a non-negative integer',
           },
           { status: 400 }
         )
       }
-      updatePayload.participantNames = participantNames
+      updatePayload.sequenceNo = sequenceNo
     }
 
     const updated = await updateQualifiedTeam(supabase, id, updatePayload)
@@ -100,10 +88,22 @@ export async function PUT(
       { status: 200 }
     )
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to update qualified team'
+
+    if (message.toLowerCase().includes('duplicate key') && message.toLowerCase().includes('team_id')) {
+      return NextResponse.json<ApiResponse<null>>(
+        {
+          success: false,
+          error: 'Team ID already exists. Please use a unique Team ID.',
+        },
+        { status: 409 }
+      )
+    }
+
     return NextResponse.json<ApiResponse<null>>(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update qualified team',
+        error: message,
       },
       { status: 500 }
     )
@@ -131,9 +131,9 @@ export async function DELETE(
 
     const { data: teamRow, error: teamError } = await supabase
       .from('qualified_teams')
-      .select('logo_url')
+      .select('id')
       .eq('id', id)
-      .maybeSingle<{ logo_url: string | null }>()
+      .maybeSingle<{ id: string }>()
 
     if (teamError) {
       throw new Error(teamError.message)
@@ -147,17 +147,6 @@ export async function DELETE(
         },
         { status: 404 }
       )
-    }
-
-    const storagePath = getQualifiedTeamsStoragePathFromUrl(teamRow.logo_url)
-    if (storagePath) {
-      const { error: removeImageError } = await supabase.storage
-        .from('qualified-teams')
-        .remove([storagePath])
-
-      if (removeImageError) {
-        console.warn('Failed to remove qualified team logo from storage:', removeImageError.message)
-      }
     }
 
     await deleteQualifiedTeam(supabase, id)

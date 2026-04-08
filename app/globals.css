@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Texturina:ital,opsz,wght@0,12..72,100..900;1,12..72,100..900&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @tailwind base;
@@ -81,8 +80,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Inter', sans-serif;
---font-texturina: var(--font-texturina);
+  --font-sans: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-texturina: 'Georgia', 'Times New Roman', serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -140,6 +139,7 @@ html {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
   }
 
   html:not(.dark) body {
