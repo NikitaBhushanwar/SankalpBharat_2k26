@@ -5,6 +5,15 @@ const REGISTRATION_LINK_SETTING_KEY = 'registration_link'
 const NAVBAR_SHOW_LEADERBOARD_KEY = 'navbar_show_leaderboard'
 const NAVBAR_SHOW_WINNERS_KEY = 'navbar_show_winners'
 const NAVBAR_SHOW_QUALIFIED_TEAMS_KEY = 'navbar_show_qualified_teams'
+const LOADING_POPUP_ENABLED_KEY = 'loading_popup_enabled'
+const LOADING_POPUP_TITLE_KEY = 'loading_popup_title'
+const LOADING_POPUP_MESSAGE_KEY = 'loading_popup_message'
+
+export const DEFAULT_LOADING_POPUP_SETTINGS = {
+  enabled: true,
+  title: 'Qualified Teams Are Live',
+  message: 'Qualified teams are now live and can be viewed in the Qualified Teams section. Check the latest list to see the updated entries.',
+}
 
 export interface LeaderboardEntry {
   id: string
@@ -47,6 +56,13 @@ export interface PublishState {
   problemStatements: boolean
   problemStatementsDownload: boolean
   qualifiedTeams: boolean
+  finalistTeams: boolean
+}
+
+export interface LoadingPopupSettings {
+  enabled: boolean
+  title: string
+  message: string
 }
 
 export interface NavbarVisibilityState {
@@ -55,7 +71,7 @@ export interface NavbarVisibilityState {
   qualifiedTeams: boolean
 }
 
-export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'qualifiedTeams'
+export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
 
 interface LeaderboardRow {
   id: string
@@ -96,7 +112,7 @@ interface AnnouncementRow {
 }
 
 interface PublishStateRow {
-  section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'qualifiedTeams'
+  section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
   is_live: boolean
 }
 
@@ -277,6 +293,7 @@ export async function readPublishState(supabase: SupabaseClient): Promise<Publis
     problemStatements: false,
     problemStatementsDownload: false,
     qualifiedTeams: false,
+    finalistTeams: false,
   }
 
   const { data, error } = await supabase
@@ -337,6 +354,59 @@ export async function writeRegistrationLink(supabase: SupabaseClient, link: stri
         key: REGISTRATION_LINK_SETTING_KEY,
         value_text: link,
       },
+      { onConflict: 'key' }
+    )
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
+export async function readLoadingPopupSettings(supabase: SupabaseClient): Promise<LoadingPopupSettings> {
+  const defaults: LoadingPopupSettings = {
+    enabled: DEFAULT_LOADING_POPUP_SETTINGS.enabled,
+    title: DEFAULT_LOADING_POPUP_SETTINGS.title,
+    message: DEFAULT_LOADING_POPUP_SETTINGS.message,
+  }
+
+  const { data, error } = await supabase
+    .from('site_settings')
+    .select('key, value_text')
+    .in('key', [
+      LOADING_POPUP_ENABLED_KEY,
+      LOADING_POPUP_TITLE_KEY,
+      LOADING_POPUP_MESSAGE_KEY,
+    ])
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  for (const row of (data as SiteSettingRow[] | null) ?? []) {
+    if (row.key === LOADING_POPUP_ENABLED_KEY) {
+      defaults.enabled = parseBooleanSetting(row.value_text, defaults.enabled)
+    } else if (row.key === LOADING_POPUP_TITLE_KEY) {
+      defaults.title = row.value_text?.trim() || defaults.title
+    } else if (row.key === LOADING_POPUP_MESSAGE_KEY) {
+      defaults.message = row.value_text?.trim() || defaults.message
+    }
+  }
+
+  return defaults
+}
+
+export async function writeLoadingPopupSettings(
+  supabase: SupabaseClient,
+  settings: LoadingPopupSettings
+) {
+  const { error } = await supabase
+    .from('site_settings')
+    .upsert(
+      [
+        { key: LOADING_POPUP_ENABLED_KEY, value_text: String(settings.enabled) },
+        { key: LOADING_POPUP_TITLE_KEY, value_text: settings.title },
+        { key: LOADING_POPUP_MESSAGE_KEY, value_text: settings.message },
+      ],
       { onConflict: 'key' }
     )
 
@@ -430,6 +500,16 @@ export interface QualifiedTeamEntry {
   sequenceNo: number
 }
 
+export interface FinalistTeamEntry {
+  id: string
+  teamId: string
+  teamName: string
+  logoUrl?: string
+  teamLeaderName: string
+  collegeName: string
+  sequenceNo: number
+}
+
 interface SponsorRow {
   id: string
   name: string
@@ -456,6 +536,17 @@ interface QualifiedTeamRow {
   created_at: string
 }
 
+interface FinalistTeamRow {
+  id: string
+  team_id: string | null
+  team_name: string
+  logo_url: string | null
+  team_leader_name: string | null
+  college_name: string
+  sequence_no: number | null
+  created_at: string
+}
+
 export const mapSponsorRow = (row: SponsorRow): SponsorEntry => ({
   id: row.id,
   name: row.name,
@@ -475,6 +566,16 @@ export const mapQualifiedTeamRow = (row: QualifiedTeamRow): QualifiedTeamEntry =
   teamId: row.team_id ?? '',
   teamName: row.team_name,
   logoUrl: row.logo_url ?? '',
+  collegeName: row.college_name,
+  sequenceNo: row.sequence_no ?? 0,
+})
+
+export const mapFinalistTeamRow = (row: FinalistTeamRow): FinalistTeamEntry => ({
+  id: row.id,
+  teamId: row.team_id ?? '',
+  teamName: row.team_name,
+  logoUrl: row.logo_url ?? '',
+  teamLeaderName: row.team_leader_name ?? '',
   collegeName: row.college_name,
   sequenceNo: row.sequence_no ?? 0,
 })
@@ -645,6 +746,83 @@ export async function updateQualifiedTeam(
 export async function deleteQualifiedTeam(supabase: SupabaseClient, id: string) {
   const { error } = await supabase
     .from('qualified_teams')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
+export async function readAllFinalistTeams(supabase: SupabaseClient): Promise<FinalistTeamEntry[]> {
+  const { data, error } = await supabase
+    .from('finalist_teams')
+    .select('*')
+    .order('sequence_no', { ascending: true })
+    .order('team_name', { ascending: true })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return (data as FinalistTeamRow[] | null)?.map(mapFinalistTeamRow) ?? []
+}
+
+export async function createFinalistTeam(
+  supabase: SupabaseClient,
+  team: Omit<FinalistTeamEntry, 'id'>
+) {
+  const { data, error } = await supabase
+    .from('finalist_teams')
+    .insert({
+      team_id: team.teamId,
+      team_name: team.teamName,
+      logo_url: team.logoUrl?.trim() || '',
+      team_leader_name: team.teamLeaderName,
+      college_name: team.collegeName,
+      sequence_no: team.sequenceNo,
+    })
+    .select()
+    .single<FinalistTeamRow>()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return mapFinalistTeamRow(data)
+}
+
+export async function updateFinalistTeam(
+  supabase: SupabaseClient,
+  id: string,
+  team: Partial<Omit<FinalistTeamEntry, 'id'>>
+) {
+  const updateData: Record<string, unknown> = {}
+
+  if (team.teamId !== undefined) updateData.team_id = team.teamId
+  if (team.teamName !== undefined) updateData.team_name = team.teamName
+  if (team.logoUrl !== undefined) updateData.logo_url = team.logoUrl.trim() || ''
+  if (team.teamLeaderName !== undefined) updateData.team_leader_name = team.teamLeaderName
+  if (team.collegeName !== undefined) updateData.college_name = team.collegeName
+  if (team.sequenceNo !== undefined) updateData.sequence_no = team.sequenceNo
+
+  const { data, error } = await supabase
+    .from('finalist_teams')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single<FinalistTeamRow>()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return mapFinalistTeamRow(data)
+}
+
+export async function deleteFinalistTeam(supabase: SupabaseClient, id: string) {
+  const { error } = await supabase
+    .from('finalist_teams')
     .delete()
     .eq('id', id)
 

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, Users } from 'lucide-react'
 import QualifiedTeamsLive from '@/components/qualified-teams-live'
+import QualifiedTeamsCelebration from '@/components/qualified-teams-celebration'
 
 export const metadata: Metadata = {
   title: 'Qualified Teams - Sankalp Bharat Hackathon 2026',
@@ -22,11 +23,12 @@ export default function QualifiedTeamsPage() {
         </div>
 
         <div className="mb-6 text-center">
+          <QualifiedTeamsCelebration />
           <p className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-cyan-600 dark:text-cyan-300 font-bold mb-2">
             <Users size={14} /> Shortlisted Teams
           </p>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white">Qualified Teams</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Find qualified teams and view their members and college details.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">View grand finalists and all generally qualified teams for the online round.</p>
         </div>
 
         <QualifiedTeamsLive />

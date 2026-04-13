@@ -49,6 +49,34 @@ create unique index if not exists idx_qualified_teams_team_id on public.qualifie
 create index if not exists idx_qualified_teams_college_name on public.qualified_teams(college_name);
 create index if not exists idx_qualified_teams_sequence_no on public.qualified_teams(sequence_no);
 
+create table if not exists public.finalist_teams (
+  id uuid primary key default gen_random_uuid(),
+  team_id text not null unique,
+  team_name text not null,
+  logo_url text not null default '',
+  team_leader_name text not null,
+  college_name text not null,
+  sequence_no integer not null default 0 check (sequence_no >= 0),
+  created_at timestamptz not null default now()
+);
+
+alter table public.finalist_teams
+  alter column logo_url set default '';
+
+alter table public.finalist_teams
+  add column if not exists sequence_no integer not null default 0;
+
+alter table public.finalist_teams
+  add column if not exists team_id text not null default '';
+
+alter table public.finalist_teams
+  add column if not exists team_leader_name text not null default '';
+
+create index if not exists idx_finalist_teams_team_name on public.finalist_teams(team_name);
+create unique index if not exists idx_finalist_teams_team_id on public.finalist_teams(team_id) where team_id <> '';
+create index if not exists idx_finalist_teams_college_name on public.finalist_teams(college_name);
+create index if not exists idx_finalist_teams_sequence_no on public.finalist_teams(sequence_no);
+
 create table if not exists public.winners (
   id uuid primary key default gen_random_uuid(),
   rank integer not null default 0,
@@ -82,7 +110,7 @@ create index if not exists idx_announcements_created_at on public.announcements(
 create index if not exists idx_announcements_updated_at on public.announcements(updated_at desc);
 
 create table if not exists public.publish_state (
-  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams')),
+  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams', 'finalistTeams')),
   is_live boolean not null default false,
   updated_at timestamptz not null default now()
 );
@@ -92,7 +120,7 @@ drop constraint if exists publish_state_section_check;
 
 alter table public.publish_state
 add constraint publish_state_section_check
-check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams'));
+check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams', 'finalistTeams'));
 
 create table if not exists public.site_settings (
   key text primary key,
@@ -150,7 +178,8 @@ values
   ('winners', false),
   ('problemStatements', false),
   ('problemStatementsDownload', false),
-  ('qualifiedTeams', false)
+  ('qualifiedTeams', false),
+  ('finalistTeams', false)
 on conflict (section) do nothing;
 
 insert into public.site_settings(key, value_text)
@@ -163,6 +192,13 @@ values
   ('navbar_show_leaderboard', 'true'),
   ('navbar_show_winners', 'true'),
   ('navbar_show_qualified_teams', 'true')
+on conflict (key) do nothing;
+
+insert into public.site_settings(key, value_text)
+values
+  ('loading_popup_enabled', 'true'),
+  ('loading_popup_title', 'Qualified Teams Are Live'),
+  ('loading_popup_message', 'Qualified teams are now live and can be viewed in the Qualified Teams section. Check the latest list to see the updated entries.')
 on conflict (key) do nothing;
 
 create table if not exists public.website_visitors (

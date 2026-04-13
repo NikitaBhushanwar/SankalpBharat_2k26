@@ -20,7 +20,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
-import type { AnnouncementEntry, QualifiedTeamEntry, SponsorEntry } from '@/lib/admin-repository'
+import type { AnnouncementEntry, FinalistTeamEntry, QualifiedTeamEntry, SponsorEntry } from '@/lib/admin-repository'
 
 interface LeaderboardEntry {
   id: string
@@ -70,6 +70,13 @@ interface PublishState {
   problemStatements: boolean
   problemStatementsDownload: boolean
   qualifiedTeams: boolean
+  finalistTeams: boolean
+}
+
+interface LoadingPopupData {
+  enabled: boolean
+  title: string
+  message: string
 }
 
 interface VisitStatsData {
@@ -129,9 +136,11 @@ const emptySponsorForm = {
 }
 
 const emptyQualifiedTeamForm = {
+  stage: 'qualified',
   sequenceNo: '0',
   teamId: '',
   teamName: '',
+  teamLeaderName: '',
   collegeName: '',
 }
 
@@ -146,6 +155,12 @@ const emptyPasswordForm = {
   currentPassword: '',
   newPassword: '',
   confirmPassword: '',
+}
+
+const emptyLoadingPopupForm: LoadingPopupData = {
+  enabled: true,
+  title: 'Qualified Teams Are Live',
+  message: 'Qualified teams are now live and can be viewed in the Qualified Teams section. Check the latest list to see the updated entries.',
 }
 
 function CountUpNumber({ value, duration = 900 }: { value: number; duration?: number }) {
@@ -192,6 +207,7 @@ export default function AdminDashboardPage() {
   const [winners, setWinners] = useState<WinnerEntry[]>([])
   const [problemStatements, setProblemStatements] = useState<ProblemStatementEntry[]>([])
   const [qualifiedTeams, setQualifiedTeams] = useState<QualifiedTeamEntry[]>([])
+  const [finalistTeams, setFinalistTeams] = useState<FinalistTeamEntry[]>([])
   const [sponsors, setSponsors] = useState<SponsorEntry[]>([])
   const [announcements, setAnnouncements] = useState<AnnouncementEntry[]>([])
   const [adminUsers, setAdminUsers] = useState<AdminAccessUser[]>([])
@@ -242,7 +258,10 @@ export default function AdminDashboardPage() {
     problemStatements: false,
     problemStatementsDownload: false,
     qualifiedTeams: false,
+    finalistTeams: false,
   })
+  const [loadingPopupSettings, setLoadingPopupSettings] = useState<LoadingPopupData>(emptyLoadingPopupForm)
+  const [loadingPopupForm, setLoadingPopupForm] = useState<LoadingPopupData>(emptyLoadingPopupForm)
   const [visitStats, setVisitStats] = useState<VisitStatsData>({
     totalVisits: 23875,
   })
@@ -285,11 +304,12 @@ export default function AdminDashboardPage() {
     setError(null)
 
     try {
-      const [leaderboardRes, winnersRes, problemStatementsRes, qualifiedTeamsRes, sponsorsRes, announcementsRes, publishRes, visitStatsRes] = await Promise.all([
+      const [leaderboardRes, winnersRes, problemStatementsRes, qualifiedTeamsRes, finalistTeamsRes, sponsorsRes, announcementsRes, publishRes, visitStatsRes] = await Promise.all([
         fetch('/api/leaderboard?sortBy=rank', { cache: 'no-store' }),
         fetch('/api/winners', { cache: 'no-store' }),
         fetch('/api/problem-statements', { cache: 'no-store' }),
         fetch('/api/qualified-teams', { cache: 'no-store' }),
+        fetch('/api/finalist-teams', { cache: 'no-store' }),
         fetch('/api/sponsors', { cache: 'no-store' }),
         fetch('/api/announcements', { cache: 'no-store' }),
         fetch('/api/publish-state', { cache: 'no-store' }),
@@ -300,6 +320,7 @@ export default function AdminDashboardPage() {
       const winnersJson = (await winnersRes.json()) as ApiResponse<WinnerEntry[]>
       const problemStatementsJson = (await problemStatementsRes.json()) as ApiResponse<ProblemStatementEntry[]>
       const qualifiedTeamsJson = (await qualifiedTeamsRes.json()) as ApiResponse<QualifiedTeamEntry[]>
+      const finalistTeamsJson = (await finalistTeamsRes.json()) as ApiResponse<FinalistTeamEntry[]>
       const sponsorsJson = (await sponsorsRes.json()) as ApiResponse<SponsorEntry[]>
       const announcementsJson = (await announcementsRes.json()) as ApiResponse<AnnouncementEntry[]>
       const publishJson = (await publishRes.json()) as ApiResponse<PublishState>
@@ -321,6 +342,10 @@ export default function AdminDashboardPage() {
         throw new Error(qualifiedTeamsJson.error || 'Failed to fetch qualified teams')
       }
 
+      if (!finalistTeamsRes.ok || !finalistTeamsJson.success) {
+        throw new Error(finalistTeamsJson.error || 'Failed to fetch grand finalist teams')
+      }
+
       if (!sponsorsRes.ok || !sponsorsJson.success) {
         throw new Error(sponsorsJson.error || 'Failed to fetch sponsors')
       }
@@ -333,17 +358,22 @@ export default function AdminDashboardPage() {
       setWinners(winnersJson.data ?? [])
       setProblemStatements(problemStatementsJson.data ?? [])
       setQualifiedTeams(qualifiedTeamsJson.data ?? [])
+      setFinalistTeams(finalistTeamsJson.data ?? [])
       setSponsors(sponsorsJson.data ?? [])
       setAnnouncements(announcementsJson.data ?? [])
       if (publishJson.success && publishJson.data) {
-        setPublishState(publishJson.data)
+        setPublishState((prev) => ({
+          ...prev,
+          ...publishJson.data,
+          finalistTeams: Boolean(publishJson.data.finalistTeams),
+        }))
       }
       if (visitStatsRes.ok && visitStatsJson.success && visitStatsJson.data) {
         setVisitStats(visitStatsJson.data)
       }
 
       if (user?.isSuperAdmin) {
-        const [adminUsersRes, registrationLinkRes, navbarVisibilityRes] = await Promise.all([
+        const [adminUsersRes, registrationLinkRes, navbarVisibilityRes, loadingPopupRes] = await Promise.all([
           fetch('/api/admin-users', {
             cache: 'no-store',
           }),
@@ -353,10 +383,14 @@ export default function AdminDashboardPage() {
           fetch('/api/site-settings/navbar-visibility', {
             cache: 'no-store',
           }),
+          fetch('/api/site-settings/loading-popup', {
+            cache: 'no-store',
+          }),
         ])
         const adminUsersJson = (await adminUsersRes.json()) as ApiResponse<AdminAccessUser[]>
         const registrationLinkJson = (await registrationLinkRes.json()) as ApiResponse<RegistrationLinkData>
         const navbarVisibilityJson = (await navbarVisibilityRes.json()) as ApiResponse<NavbarVisibilityState>
+        const loadingPopupJson = (await loadingPopupRes.json()) as ApiResponse<LoadingPopupData>
 
         if (!adminUsersRes.ok || !adminUsersJson.success) {
           throw new Error(adminUsersJson.error || 'Failed to fetch admin users')
@@ -372,6 +406,11 @@ export default function AdminDashboardPage() {
 
         if (navbarVisibilityJson.success && navbarVisibilityJson.data) {
           setNavbarVisibility(navbarVisibilityJson.data)
+        }
+
+        if (loadingPopupJson.success && loadingPopupJson.data) {
+          setLoadingPopupSettings(loadingPopupJson.data)
+          setLoadingPopupForm(loadingPopupJson.data)
         }
       }
     } catch (fetchError) {
@@ -604,9 +643,11 @@ export default function AdminDashboardPage() {
 
     try {
       const payload = {
+        stage: qualifiedTeamForm.stage,
         sequenceNo: Number(qualifiedTeamForm.sequenceNo || 0),
         teamId: qualifiedTeamForm.teamId.trim(),
         teamName: qualifiedTeamForm.teamName.trim(),
+        teamLeaderName: qualifiedTeamForm.teamLeaderName.trim(),
         collegeName: qualifiedTeamForm.collegeName.trim(),
       }
 
@@ -618,13 +659,30 @@ export default function AdminDashboardPage() {
         throw new Error('Team ID is required')
       }
 
-      const endpoint = editingQualifiedTeamId ? `/api/qualified-teams/${editingQualifiedTeamId}` : '/api/qualified-teams'
+      if (payload.stage === 'finalist' && !payload.teamLeaderName) {
+        throw new Error('Team leader name is required for grand finalist teams')
+      }
+
+      const endpointBase = payload.stage === 'finalist' ? '/api/finalist-teams' : '/api/qualified-teams'
+      const editingEndpointBase = editingQualifiedTeamId?.startsWith('finalist:') ? '/api/finalist-teams' : '/api/qualified-teams'
+      const editingId = editingQualifiedTeamId?.includes(':') ? editingQualifiedTeamId.split(':')[1] : editingQualifiedTeamId
+
+      const endpoint = editingQualifiedTeamId ? `${editingEndpointBase}/${editingId}` : endpointBase
       const method = editingQualifiedTeamId ? 'PUT' : 'POST'
+
+      const body = payload.stage === 'finalist'
+        ? payload
+        : {
+            sequenceNo: payload.sequenceNo,
+            teamId: payload.teamId,
+            teamName: payload.teamName,
+            collegeName: payload.collegeName,
+          }
 
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
       })
 
       const json = (await response.json()) as ApiResponse<QualifiedTeamEntry>
@@ -640,12 +698,13 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const onDeleteQualifiedTeam = async (id: string) => {
+  const onDeleteQualifiedTeam = async (id: string, stage: 'qualified' | 'finalist' = 'qualified') => {
     setLoading(true)
     setError(null)
 
     try {
-      const response = await fetch(`/api/qualified-teams/${id}`, { method: 'DELETE' })
+      const baseEndpoint = stage === 'finalist' ? '/api/finalist-teams' : '/api/qualified-teams'
+      const response = await fetch(`${baseEndpoint}/${id}`, { method: 'DELETE' })
       const json = (await response.json()) as ApiResponse<null>
 
       if (!response.ok || !json.success) {
@@ -1060,6 +1119,41 @@ export default function AdminDashboardPage() {
     }
   }
 
+  const onSaveLoadingPopup = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!user?.isSuperAdmin) return
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/site-settings/loading-popup', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          enabled: loadingPopupForm.enabled,
+          title: loadingPopupForm.title.trim(),
+          message: loadingPopupForm.message.trim(),
+        }),
+      })
+
+      const json = (await response.json()) as ApiResponse<LoadingPopupData>
+
+      if (!response.ok || !json.success || !json.data) {
+        throw new Error(json.error || 'Failed to update loading popup settings')
+      }
+
+      setLoadingPopupSettings(json.data)
+      setLoadingPopupForm(json.data)
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Failed to update loading popup settings')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const sortedLeaderboard = useMemo(
     () =>
       [...leaderboard].sort((a, b) => {
@@ -1079,6 +1173,11 @@ export default function AdminDashboardPage() {
   const sortedQualifiedTeams = useMemo(
     () => [...qualifiedTeams].sort((a, b) => a.sequenceNo - b.sequenceNo || a.teamName.localeCompare(b.teamName)),
     [qualifiedTeams]
+  )
+
+  const sortedFinalistTeams = useMemo(
+    () => [...finalistTeams].sort((a, b) => a.sequenceNo - b.sequenceNo || a.teamName.localeCompare(b.teamName)),
+    [finalistTeams]
   )
 
   if (!isAuthenticated) {
@@ -1792,7 +1891,15 @@ export default function AdminDashboardPage() {
                   publishState.qualifiedTeams ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-200'
                 }`}
               >
-                {publishState.qualifiedTeams ? 'Unpublish' : 'Go Live'}
+                {publishState.qualifiedTeams ? 'Unpublish Qualified' : 'Go Live Qualified'}
+              </button>
+              <button
+                onClick={() => void togglePublish('finalistTeams')}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
+                  publishState.finalistTeams ? 'bg-amber-400 text-slate-950' : 'bg-slate-700 text-slate-200'
+                }`}
+              >
+                {publishState.finalistTeams ? 'Unpublish Grand Finalists' : 'Go Live Grand Finalists'}
               </button>
               <button
                 onClick={() => {
@@ -1803,12 +1910,28 @@ export default function AdminDashboardPage() {
                 }}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
               >
-                <Plus size={16} /> {showQualifiedTeamForm ? 'Close' : 'Add Qualified Team'}
+                <Plus size={16} /> {showQualifiedTeamForm ? 'Close' : 'Add Team'}
               </button>
             </div>
 
             {showQualifiedTeamForm && (
               <form onSubmit={onSaveQualifiedTeam} className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-2xl border border-emerald-500/20 bg-slate-900/80 p-4">
+                <label className="space-y-1 md:col-span-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Team Stage</span>
+                  <select
+                    value={qualifiedTeamForm.stage}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, stage: e.target.value as 'qualified' | 'finalist' }))}
+                    disabled={Boolean(editingQualifiedTeamId)}
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                  >
+                    <option value="qualified">Qualified Team (General)</option>
+                    <option value="finalist">Grand Finalist Team</option>
+                  </select>
+                  {editingQualifiedTeamId && (
+                    <p className="text-[11px] text-slate-500">Team stage cannot be changed while editing. Create a new entry to move between sections.</p>
+                  )}
+                </label>
+
                 <label className="space-y-1">
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Sr No</span>
                   <input
@@ -1845,6 +1968,19 @@ export default function AdminDashboardPage() {
                   />
                 </label>
 
+                {qualifiedTeamForm.stage === 'finalist' && (
+                  <label className="space-y-1">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Team Leader Name</span>
+                    <input
+                      value={qualifiedTeamForm.teamLeaderName}
+                      onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, teamLeaderName: e.target.value }))}
+                      placeholder="Enter team leader name"
+                      className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                      required
+                    />
+                  </label>
+                )}
+
                 <label className="space-y-1">
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Team ID</span>
                   <input
@@ -1869,50 +2005,103 @@ export default function AdminDashboardPage() {
                     type="submit"
                     className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-emerald-500 text-slate-950 disabled:opacity-60"
                   >
-                    {editingQualifiedTeamId ? 'Update Qualified Team' : 'Save Qualified Team'}
+                    {editingQualifiedTeamId ? 'Update Team' : 'Save Team'}
                   </button>
                 </div>
               </form>
             )}
 
-            <div className="rounded-2xl border border-emerald-500/20 overflow-hidden">
-              {sortedQualifiedTeams.length === 0 ? (
-                <div className="p-10 text-center text-slate-400 font-semibold">No qualified teams added yet.</div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-3 sm:p-4">
-                  {sortedQualifiedTeams.map((team) => (
-                    <div key={team.id} className="rounded-xl border border-emerald-500/20 bg-slate-900/60 p-4">
-                      <p className="text-xs font-bold uppercase tracking-widest text-emerald-300">Sr No: {team.sequenceNo}</p>
-                      <p className="text-lg font-bold text-white line-clamp-1 mt-1">{team.teamName}</p>
-                      <p className="text-sm text-emerald-300/90 mt-1 line-clamp-1">{team.collegeName}</p>
-                      <p className="text-xs text-slate-400 mt-2 uppercase tracking-wide">Team ID: {team.teamId}</p>
-                      <div className="mt-3 flex justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            setEditingQualifiedTeamId(team.id)
-                            setQualifiedTeamForm({
-                              sequenceNo: String(team.sequenceNo),
-                              teamId: team.teamId,
-                              teamName: team.teamName,
-                              collegeName: team.collegeName,
-                            })
-                            setShowQualifiedTeamForm(true)
-                          }}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
-                        >
-                          <Pencil size={14} />
-                        </button>
-                        <button
-                          onClick={() => void onDeleteQualifiedTeam(team.id)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/40"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-emerald-500/20 overflow-hidden">
+                <div className="border-b border-emerald-500/20 px-4 py-3 bg-slate-900/70">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-emerald-300">Grand Finalist Teams</h3>
                 </div>
-              )}
+                {sortedFinalistTeams.length === 0 ? (
+                  <div className="p-8 text-center text-slate-400 font-semibold">No grand finalist teams added yet.</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-3 sm:p-4">
+                    {sortedFinalistTeams.map((team) => (
+                      <div key={team.id} className="rounded-xl border border-emerald-500/20 bg-slate-900/60 p-4">
+                        <p className="text-xs font-bold uppercase tracking-widest text-emerald-300">Sr No: {team.sequenceNo}</p>
+                        <p className="text-lg font-bold text-white line-clamp-1 mt-1">{team.teamName}</p>
+                        <p className="text-sm text-emerald-200 mt-1 line-clamp-1">Leader: {team.teamLeaderName}</p>
+                        <p className="text-sm text-emerald-300/90 mt-1 line-clamp-1">{team.collegeName}</p>
+                        <p className="text-xs text-slate-400 mt-2 uppercase tracking-wide">Team ID: {team.teamId}</p>
+                        <div className="mt-3 flex justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingQualifiedTeamId(`finalist:${team.id}`)
+                              setQualifiedTeamForm({
+                                stage: 'finalist',
+                                sequenceNo: String(team.sequenceNo),
+                                teamId: team.teamId,
+                                teamName: team.teamName,
+                                teamLeaderName: team.teamLeaderName,
+                                collegeName: team.collegeName,
+                              })
+                              setShowQualifiedTeamForm(true)
+                            }}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => void onDeleteQualifiedTeam(team.id, 'finalist')}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/40"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-emerald-500/20 overflow-hidden">
+                <div className="border-b border-emerald-500/20 px-4 py-3 bg-slate-900/70">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-emerald-300">Qualified Teams (General)</h3>
+                </div>
+                {sortedQualifiedTeams.length === 0 ? (
+                  <div className="p-8 text-center text-slate-400 font-semibold">No qualified teams added yet.</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-3 sm:p-4">
+                    {sortedQualifiedTeams.map((team) => (
+                      <div key={team.id} className="rounded-xl border border-emerald-500/20 bg-slate-900/60 p-4">
+                        <p className="text-xs font-bold uppercase tracking-widest text-emerald-300">Sr No: {team.sequenceNo}</p>
+                        <p className="text-lg font-bold text-white line-clamp-1 mt-1">{team.teamName}</p>
+                        <p className="text-sm text-emerald-300/90 mt-1 line-clamp-1">{team.collegeName}</p>
+                        <p className="text-xs text-slate-400 mt-2 uppercase tracking-wide">Team ID: {team.teamId}</p>
+                        <div className="mt-3 flex justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingQualifiedTeamId(`qualified:${team.id}`)
+                              setQualifiedTeamForm({
+                                stage: 'qualified',
+                                sequenceNo: String(team.sequenceNo),
+                                teamId: team.teamId,
+                                teamName: team.teamName,
+                                teamLeaderName: '',
+                                collegeName: team.collegeName,
+                              })
+                              setShowQualifiedTeamForm(true)
+                            }}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => void onDeleteQualifiedTeam(team.id, 'qualified')}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/40"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -2302,6 +2491,59 @@ export default function AdminDashboardPage() {
                   className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-violet-500 text-slate-950 disabled:opacity-60"
                 >
                   Save Redirect
+                </button>
+              </div>
+            </form>
+
+            <form onSubmit={onSaveLoadingPopup} className="rounded-2xl border border-violet-500/20 bg-slate-900/80 p-4 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-violet-300">
+                Loading Popup Content
+              </p>
+
+              <label className="inline-flex items-center gap-2 text-sm text-slate-200">
+                <input
+                  type="checkbox"
+                  checked={loadingPopupForm.enabled}
+                  onChange={(e) => setLoadingPopupForm((prev) => ({ ...prev, enabled: e.target.checked }))}
+                />
+                Enable popup after page load
+              </label>
+
+              <input
+                value={loadingPopupForm.title}
+                onChange={(e) => setLoadingPopupForm((prev) => ({ ...prev, title: e.target.value }))}
+                placeholder="Popup title"
+                className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                required
+              />
+
+              <textarea
+                value={loadingPopupForm.message}
+                onChange={(e) => setLoadingPopupForm((prev) => ({ ...prev, message: e.target.value }))}
+                placeholder="Popup message"
+                rows={4}
+                className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                required
+              />
+
+              <p className="text-xs text-slate-400">
+                Live title: {loadingPopupSettings.title}
+              </p>
+
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLoadingPopupForm(loadingPopupSettings)}
+                  className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-700 text-slate-200"
+                >
+                  Reset
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-violet-500 text-slate-950 disabled:opacity-60"
+                >
+                  Save Popup
                 </button>
               </div>
             </form>

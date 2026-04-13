@@ -2,16 +2,45 @@
 
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+
+interface LoadingPopupSettings {
+  enabled: boolean
+  title: string
+  message: string
+}
+
+interface ApiResponse<T> {
+  success: boolean
+  data?: T
+  error?: string
+}
+
+const defaultPopupSettings: LoadingPopupSettings = {
+  enabled: true,
+  title: 'Qualified Teams Are Live',
+  message: 'Qualified teams are now live and can be viewed in the Qualified Teams section. Check the latest list to see the updated entries.',
+}
 
 export default function RegistrationPolicyPopup() {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const [settings, setSettings] = useState<LoadingPopupSettings>(defaultPopupSettings)
+  const [settingsLoaded, setSettingsLoaded] = useState(false)
 
   useEffect(() => {
+    if (pathname.startsWith('/qualified-teams')) {
+      return
+    }
+
+    if (!settingsLoaded) return
+
     let timeoutId: number | undefined
     const isMobile = window.matchMedia('(max-width: 767px)').matches
     const hasMobileLoaderPlayed = sessionStorage.getItem('sb_mobile_loader_played') === 'true'
 
     const openPopup = () => {
+      if (!settings.enabled) return
       timeoutId = window.setTimeout(() => {
         setIsOpen(true)
       }, 250)
@@ -40,11 +69,34 @@ export default function RegistrationPolicyPopup() {
       window.removeEventListener('sb-mobile-loader-complete', handleMobileLoaderComplete)
       if (timeoutId) window.clearTimeout(timeoutId)
     }
+  }, [pathname, settings.enabled, settingsLoaded])
+
+  useEffect(() => {
+    const fetchPopupSettings = async () => {
+      try {
+        const response = await fetch('/api/site-settings/loading-popup', { cache: 'no-store' })
+        const json = (await response.json()) as ApiResponse<LoadingPopupSettings>
+
+        if (!response.ok || !json.success || !json.data) {
+          return
+        }
+
+        setSettings(json.data)
+      } catch {
+        // Keep default popup copy on network errors.
+      } finally {
+        setSettingsLoaded(true)
+      }
+    }
+
+    void fetchPopupSettings()
   }, [])
 
   const closePopup = () => {
     setIsOpen(false)
   }
+
+  if (pathname.startsWith('/qualified-teams')) return null
 
   if (!isOpen) return null
 
@@ -58,7 +110,7 @@ export default function RegistrationPolicyPopup() {
       >
         <div className="mb-3 relative">
           <h2 id="round-policy-title" className="text-center text-lg sm:text-xl font-black text-red-600 dark:text-red-400">
-            Qualified Teams Are Live
+            {settings.title}
           </h2>
           <button
             type="button"
@@ -71,7 +123,7 @@ export default function RegistrationPolicyPopup() {
         </div>
 
         <p className="text-sm sm:text-base font-semibold text-emerald-700 dark:text-emerald-300">
-          Qualified teams are now live and can be viewed in the Qualified Teams section. Check the latest list to see the updated entries.
+          {settings.message}
         </p>
 
         <div className="mt-5 flex justify-end">
