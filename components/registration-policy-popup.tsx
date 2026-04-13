@@ -22,6 +22,8 @@ const defaultPopupSettings: LoadingPopupSettings = {
   message: 'Qualified teams are now live and can be viewed in the Qualified Teams section. Check the latest list to see the updated entries.',
 }
 
+const POPUP_SEEN_KEY = 'sb_registration_popup_seen'
+
 export default function RegistrationPolicyPopup() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
@@ -30,10 +32,14 @@ export default function RegistrationPolicyPopup() {
 
   useEffect(() => {
     if (pathname.startsWith('/qualified-teams')) {
+      sessionStorage.setItem(POPUP_SEEN_KEY, 'true')
       return
     }
 
     if (!settingsLoaded) return
+
+    const hasSeenPopup = sessionStorage.getItem(POPUP_SEEN_KEY) === 'true'
+    if (hasSeenPopup) return
 
     let timeoutId: number | undefined
     const isMobile = window.matchMedia('(max-width: 767px)').matches
@@ -43,6 +49,7 @@ export default function RegistrationPolicyPopup() {
       if (!settings.enabled) return
       timeoutId = window.setTimeout(() => {
         setIsOpen(true)
+        sessionStorage.setItem(POPUP_SEEN_KEY, 'true')
       }, 250)
     }
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
+import QualifiedTeamsCelebration from '@/components/qualified-teams-celebration'
 
 interface QualifiedTeamEntry {
   id: string
@@ -158,12 +159,14 @@ export default function QualifiedTeamsLive() {
         </select>
       </div>
 
+      <QualifiedTeamsCelebration />
+
       <div className="space-y-8">
           {showGrandFinalistsSection && (
           <div className="space-y-4">
             <div className="text-center">
               <h2 className="text-xl sm:text-2xl font-black text-emerald-300">Grand Finalist Teams</h2>
-              <p className="text-xs text-slate-400 mt-1">Teams selected for the grand finalist stage with team leader details.</p>
+              <p className="text-xs text-slate-400 mt-1">Teams selected for the grand finalist stage.</p>
             </div>
 
             {!isFinalistsLive ? (
