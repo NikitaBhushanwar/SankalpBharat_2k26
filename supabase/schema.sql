@@ -97,6 +97,15 @@ create table if not exists public.problem_statements (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.final_problem_statements (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  domain text not null,
+  description text not null,
+  pdf_link text not null default '',
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.announcements (
   id uuid primary key default gen_random_uuid(),
   title text not null,
@@ -110,7 +119,7 @@ create index if not exists idx_announcements_created_at on public.announcements(
 create index if not exists idx_announcements_updated_at on public.announcements(updated_at desc);
 
 create table if not exists public.publish_state (
-  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams', 'finalistTeams')),
+  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'finalProblemStatements', 'finalProblemStatementsDownload', 'qualifiedTeams', 'finalistTeams')),
   is_live boolean not null default false,
   updated_at timestamptz not null default now()
 );
@@ -120,7 +129,7 @@ drop constraint if exists publish_state_section_check;
 
 alter table public.publish_state
 add constraint publish_state_section_check
-check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams', 'finalistTeams'));
+check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'finalProblemStatements', 'finalProblemStatementsDownload', 'qualifiedTeams', 'finalistTeams'));
 
 create table if not exists public.site_settings (
   key text primary key,
@@ -178,6 +187,8 @@ values
   ('winners', false),
   ('problemStatements', false),
   ('problemStatementsDownload', false),
+  ('finalProblemStatements', false),
+  ('finalProblemStatementsDownload', false),
   ('qualifiedTeams', false),
   ('finalistTeams', false)
 on conflict (section) do nothing;

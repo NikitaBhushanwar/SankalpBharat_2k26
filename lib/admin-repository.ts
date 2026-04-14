@@ -41,6 +41,14 @@ export interface ProblemStatementEntry {
   pdfLink: string
 }
 
+export interface FinalProblemStatementEntry {
+  id: string
+  title: string
+  domain: string
+  description: string
+  pdfLink: string
+}
+
 export interface AnnouncementEntry {
   id: string
   title: string
@@ -55,6 +63,8 @@ export interface PublishState {
   winners: boolean
   problemStatements: boolean
   problemStatementsDownload: boolean
+  finalProblemStatements: boolean
+  finalProblemStatementsDownload: boolean
   qualifiedTeams: boolean
   finalistTeams: boolean
 }
@@ -71,7 +81,7 @@ export interface NavbarVisibilityState {
   qualifiedTeams: boolean
 }
 
-export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
+export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
 
 interface LeaderboardRow {
   id: string
@@ -102,6 +112,15 @@ interface ProblemStatementRow {
   created_at: string
 }
 
+interface FinalProblemStatementRow {
+  id: string
+  title: string
+  domain: string
+  description: string
+  pdf_link: string | null
+  created_at: string
+}
+
 interface AnnouncementRow {
   id: string
   title: string
@@ -112,7 +131,7 @@ interface AnnouncementRow {
 }
 
 interface PublishStateRow {
-  section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
+  section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
   is_live: boolean
 }
 
@@ -140,6 +159,14 @@ export const mapWinnerRow = (row: WinnerRow): WinnerEntry => ({
 })
 
 export const mapProblemStatementRow = (row: ProblemStatementRow): ProblemStatementEntry => ({
+  id: row.id,
+  title: row.title,
+  domain: row.domain,
+  description: row.description,
+  pdfLink: row.pdf_link ?? '',
+})
+
+export const mapFinalProblemStatementRow = (row: FinalProblemStatementRow): FinalProblemStatementEntry => ({
   id: row.id,
   title: row.title,
   domain: row.domain,
@@ -235,6 +262,150 @@ export async function deleteAnnouncement(supabase: SupabaseClient, id: string) {
   }
 }
 
+export async function readAllProblemStatements(supabase: SupabaseClient): Promise<ProblemStatementEntry[]> {
+  const { data, error } = await supabase
+    .from('problem_statements')
+    .select('*')
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return (data as ProblemStatementRow[] | null)?.map(mapProblemStatementRow) ?? []
+}
+
+export async function createProblemStatement(
+  supabase: SupabaseClient,
+  statement: Omit<ProblemStatementEntry, 'id'>
+) {
+  const { data, error } = await supabase
+    .from('problem_statements')
+    .insert({
+      title: statement.title,
+      domain: statement.domain,
+      description: statement.description,
+      pdf_link: statement.pdfLink,
+    })
+    .select('*')
+    .single<ProblemStatementRow>()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return mapProblemStatementRow(data)
+}
+
+export async function updateProblemStatement(
+  supabase: SupabaseClient,
+  id: string,
+  statement: Partial<Omit<ProblemStatementEntry, 'id'>>
+) {
+  const updateData: Record<string, unknown> = {}
+
+  if (statement.title !== undefined) updateData.title = statement.title
+  if (statement.domain !== undefined) updateData.domain = statement.domain
+  if (statement.description !== undefined) updateData.description = statement.description
+  if (statement.pdfLink !== undefined) updateData.pdf_link = statement.pdfLink
+
+  const { data, error } = await supabase
+    .from('problem_statements')
+    .update(updateData)
+    .eq('id', id)
+    .select('*')
+    .single<ProblemStatementRow>()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return mapProblemStatementRow(data)
+}
+
+export async function deleteProblemStatement(supabase: SupabaseClient, id: string) {
+  const { error } = await supabase
+    .from('problem_statements')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
+export async function readAllFinalProblemStatements(supabase: SupabaseClient): Promise<FinalProblemStatementEntry[]> {
+  const { data, error } = await supabase
+    .from('final_problem_statements')
+    .select('*')
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return (data as FinalProblemStatementRow[] | null)?.map(mapFinalProblemStatementRow) ?? []
+}
+
+export async function createFinalProblemStatement(
+  supabase: SupabaseClient,
+  statement: Omit<FinalProblemStatementEntry, 'id'>
+) {
+  const { data, error } = await supabase
+    .from('final_problem_statements')
+    .insert({
+      title: statement.title,
+      domain: statement.domain,
+      description: statement.description,
+      pdf_link: statement.pdfLink,
+    })
+    .select('*')
+    .single<FinalProblemStatementRow>()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return mapFinalProblemStatementRow(data)
+}
+
+export async function updateFinalProblemStatement(
+  supabase: SupabaseClient,
+  id: string,
+  statement: Partial<Omit<FinalProblemStatementEntry, 'id'>>
+) {
+  const updateData: Record<string, unknown> = {}
+
+  if (statement.title !== undefined) updateData.title = statement.title
+  if (statement.domain !== undefined) updateData.domain = statement.domain
+  if (statement.description !== undefined) updateData.description = statement.description
+  if (statement.pdfLink !== undefined) updateData.pdf_link = statement.pdfLink
+
+  const { data, error } = await supabase
+    .from('final_problem_statements')
+    .update(updateData)
+    .eq('id', id)
+    .select('*')
+    .single<FinalProblemStatementRow>()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return mapFinalProblemStatementRow(data)
+}
+
+export async function deleteFinalProblemStatement(supabase: SupabaseClient, id: string) {
+  const { error } = await supabase
+    .from('final_problem_statements')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+}
+
 export async function recomputeLeaderboardRanks(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('leaderboard_entries')
@@ -292,6 +463,8 @@ export async function readPublishState(supabase: SupabaseClient): Promise<Publis
     winners: false,
     problemStatements: false,
     problemStatementsDownload: false,
+    finalProblemStatements: false,
+    finalProblemStatementsDownload: false,
     qualifiedTeams: false,
     finalistTeams: false,
   }

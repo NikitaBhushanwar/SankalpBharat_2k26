@@ -20,6 +20,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
+import ProblemStatementsAdmin from '@/components/problem-statements-admin'
 import type { AnnouncementEntry, FinalistTeamEntry, QualifiedTeamEntry, SponsorEntry } from '@/lib/admin-repository'
 
 interface LeaderboardEntry {
@@ -1752,134 +1753,7 @@ export default function AdminDashboardPage() {
         )}
 
         {activeTab === 'problemStatements' && (
-          <div className="space-y-4">
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => void togglePublish('problemStatements')}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
-                  publishState.problemStatements ? 'bg-blue-500 text-slate-950' : 'bg-slate-700 text-slate-200'
-                }`}
-              >
-                {publishState.problemStatements ? 'Unpublish' : 'Go Live'}
-              </button>
-              <button
-                onClick={() => void togglePublish('problemStatementsDownload')}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
-                  publishState.problemStatementsDownload ? 'bg-sky-500 text-slate-950' : 'bg-slate-700 text-slate-200'
-                }`}
-              >
-                {publishState.problemStatementsDownload ? 'Hide Download PS' : 'Show Download PS'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowProblemForm((prev) => !prev)
-                  if (editingProblemId) {
-                    setEditingProblemId(null)
-                    setProblemForm(emptyProblemForm)
-                  }
-                }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
-              >
-                <Plus size={16} /> {showProblemForm ? 'Close' : 'Add Problem Statement'}
-              </button>
-            </div>
-
-            {showProblemForm && (
-              <form onSubmit={onSaveProblem} className="grid grid-cols-1 gap-3 rounded-2xl border border-blue-500/20 bg-slate-900/80 p-4">
-                <input
-                  value={problemForm.title}
-                  onChange={(e) => setProblemForm((prev) => ({ ...prev, title: e.target.value }))}
-                  placeholder="Problem title"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-                <input
-                  value={problemForm.domain}
-                  onChange={(e) => setProblemForm((prev) => ({ ...prev, domain: e.target.value }))}
-                  placeholder="Domain (e.g. Environment, AI, Healthcare)"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-                <textarea
-                  value={problemForm.description}
-                  onChange={(e) => setProblemForm((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Detailed problem statement description"
-                  rows={4}
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-                <input
-                  value={problemForm.pdfLink}
-                  onChange={(e) => setProblemForm((prev) => ({ ...prev, pdfLink: e.target.value }))}
-                  placeholder="Google Drive PDF link"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-
-                <div className="flex gap-2 justify-end">
-                  <button
-                    type="button"
-                    onClick={resetProblemForm}
-                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-700 text-slate-200"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    disabled={loading}
-                    type="submit"
-                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-blue-500 text-slate-950 disabled:opacity-60"
-                  >
-                    {editingProblemId ? 'Update Statement' : 'Save Statement'}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            <div className="rounded-2xl border border-blue-500/20 overflow-hidden">
-              {problemStatements.length === 0 ? (
-                <div className="p-10 text-center text-slate-400 font-semibold">No problem statements uploaded yet.</div>
-              ) : (
-                <div className="space-y-3 p-3 sm:p-4">
-                  {problemStatements.map((item, index) => (
-                    <div key={item.id} className="rounded-xl border border-blue-500/20 bg-slate-900/60 p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-xs text-blue-300 font-bold uppercase tracking-wider mb-1">Statement {String(index + 1).padStart(2, '0')}</p>
-                          <h3 className="text-lg font-bold text-white">{item.title}</h3>
-                          <p className="text-xs text-cyan-300 mt-1">Domain: {item.domain}</p>
-                          <p className="text-xs text-slate-400 mt-1 break-all">PDF Link: {item.pdfLink || 'Not added yet'}</p>
-                          <p className="text-sm text-slate-300 mt-2 leading-relaxed">{item.description}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => {
-                              setEditingProblemId(item.id)
-                              setProblemForm({
-                                title: item.title,
-                                domain: item.domain,
-                                description: item.description,
-                                pdfLink: item.pdfLink ?? '',
-                              })
-                              setShowProblemForm(true)
-                            }}
-                            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
-                          >
-                            <Pencil size={14} />
-                          </button>
-                          <button
-                            onClick={() => void onDeleteProblem(item.id)}
-                            className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/40"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <ProblemStatementsAdmin embedded />
         )}
 
         {activeTab === 'qualifiedTeams' && (
