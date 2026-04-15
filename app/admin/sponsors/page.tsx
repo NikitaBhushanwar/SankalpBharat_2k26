@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SponsorEntry } from '@/lib/admin-repository'
 import { Trash2, Edit2, Plus, X, AlertTriangle, ArrowLeft, LogOut } from 'lucide-react'
+import { createPortal } from 'react-dom'
 import { useAuth } from '@/context/auth-context'
 
 const isValidSponsorId = (id: unknown): id is string =>
@@ -26,6 +27,7 @@ export default function SponsorsPage() {
   const [secondaryPreviewUrl, setSecondaryPreviewUrl] = useState<string | null>(null)
   const [showCustomCategory, setShowCustomCategory] = useState(false)
   const [customCategoryInput, setCustomCategoryInput] = useState('')
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [formData, setFormData] = useState<Omit<SponsorEntry, 'id'>>({
     name: '',
     logoUrl: '',
@@ -151,8 +153,6 @@ export default function SponsorsPage() {
       setError('Invalid sponsor id. Please refresh and try again.')
       return
     }
-
-    if (!confirm('Are you sure you want to delete this sponsor?')) return
 
     try {
       setDeletingId(id)
@@ -797,7 +797,7 @@ export default function SponsorsPage() {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(sponsor.id)}
+                      onClick={() => setPendingDeleteId(sponsor.id)}
                       disabled={deletingId !== null || !isValidSponsorId(sponsor.id)}
                       className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-500/20 text-red-600 dark:text-red-400 rounded-lg font-semibold hover:bg-red-500/30 transition-all duration-300 text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -820,6 +820,57 @@ export default function SponsorsPage() {
           </div>
         )}
       </div>
+
+      {pendingDeleteId && typeof window !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/75 backdrop-blur-sm px-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="sponsor-delete-title"
+            className="w-full max-w-md rounded-3xl border border-rose-400/30 bg-slate-900 shadow-[0_28px_80px_rgba(2,6,23,0.65)]"
+          >
+            <div className="p-5 sm:p-6 space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-rose-400/30 bg-rose-500/15 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-rose-200">
+                <AlertTriangle size={14} /> Delete Confirmation
+              </div>
+
+              <div className="space-y-2">
+                <h3 id="sponsor-delete-title" className="text-xl font-black text-white">
+                  Delete this sponsor?
+                </h3>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  This sponsor entry and its references will be removed from the admin list.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setPendingDeleteId(null)}
+                  className="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-slate-800 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-200 transition hover:bg-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const id = pendingDeleteId
+                    setPendingDeleteId(null)
+
+                    if (id) {
+                      void handleDelete(id)
+                    }
+                  }}
+                  className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-rose-400 to-red-500 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-950 transition hover:brightness-110"
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   )
 }

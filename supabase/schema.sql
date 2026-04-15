@@ -99,12 +99,120 @@ create table if not exists public.problem_statements (
 
 create table if not exists public.final_problem_statements (
   id uuid primary key default gen_random_uuid(),
+  problem_statement_id text not null default '',
   title text not null,
   domain text not null,
   description text not null,
   pdf_link text not null default '',
+  display_order integer not null default 0 check (display_order >= 0),
+  max_slots integer not null default 6 check (max_slots > 0),
   created_at timestamptz not null default now()
 );
+
+alter table public.final_problem_statements
+  add column if not exists problem_statement_id text not null default '';
+
+alter table public.final_problem_statements
+  add column if not exists display_order integer not null default 0;
+
+alter table public.final_problem_statements
+  add column if not exists max_slots integer not null default 6;
+
+alter table public.final_problem_statements
+  drop constraint if exists final_problem_statements_max_slots_check;
+
+alter table public.final_problem_statements
+  add constraint final_problem_statements_max_slots_check check (max_slots > 0);
+
+create index if not exists idx_final_problem_statements_display_order on public.final_problem_statements(display_order);
+create unique index if not exists idx_final_problem_statements_problem_statement_id
+  on public.final_problem_statements(problem_statement_id)
+  where problem_statement_id <> '';
+
+create table if not exists public.final_round_teams (
+  id uuid primary key default gen_random_uuid(),
+  team_id text not null unique,
+  team_name text not null,
+  password_hash text not null,
+  selected_problem_statement_id uuid references public.final_problem_statements(id) on delete set null,
+  selected_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+alter table public.final_round_teams
+  add column if not exists selected_problem_statement_id uuid references public.final_problem_statements(id) on delete set null;
+
+alter table public.final_round_teams
+  add column if not exists selected_at timestamptz;
+
+create unique index if not exists idx_final_round_teams_team_id on public.final_round_teams(team_id);
+create index if not exists idx_final_round_teams_selected_problem_statement_id on public.final_round_teams(selected_problem_statement_id);
+
+create or replace function public.final_round_select_problem_statement(
+  p_team_id text,
+  p_problem_statement_id uuid
+)
+returns table (
+  team_id text,
+  team_name text,
+  selected_problem_statement_id uuid,
+  selected_at timestamptz
+)
+language plpgsql
+as $$
+declare
+  v_team public.final_round_teams%rowtype;
+  v_statement public.final_problem_statements%rowtype;
+  v_filled_slots integer;
+begin
+  select *
+    into v_team
+    from public.final_round_teams as frt
+   where frt.team_id = p_team_id
+   for update;
+
+  if not found then
+    raise exception 'Team not found';
+  end if;
+
+  if v_team.selected_problem_statement_id is not null then
+    raise exception 'Team already selected a problem statement';
+  end if;
+
+  select *
+    into v_statement
+    from public.final_problem_statements as fps
+   where fps.id = p_problem_statement_id
+   for update;
+
+  if not found then
+    raise exception 'Problem statement not found';
+  end if;
+
+  select count(*)
+    into v_filled_slots
+    from public.final_round_teams as frt
+   where frt.selected_problem_statement_id = p_problem_statement_id;
+
+  if v_filled_slots >= v_statement.max_slots then
+    raise exception 'Problem statement is full';
+  end if;
+
+  update public.final_round_teams as frt
+     set selected_problem_statement_id = p_problem_statement_id,
+         selected_at = now()
+   where frt.id = v_team.id;
+
+  return query
+    select
+      v_team.team_id,
+      v_team.team_name,
+      p_problem_statement_id,
+      now();
+end;
+$$;
+
+create index if not exists idx_final_problem_statements_title on public.final_problem_statements(title);
 
 create table if not exists public.announcements (
   id uuid primary key default gen_random_uuid(),

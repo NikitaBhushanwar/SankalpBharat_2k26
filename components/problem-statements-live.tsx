@@ -12,6 +12,7 @@ interface ProblemStatementEntry {
 
 interface FinalProblemStatementEntry {
   id: string
+  problemStatementId: string
   title: string
   domain: string
   description: string
@@ -141,7 +142,9 @@ export default function ProblemStatementsLive() {
             <article key={item.id} className={`glass-effect rounded-2xl border p-5 sm:p-6 shadow-[0_0_0_1px_rgba(148,163,184,0.12)] ${sectionType === 'final' ? 'border-emerald-500/25' : 'border-border/50'}`}>
               <div className="mb-4 space-y-2">
                 <p className={`text-xs uppercase tracking-widest font-bold ${sectionType === 'final' ? 'text-emerald-500 dark:text-emerald-300' : 'text-cyan-600 dark:text-cyan-300'}`}>
-                  {sectionType === 'final' ? `Final PS ${String(index + 1).padStart(2, '0')}` : `Statement ${String(index + 1).padStart(2, '0')}`}
+                  {sectionType === 'final'
+                    ? ((item as FinalProblemStatementEntry).problemStatementId || `Final PS ${String(index + 1).padStart(2, '0')}`)
+                    : `Statement ${String(index + 1).padStart(2, '0')}`}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {(domainChips.length > 0 ? domainChips : [item.domain]).map((domain) => (

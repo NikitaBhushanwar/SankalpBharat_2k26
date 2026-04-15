@@ -28,7 +28,8 @@ const resolveEncryptionKey = () => {
   return createHash('sha256').update(secret).digest()
 }
 
-export function hashPassword(password: string) {
+export function 
+hashPassword(password: string) {
   const salt = randomBytes(16).toString('hex')
   const hashedBuffer = scryptSync(password, salt, KEY_LENGTH)
   return `${salt}:${hashedBuffer.toString('hex')}`

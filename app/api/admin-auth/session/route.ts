@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
-import { requireAdminSession } from '@/lib/admin-session'
+import {
+  createAdminSessionToken,
+  requireAdminSession,
+  setAdminSessionCookie,
+} from '@/lib/admin-session'
 import { mapAdminUserRow } from '@/lib/admin-access'
 
 interface ApiResponse<T> {
@@ -34,13 +38,19 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    return NextResponse.json<ApiResponse<ReturnType<typeof mapAdminUserRow>>>(
+    const response = NextResponse.json<ApiResponse<ReturnType<typeof mapAdminUserRow>>>(
       {
         success: true,
         data: mapAdminUserRow(adminRow),
       },
       { status: 200 }
     )
+
+    // Sliding expiration: keep admin session alive while the user stays active.
+    const refreshedToken = createAdminSessionToken(sessionUser.email)
+    setAdminSessionCookie(response, refreshedToken)
+
+    return response
   } catch {
     return NextResponse.json<ApiResponse<null>>(
       {

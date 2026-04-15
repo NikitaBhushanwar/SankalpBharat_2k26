@@ -38,6 +38,7 @@ export async function PUT(
 
     const updatePayload: Partial<Omit<FinalProblemStatementEntry, 'id'>> = {}
 
+    if (body.problemStatementId !== undefined) updatePayload.problemStatementId = String(body.problemStatementId).trim()
     if (body.title !== undefined) updatePayload.title = String(body.title).trim()
     if (body.domain !== undefined) updatePayload.domain = String(body.domain).trim()
     if (body.description !== undefined) updatePayload.description = String(body.description).trim()

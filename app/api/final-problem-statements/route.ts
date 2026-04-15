@@ -42,22 +42,24 @@ export async function POST(request: NextRequest) {
     await requireAdminSession(request, supabase)
     const body = await request.json()
 
+    const problemStatementId = String(body.problemStatementId ?? '').trim()
     const title = String(body.title ?? '').trim()
     const domain = String(body.domain ?? '').trim()
     const description = String(body.description ?? '').trim()
     const pdfLink = String(body.pdfLink ?? '').trim()
 
-    if (!title || !domain || !description || !pdfLink) {
+    if (!problemStatementId || !title || !domain || !description || !pdfLink) {
       return NextResponse.json<ApiResponse<null>>(
         {
           success: false,
-          error: 'Title, domain, description, and PDF link are required',
+          error: 'Problem statement ID, title, domain, description, and PDF link are required',
         },
         { status: 400 }
       )
     }
 
     const created = await createFinalProblemStatement(supabase, {
+      problemStatementId,
       title,
       domain,
       description,

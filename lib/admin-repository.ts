@@ -43,6 +43,7 @@ export interface ProblemStatementEntry {
 
 export interface FinalProblemStatementEntry {
   id: string
+  problemStatementId: string
   title: string
   domain: string
   description: string
@@ -114,6 +115,7 @@ interface ProblemStatementRow {
 
 interface FinalProblemStatementRow {
   id: string
+  problem_statement_id: string | null
   title: string
   domain: string
   description: string
@@ -168,6 +170,7 @@ export const mapProblemStatementRow = (row: ProblemStatementRow): ProblemStateme
 
 export const mapFinalProblemStatementRow = (row: FinalProblemStatementRow): FinalProblemStatementEntry => ({
   id: row.id,
+  problemStatementId: row.problem_statement_id ?? '',
   title: row.title,
   domain: row.domain,
   description: row.description,
@@ -354,6 +357,7 @@ export async function createFinalProblemStatement(
   const { data, error } = await supabase
     .from('final_problem_statements')
     .insert({
+      problem_statement_id: statement.problemStatementId,
       title: statement.title,
       domain: statement.domain,
       description: statement.description,
@@ -376,6 +380,7 @@ export async function updateFinalProblemStatement(
 ) {
   const updateData: Record<string, unknown> = {}
 
+  if (statement.problemStatementId !== undefined) updateData.problem_statement_id = statement.problemStatementId
   if (statement.title !== undefined) updateData.title = statement.title
   if (statement.domain !== undefined) updateData.domain = statement.domain
   if (statement.description !== undefined) updateData.description = statement.description
