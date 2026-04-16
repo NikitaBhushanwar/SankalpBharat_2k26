@@ -33,7 +33,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const supabase = getSupabaseAdmin()
-    await requireAdminSession(request, supabase)
+    const admin = await requireAdminSession(request, supabase)
     const body = await request.json()
     const { section, value } = body as {
       section?: PublishSection
@@ -50,6 +50,16 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    if (section === 'finalRoundSelector' && !admin.is_super_admin) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Not authorized',
+        },
+        { status: 403 }
+      )
+    }
+
     await writePublishState(supabase, section, value)
     const publishState = await readPublishState(supabase)
 
@@ -62,7 +72,12 @@ export async function PUT(request: NextRequest) {
       { status: 200 }
     )
   } catch (error) {
-    const status = error instanceof Error && error.message === 'Not authenticated' ? 401 : 500
+    const status =
+      error instanceof Error && error.message === 'Not authenticated'
+        ? 401
+        : error instanceof Error && error.message === 'Not authorized'
+          ? 403
+          : 500
 
     return NextResponse.json(
       {

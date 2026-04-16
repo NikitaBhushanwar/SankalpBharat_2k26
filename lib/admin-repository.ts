@@ -68,6 +68,7 @@ export interface PublishState {
   finalProblemStatementsDownload: boolean
   qualifiedTeams: boolean
   finalistTeams: boolean
+  finalRoundSelector: boolean
 }
 
 export interface LoadingPopupSettings {
@@ -82,7 +83,7 @@ export interface NavbarVisibilityState {
   qualifiedTeams: boolean
 }
 
-export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
+export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams' | 'finalRoundSelector'
 
 interface LeaderboardRow {
   id: string
@@ -133,7 +134,7 @@ interface AnnouncementRow {
 }
 
 interface PublishStateRow {
-  section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
+  section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams' | 'finalRoundSelector'
   is_live: boolean
 }
 
@@ -472,6 +473,7 @@ export async function readPublishState(supabase: SupabaseClient): Promise<Publis
     finalProblemStatementsDownload: false,
     qualifiedTeams: false,
     finalistTeams: false,
+    finalRoundSelector: true,
   }
 
   const { data, error } = await supabase

@@ -227,7 +227,7 @@ create index if not exists idx_announcements_created_at on public.announcements(
 create index if not exists idx_announcements_updated_at on public.announcements(updated_at desc);
 
 create table if not exists public.publish_state (
-  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'finalProblemStatements', 'finalProblemStatementsDownload', 'qualifiedTeams', 'finalistTeams')),
+  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'finalProblemStatements', 'finalProblemStatementsDownload', 'qualifiedTeams', 'finalistTeams', 'finalRoundSelector')),
   is_live boolean not null default false,
   updated_at timestamptz not null default now()
 );
@@ -237,7 +237,7 @@ drop constraint if exists publish_state_section_check;
 
 alter table public.publish_state
 add constraint publish_state_section_check
-check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'finalProblemStatements', 'finalProblemStatementsDownload', 'qualifiedTeams', 'finalistTeams'));
+check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'finalProblemStatements', 'finalProblemStatementsDownload', 'qualifiedTeams', 'finalistTeams', 'finalRoundSelector'));
 
 create table if not exists public.site_settings (
   key text primary key,
@@ -298,7 +298,8 @@ values
   ('finalProblemStatements', false),
   ('finalProblemStatementsDownload', false),
   ('qualifiedTeams', false),
-  ('finalistTeams', false)
+  ('finalistTeams', false),
+  ('finalRoundSelector', true)
 on conflict (section) do nothing;
 
 insert into public.site_settings(key, value_text)
@@ -338,8 +339,7 @@ values (
   5242880,
   array['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml']
 )
-on conflict (id) do update
-set
+on conflict (id) do update set
   public = excluded.public,
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;

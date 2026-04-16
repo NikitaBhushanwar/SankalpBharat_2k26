@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, type FormEvent } from 'react'
+import { Suspense, useMemo, useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { KeyRound, ShieldCheck } from 'lucide-react'
@@ -36,7 +36,7 @@ interface ApiResponse<T> {
   error?: string
 }
 
-export default function FinalRoundSetupPasswordPage() {
+function SetupPasswordContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = useMemo(() => searchParams.get('token')?.trim() ?? '', [searchParams])
@@ -155,5 +155,21 @@ export default function FinalRoundSetupPasswordPage() {
         </p>
       </section>
     </main>
+  )
+}
+
+export default function FinalRoundSetupPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen px-4 sm:px-6 lg:px-8 pt-36 pb-10 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.16),_transparent_26%),linear-gradient(180deg,_#020617_0%,_#08111f_48%,_#020617_100%)] text-white">
+          <section className="mx-auto max-w-xl rounded-[2rem] border border-white/10 bg-white/6 backdrop-blur-2xl shadow-[0_40px_120px_rgba(2,6,23,0.45)] p-6 sm:p-8 space-y-5">
+            <p className="text-sm text-slate-300">Loading password setup...</p>
+          </section>
+        </main>
+      }
+    >
+      <SetupPasswordContent />
+    </Suspense>
   )
 }

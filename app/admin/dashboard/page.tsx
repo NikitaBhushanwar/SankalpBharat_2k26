@@ -72,6 +72,7 @@ interface PublishState {
   problemStatementsDownload: boolean
   qualifiedTeams: boolean
   finalistTeams: boolean
+  finalRoundSelector: boolean
 }
 
 interface LoadingPopupData {
@@ -260,6 +261,7 @@ export default function AdminDashboardPage() {
     problemStatementsDownload: false,
     qualifiedTeams: false,
     finalistTeams: false,
+    finalRoundSelector: true,
   })
   const [loadingPopupSettings, setLoadingPopupSettings] = useState<LoadingPopupData>(emptyLoadingPopupForm)
   const [loadingPopupForm, setLoadingPopupForm] = useState<LoadingPopupData>(emptyLoadingPopupForm)
@@ -367,6 +369,7 @@ export default function AdminDashboardPage() {
           ...prev,
           ...publishJson.data,
           finalistTeams: Boolean(publishJson.data.finalistTeams),
+          finalRoundSelector: Boolean(publishJson.data.finalRoundSelector ?? true),
         }))
       }
       if (visitStatsRes.ok && visitStatsJson.success && visitStatsJson.data) {
@@ -2452,6 +2455,23 @@ export default function AdminDashboardPage() {
                   {navbarVisibility.qualifiedTeams ? 'Hide' : 'Show'} Qualified Teams
                 </button>
               </div>
+            </div>
+
+            <div className="rounded-2xl border border-violet-500/20 bg-slate-900/80 p-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-violet-300 mb-2">
+                Final Round Slots Access
+              </p>
+              <p className="text-xs text-slate-400 mb-3">
+                Controls whether teams can access the problem statement slot selector on the Final Round page.
+              </p>
+              <button
+                onClick={() => void togglePublish('finalRoundSelector')}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
+                  publishState.finalRoundSelector ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-slate-950'
+                }`}
+              >
+                {publishState.finalRoundSelector ? 'Disable Slots Access' : 'Enable Slots Access'}
+              </button>
             </div>
 
             <div className="flex justify-end gap-2">

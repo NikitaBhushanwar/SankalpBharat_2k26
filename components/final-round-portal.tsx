@@ -34,6 +34,10 @@ interface ApiResponse<T> {
   error?: string
 }
 
+interface PublishStateResponse {
+  finalRoundSelector: boolean
+}
+
 const POLL_INTERVAL_MS = 3000
 
 export default function FinalRoundPortal() {
@@ -54,6 +58,7 @@ export default function FinalRoundPortal() {
   const [passwordChangeMessage, setPasswordChangeMessage] = useState<string | null>(null)
   const [showPasswordChangeForm, setShowPasswordChangeForm] = useState(false)
   const [selectionRevealReady, setSelectionRevealReady] = useState(false)
+  const [finalRoundSelectorVisible, setFinalRoundSelectorVisible] = useState(true)
 
   const selectedProblemStatement = useMemo(() => {
     if (!data?.team.selectedProblemStatementId) {
@@ -73,14 +78,21 @@ export default function FinalRoundPortal() {
 
   const loadSession = useCallback(async () => {
     try {
-      const response = await fetch('/api/final-round/session', { cache: 'no-store' })
-      const json = (await response.json()) as ApiResponse<FinalRoundDashboardData>
+      const [sessionResponse, publishStateResponse] = await Promise.all([
+        fetch('/api/final-round/session', { cache: 'no-store' }),
+        fetch('/api/publish-state', { cache: 'no-store' }),
+      ])
 
-      if (!response.ok || !json.success || !json.data) {
+      const sessionJson = (await sessionResponse.json()) as ApiResponse<FinalRoundDashboardData>
+      const publishJson = (await publishStateResponse.json()) as ApiResponse<PublishStateResponse>
+
+      setFinalRoundSelectorVisible(publishJson.success ? Boolean(publishJson.data?.finalRoundSelector ?? true) : true)
+
+      if (!sessionResponse.ok || !sessionJson.success || !sessionJson.data) {
         throw new Error('Not authenticated')
       }
 
-      setData(json.data)
+      setData(sessionJson.data)
       setError(null)
       setLastSyncedAt(new Date().toISOString())
     } catch {
@@ -454,7 +466,7 @@ export default function FinalRoundPortal() {
                     </p>
                   </article>
                 </div>
-              ) : (
+              ) : finalRoundSelectorVisible ? (
                 <>
                   <div className="rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-5 space-y-3">
                     <div className="inline-flex items-center gap-2 text-cyan-200 text-sm font-semibold">
@@ -552,6 +564,27 @@ export default function FinalRoundPortal() {
                     </div>
                   </div>
                 </>
+              ) : (
+                <div className="min-h-[520px] flex items-center justify-center">
+                  <div className="w-full max-w-xl rounded-[2rem] border border-violet-400/20 bg-violet-400/10 p-6 sm:p-8 text-center space-y-3">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-violet-300/30 bg-violet-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-violet-200 mx-auto">
+                      <Shield size={14} /> Selector Hidden
+                    </div>
+                    <h3 className="text-2xl font-black text-white">The final round selector is currently hidden by admin</h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      You can still log in, and if your team has already selected a problem statement, that locked selection will continue to show here.
+                    </p>
+                    {data?.team && (
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="inline-flex items-center justify-center rounded-xl border border-violet-300/30 bg-violet-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-violet-100 transition hover:bg-violet-300/20"
+                      >
+                        Logout
+                      </button>
+                    )}
+                  </div>
+                </div>
               )}
 
               {error && <p className="text-sm font-semibold text-rose-300">{error}</p>}
