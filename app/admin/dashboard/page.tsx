@@ -20,7 +20,8 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useAuth } from '@/context/auth-context'
-import type { AnnouncementEntry, QualifiedTeamEntry, SponsorEntry } from '@/lib/admin-repository'
+import ProblemStatementsAdmin from '@/components/problem-statements-admin'
+import type { AnnouncementEntry, FinalistTeamEntry, QualifiedTeamEntry, SponsorEntry } from '@/lib/admin-repository'
 
 interface LeaderboardEntry {
   id: string
@@ -70,6 +71,13 @@ interface PublishState {
   problemStatements: boolean
   problemStatementsDownload: boolean
   qualifiedTeams: boolean
+  finalistTeams: boolean
+}
+
+interface LoadingPopupData {
+  enabled: boolean
+  title: string
+  message: string
 }
 
 interface VisitStatsData {
@@ -129,9 +137,11 @@ const emptySponsorForm = {
 }
 
 const emptyQualifiedTeamForm = {
+  stage: 'qualified',
+  sequenceNo: '0',
+  teamId: '',
   teamName: '',
-  logoUrl: '',
-  participantNamesText: '',
+  teamLeaderName: '',
   collegeName: '',
 }
 
@@ -146,6 +156,12 @@ const emptyPasswordForm = {
   currentPassword: '',
   newPassword: '',
   confirmPassword: '',
+}
+
+const emptyLoadingPopupForm: LoadingPopupData = {
+  enabled: true,
+  title: 'Qualified Teams Are Live',
+  message: 'Qualified teams are now live and can be viewed in the Qualified Teams section. Check the latest list to see the updated entries.',
 }
 
 function CountUpNumber({ value, duration = 900 }: { value: number; duration?: number }) {
@@ -192,6 +208,7 @@ export default function AdminDashboardPage() {
   const [winners, setWinners] = useState<WinnerEntry[]>([])
   const [problemStatements, setProblemStatements] = useState<ProblemStatementEntry[]>([])
   const [qualifiedTeams, setQualifiedTeams] = useState<QualifiedTeamEntry[]>([])
+  const [finalistTeams, setFinalistTeams] = useState<FinalistTeamEntry[]>([])
   const [sponsors, setSponsors] = useState<SponsorEntry[]>([])
   const [announcements, setAnnouncements] = useState<AnnouncementEntry[]>([])
   const [adminUsers, setAdminUsers] = useState<AdminAccessUser[]>([])
@@ -221,10 +238,8 @@ export default function AdminDashboardPage() {
   const [accessForm, setAccessForm] = useState(emptyAccessForm)
   const [sponsorPrimaryPreviewUrl, setSponsorPrimaryPreviewUrl] = useState<string | null>(null)
   const [sponsorSecondaryPreviewUrl, setSponsorSecondaryPreviewUrl] = useState<string | null>(null)
-  const [qualifiedTeamPreviewUrl, setQualifiedTeamPreviewUrl] = useState<string | null>(null)
   const [sponsorUploadingPrimary, setSponsorUploadingPrimary] = useState(false)
   const [sponsorUploadingSecondary, setSponsorUploadingSecondary] = useState(false)
-  const [qualifiedTeamUploading, setQualifiedTeamUploading] = useState(false)
   const [passwordForm, setPasswordForm] = useState(emptyPasswordForm)
   const [showPasswordForm, setShowPasswordForm] = useState(false)
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
@@ -244,7 +259,10 @@ export default function AdminDashboardPage() {
     problemStatements: false,
     problemStatementsDownload: false,
     qualifiedTeams: false,
+    finalistTeams: false,
   })
+  const [loadingPopupSettings, setLoadingPopupSettings] = useState<LoadingPopupData>(emptyLoadingPopupForm)
+  const [loadingPopupForm, setLoadingPopupForm] = useState<LoadingPopupData>(emptyLoadingPopupForm)
   const [visitStats, setVisitStats] = useState<VisitStatsData>({
     totalVisits: 23875,
   })
@@ -287,11 +305,12 @@ export default function AdminDashboardPage() {
     setError(null)
 
     try {
-      const [leaderboardRes, winnersRes, problemStatementsRes, qualifiedTeamsRes, sponsorsRes, announcementsRes, publishRes, visitStatsRes] = await Promise.all([
+      const [leaderboardRes, winnersRes, problemStatementsRes, qualifiedTeamsRes, finalistTeamsRes, sponsorsRes, announcementsRes, publishRes, visitStatsRes] = await Promise.all([
         fetch('/api/leaderboard?sortBy=rank', { cache: 'no-store' }),
         fetch('/api/winners', { cache: 'no-store' }),
         fetch('/api/problem-statements', { cache: 'no-store' }),
         fetch('/api/qualified-teams', { cache: 'no-store' }),
+        fetch('/api/finalist-teams', { cache: 'no-store' }),
         fetch('/api/sponsors', { cache: 'no-store' }),
         fetch('/api/announcements', { cache: 'no-store' }),
         fetch('/api/publish-state', { cache: 'no-store' }),
@@ -302,6 +321,7 @@ export default function AdminDashboardPage() {
       const winnersJson = (await winnersRes.json()) as ApiResponse<WinnerEntry[]>
       const problemStatementsJson = (await problemStatementsRes.json()) as ApiResponse<ProblemStatementEntry[]>
       const qualifiedTeamsJson = (await qualifiedTeamsRes.json()) as ApiResponse<QualifiedTeamEntry[]>
+      const finalistTeamsJson = (await finalistTeamsRes.json()) as ApiResponse<FinalistTeamEntry[]>
       const sponsorsJson = (await sponsorsRes.json()) as ApiResponse<SponsorEntry[]>
       const announcementsJson = (await announcementsRes.json()) as ApiResponse<AnnouncementEntry[]>
       const publishJson = (await publishRes.json()) as ApiResponse<PublishState>
@@ -323,6 +343,10 @@ export default function AdminDashboardPage() {
         throw new Error(qualifiedTeamsJson.error || 'Failed to fetch qualified teams')
       }
 
+      if (!finalistTeamsRes.ok || !finalistTeamsJson.success) {
+        throw new Error(finalistTeamsJson.error || 'Failed to fetch grand finalist teams')
+      }
+
       if (!sponsorsRes.ok || !sponsorsJson.success) {
         throw new Error(sponsorsJson.error || 'Failed to fetch sponsors')
       }
@@ -335,17 +359,22 @@ export default function AdminDashboardPage() {
       setWinners(winnersJson.data ?? [])
       setProblemStatements(problemStatementsJson.data ?? [])
       setQualifiedTeams(qualifiedTeamsJson.data ?? [])
+      setFinalistTeams(finalistTeamsJson.data ?? [])
       setSponsors(sponsorsJson.data ?? [])
       setAnnouncements(announcementsJson.data ?? [])
       if (publishJson.success && publishJson.data) {
-        setPublishState(publishJson.data)
+        setPublishState((prev) => ({
+          ...prev,
+          ...publishJson.data,
+          finalistTeams: Boolean(publishJson.data.finalistTeams),
+        }))
       }
       if (visitStatsRes.ok && visitStatsJson.success && visitStatsJson.data) {
         setVisitStats(visitStatsJson.data)
       }
 
       if (user?.isSuperAdmin) {
-        const [adminUsersRes, registrationLinkRes, navbarVisibilityRes] = await Promise.all([
+        const [adminUsersRes, registrationLinkRes, navbarVisibilityRes, loadingPopupRes] = await Promise.all([
           fetch('/api/admin-users', {
             cache: 'no-store',
           }),
@@ -355,10 +384,14 @@ export default function AdminDashboardPage() {
           fetch('/api/site-settings/navbar-visibility', {
             cache: 'no-store',
           }),
+          fetch('/api/site-settings/loading-popup', {
+            cache: 'no-store',
+          }),
         ])
         const adminUsersJson = (await adminUsersRes.json()) as ApiResponse<AdminAccessUser[]>
         const registrationLinkJson = (await registrationLinkRes.json()) as ApiResponse<RegistrationLinkData>
         const navbarVisibilityJson = (await navbarVisibilityRes.json()) as ApiResponse<NavbarVisibilityState>
+        const loadingPopupJson = (await loadingPopupRes.json()) as ApiResponse<LoadingPopupData>
 
         if (!adminUsersRes.ok || !adminUsersJson.success) {
           throw new Error(adminUsersJson.error || 'Failed to fetch admin users')
@@ -374,6 +407,11 @@ export default function AdminDashboardPage() {
 
         if (navbarVisibilityJson.success && navbarVisibilityJson.data) {
           setNavbarVisibility(navbarVisibilityJson.data)
+        }
+
+        if (loadingPopupJson.success && loadingPopupJson.data) {
+          setLoadingPopupSettings(loadingPopupJson.data)
+          setLoadingPopupForm(loadingPopupJson.data)
         }
       }
     } catch (fetchError) {
@@ -406,7 +444,6 @@ export default function AdminDashboardPage() {
   const resetQualifiedTeamForm = () => {
     setEditingQualifiedTeamId(null)
     setQualifiedTeamForm(emptyQualifiedTeamForm)
-    setQualifiedTeamPreviewUrl(null)
     setShowQualifiedTeamForm(false)
   }
 
@@ -606,33 +643,47 @@ export default function AdminDashboardPage() {
     setError(null)
 
     try {
-      const participantNames = qualifiedTeamForm.participantNamesText
-        .split('\n')
-        .map((name) => name.trim())
-        .filter(Boolean)
-
-      if (participantNames.length < 2 || participantNames.length > 6) {
-        throw new Error('Participant names must be between 2 and 6')
-      }
-
       const payload = {
+        stage: qualifiedTeamForm.stage,
+        sequenceNo: Number(qualifiedTeamForm.sequenceNo || 0),
+        teamId: qualifiedTeamForm.teamId.trim(),
         teamName: qualifiedTeamForm.teamName.trim(),
-        logoUrl: qualifiedTeamForm.logoUrl.trim(),
-        participantNames,
+        teamLeaderName: qualifiedTeamForm.teamLeaderName.trim(),
         collegeName: qualifiedTeamForm.collegeName.trim(),
       }
 
-      if (!payload.logoUrl) {
-        throw new Error('Please upload team logo before saving')
+      if (!Number.isInteger(payload.sequenceNo) || payload.sequenceNo < 0) {
+        throw new Error('Sr No must be a non-negative integer')
       }
 
-      const endpoint = editingQualifiedTeamId ? `/api/qualified-teams/${editingQualifiedTeamId}` : '/api/qualified-teams'
+      if (!payload.teamId) {
+        throw new Error('Team ID is required')
+      }
+
+      if (payload.stage === 'finalist' && !payload.teamLeaderName) {
+        throw new Error('Team leader name is required for grand finalist teams')
+      }
+
+      const endpointBase = payload.stage === 'finalist' ? '/api/finalist-teams' : '/api/qualified-teams'
+      const editingEndpointBase = editingQualifiedTeamId?.startsWith('finalist:') ? '/api/finalist-teams' : '/api/qualified-teams'
+      const editingId = editingQualifiedTeamId?.includes(':') ? editingQualifiedTeamId.split(':')[1] : editingQualifiedTeamId
+
+      const endpoint = editingQualifiedTeamId ? `${editingEndpointBase}/${editingId}` : endpointBase
       const method = editingQualifiedTeamId ? 'PUT' : 'POST'
+
+      const body = payload.stage === 'finalist'
+        ? payload
+        : {
+            sequenceNo: payload.sequenceNo,
+            teamId: payload.teamId,
+            teamName: payload.teamName,
+            collegeName: payload.collegeName,
+          }
 
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
       })
 
       const json = (await response.json()) as ApiResponse<QualifiedTeamEntry>
@@ -648,12 +699,13 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const onDeleteQualifiedTeam = async (id: string) => {
+  const onDeleteQualifiedTeam = async (id: string, stage: 'qualified' | 'finalist' = 'qualified') => {
     setLoading(true)
     setError(null)
 
     try {
-      const response = await fetch(`/api/qualified-teams/${id}`, { method: 'DELETE' })
+      const baseEndpoint = stage === 'finalist' ? '/api/finalist-teams' : '/api/qualified-teams'
+      const response = await fetch(`${baseEndpoint}/${id}`, { method: 'DELETE' })
       const json = (await response.json()) as ApiResponse<null>
 
       if (!response.ok || !json.success) {
@@ -724,48 +776,6 @@ export default function AdminDashboardPage() {
     reader.readAsDataURL(file)
 
     void onUploadSponsorLogo(file, target)
-  }
-
-  const onUploadQualifiedTeamLogo = async (file: File) => {
-    if (!file) return
-
-    try {
-      setQualifiedTeamUploading(true)
-      setError(null)
-
-      const uploadData = new FormData()
-      uploadData.append('file', file)
-
-      const response = await fetch('/api/qualified-teams/upload', {
-        method: 'POST',
-        body: uploadData,
-      })
-
-      const json = (await response.json()) as ApiResponse<{ url: string }>
-      if (!response.ok || !json.success || !json.data?.url) {
-        throw new Error(json.error || 'Failed to upload team logo')
-      }
-
-      setQualifiedTeamForm((prev) => ({ ...prev, logoUrl: json.data.url }))
-      setQualifiedTeamPreviewUrl(json.data.url)
-    } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : 'Failed to upload team logo')
-    } finally {
-      setQualifiedTeamUploading(false)
-    }
-  }
-
-  const onQualifiedTeamFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setQualifiedTeamPreviewUrl(reader.result as string)
-    }
-    reader.readAsDataURL(file)
-
-    void onUploadQualifiedTeamLogo(file)
   }
 
   const resetProblemForm = () => {
@@ -1110,6 +1120,41 @@ export default function AdminDashboardPage() {
     }
   }
 
+  const onSaveLoadingPopup = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!user?.isSuperAdmin) return
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/site-settings/loading-popup', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          enabled: loadingPopupForm.enabled,
+          title: loadingPopupForm.title.trim(),
+          message: loadingPopupForm.message.trim(),
+        }),
+      })
+
+      const json = (await response.json()) as ApiResponse<LoadingPopupData>
+
+      if (!response.ok || !json.success || !json.data) {
+        throw new Error(json.error || 'Failed to update loading popup settings')
+      }
+
+      setLoadingPopupSettings(json.data)
+      setLoadingPopupForm(json.data)
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Failed to update loading popup settings')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const sortedLeaderboard = useMemo(
     () =>
       [...leaderboard].sort((a, b) => {
@@ -1127,8 +1172,13 @@ export default function AdminDashboardPage() {
   )
 
   const sortedQualifiedTeams = useMemo(
-    () => [...qualifiedTeams].sort((a, b) => a.teamName.localeCompare(b.teamName)),
+    () => [...qualifiedTeams].sort((a, b) => a.sequenceNo - b.sequenceNo || a.teamName.localeCompare(b.teamName)),
     [qualifiedTeams]
+  )
+
+  const sortedFinalistTeams = useMemo(
+    () => [...finalistTeams].sort((a, b) => a.sequenceNo - b.sequenceNo || a.teamName.localeCompare(b.teamName)),
+    [finalistTeams]
   )
 
   if (!isAuthenticated) {
@@ -1703,134 +1753,7 @@ export default function AdminDashboardPage() {
         )}
 
         {activeTab === 'problemStatements' && (
-          <div className="space-y-4">
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => void togglePublish('problemStatements')}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
-                  publishState.problemStatements ? 'bg-blue-500 text-slate-950' : 'bg-slate-700 text-slate-200'
-                }`}
-              >
-                {publishState.problemStatements ? 'Unpublish' : 'Go Live'}
-              </button>
-              <button
-                onClick={() => void togglePublish('problemStatementsDownload')}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
-                  publishState.problemStatementsDownload ? 'bg-sky-500 text-slate-950' : 'bg-slate-700 text-slate-200'
-                }`}
-              >
-                {publishState.problemStatementsDownload ? 'Hide Download PS' : 'Show Download PS'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowProblemForm((prev) => !prev)
-                  if (editingProblemId) {
-                    setEditingProblemId(null)
-                    setProblemForm(emptyProblemForm)
-                  }
-                }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
-              >
-                <Plus size={16} /> {showProblemForm ? 'Close' : 'Add Problem Statement'}
-              </button>
-            </div>
-
-            {showProblemForm && (
-              <form onSubmit={onSaveProblem} className="grid grid-cols-1 gap-3 rounded-2xl border border-blue-500/20 bg-slate-900/80 p-4">
-                <input
-                  value={problemForm.title}
-                  onChange={(e) => setProblemForm((prev) => ({ ...prev, title: e.target.value }))}
-                  placeholder="Problem title"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-                <input
-                  value={problemForm.domain}
-                  onChange={(e) => setProblemForm((prev) => ({ ...prev, domain: e.target.value }))}
-                  placeholder="Domain (e.g. Environment, AI, Healthcare)"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-                <textarea
-                  value={problemForm.description}
-                  onChange={(e) => setProblemForm((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Detailed problem statement description"
-                  rows={4}
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-                <input
-                  value={problemForm.pdfLink}
-                  onChange={(e) => setProblemForm((prev) => ({ ...prev, pdfLink: e.target.value }))}
-                  placeholder="Google Drive PDF link"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-
-                <div className="flex gap-2 justify-end">
-                  <button
-                    type="button"
-                    onClick={resetProblemForm}
-                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-700 text-slate-200"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    disabled={loading}
-                    type="submit"
-                    className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-blue-500 text-slate-950 disabled:opacity-60"
-                  >
-                    {editingProblemId ? 'Update Statement' : 'Save Statement'}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            <div className="rounded-2xl border border-blue-500/20 overflow-hidden">
-              {problemStatements.length === 0 ? (
-                <div className="p-10 text-center text-slate-400 font-semibold">No problem statements uploaded yet.</div>
-              ) : (
-                <div className="space-y-3 p-3 sm:p-4">
-                  {problemStatements.map((item, index) => (
-                    <div key={item.id} className="rounded-xl border border-blue-500/20 bg-slate-900/60 p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-xs text-blue-300 font-bold uppercase tracking-wider mb-1">Statement {String(index + 1).padStart(2, '0')}</p>
-                          <h3 className="text-lg font-bold text-white">{item.title}</h3>
-                          <p className="text-xs text-cyan-300 mt-1">Domain: {item.domain}</p>
-                          <p className="text-xs text-slate-400 mt-1 break-all">PDF Link: {item.pdfLink || 'Not added yet'}</p>
-                          <p className="text-sm text-slate-300 mt-2 leading-relaxed">{item.description}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => {
-                              setEditingProblemId(item.id)
-                              setProblemForm({
-                                title: item.title,
-                                domain: item.domain,
-                                description: item.description,
-                                pdfLink: item.pdfLink ?? '',
-                              })
-                              setShowProblemForm(true)
-                            }}
-                            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
-                          >
-                            <Pencil size={14} />
-                          </button>
-                          <button
-                            onClick={() => void onDeleteProblem(item.id)}
-                            className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/40"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <ProblemStatementsAdmin embedded />
         )}
 
         {activeTab === 'qualifiedTeams' && (
@@ -1842,7 +1765,15 @@ export default function AdminDashboardPage() {
                   publishState.qualifiedTeams ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-200'
                 }`}
               >
-                {publishState.qualifiedTeams ? 'Unpublish' : 'Go Live'}
+                {publishState.qualifiedTeams ? 'Unpublish Qualified' : 'Go Live Qualified'}
+              </button>
+              <button
+                onClick={() => void togglePublish('finalistTeams')}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition ${
+                  publishState.finalistTeams ? 'bg-amber-400 text-slate-950' : 'bg-slate-700 text-slate-200'
+                }`}
+              >
+                {publishState.finalistTeams ? 'Unpublish Grand Finalists' : 'Go Live Grand Finalists'}
               </button>
               <button
                 onClick={() => {
@@ -1853,57 +1784,87 @@ export default function AdminDashboardPage() {
                 }}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
               >
-                <Plus size={16} /> {showQualifiedTeamForm ? 'Close' : 'Add Qualified Team'}
+                <Plus size={16} /> {showQualifiedTeamForm ? 'Close' : 'Add Team'}
               </button>
             </div>
 
             {showQualifiedTeamForm && (
               <form onSubmit={onSaveQualifiedTeam} className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-2xl border border-emerald-500/20 bg-slate-900/80 p-4">
-                <input
-                  value={qualifiedTeamForm.teamName}
-                  onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, teamName: e.target.value }))}
-                  placeholder="Team name"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
+                <label className="space-y-1 md:col-span-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Team Stage</span>
+                  <select
+                    value={qualifiedTeamForm.stage}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, stage: e.target.value as 'qualified' | 'finalist' }))}
+                    disabled={Boolean(editingQualifiedTeamId)}
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                  >
+                    <option value="qualified">Qualified Team (General)</option>
+                    <option value="finalist">Grand Finalist Team</option>
+                  </select>
+                  {editingQualifiedTeamId && (
+                    <p className="text-[11px] text-slate-500">Team stage cannot be changed while editing. Create a new entry to move between sections.</p>
+                  )}
+                </label>
 
-                <input
-                  value={qualifiedTeamForm.collegeName}
-                  onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, collegeName: e.target.value }))}
-                  placeholder="College name"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-
-                <div>
+                <label className="space-y-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Sr No</span>
                   <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
-                    onChange={onQualifiedTeamFileChange}
-                    disabled={qualifiedTeamUploading}
-                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500 file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-950"
-                    required={!editingQualifiedTeamId}
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={qualifiedTeamForm.sequenceNo}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, sequenceNo: e.target.value }))}
+                    placeholder="Sequence number"
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                    required
                   />
-                  {qualifiedTeamUploading && <p className="mt-1 text-xs text-emerald-300">Uploading logo...</p>}
-                </div>
+                </label>
 
-                <textarea
-                  value={qualifiedTeamForm.participantNamesText}
-                  onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, participantNamesText: e.target.value }))}
-                  placeholder={'Participant names (one per line)\nMinimum 2, maximum 6'}
-                  rows={5}
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
+                <label className="space-y-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Team Name</span>
+                  <input
+                    value={qualifiedTeamForm.teamName}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, teamName: e.target.value }))}
+                    placeholder="Enter team name"
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                    required
+                  />
+                </label>
 
-                {qualifiedTeamPreviewUrl && (
-                  <div className="md:col-span-2 rounded-xl border border-emerald-500/20 bg-slate-950/70 p-3">
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-emerald-300">Logo Preview</p>
-                    <div className="h-36 rounded-lg border border-slate-700 bg-slate-900 flex items-center justify-center p-3">
-                      <img src={qualifiedTeamPreviewUrl} alt="Qualified team preview" className="max-h-full max-w-full object-contain" />
-                    </div>
-                  </div>
+                <label className="space-y-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">College Name</span>
+                  <input
+                    value={qualifiedTeamForm.collegeName}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, collegeName: e.target.value }))}
+                    placeholder="Enter college name"
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                    required
+                  />
+                </label>
+
+                {qualifiedTeamForm.stage === 'finalist' && (
+                  <label className="space-y-1">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Team Leader Name</span>
+                    <input
+                      value={qualifiedTeamForm.teamLeaderName}
+                      onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, teamLeaderName: e.target.value }))}
+                      placeholder="Enter team leader name"
+                      className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                      required
+                    />
+                  </label>
                 )}
+
+                <label className="space-y-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Team ID</span>
+                  <input
+                    value={qualifiedTeamForm.teamId}
+                    onChange={(e) => setQualifiedTeamForm((prev) => ({ ...prev, teamId: e.target.value }))}
+                    placeholder="Enter team ID"
+                    className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                    required
+                  />
+                </label>
 
                 <div className="md:col-span-2 flex justify-end gap-2">
                   <button
@@ -1914,69 +1875,107 @@ export default function AdminDashboardPage() {
                     Cancel
                   </button>
                   <button
-                    disabled={loading || qualifiedTeamUploading}
+                    disabled={loading}
                     type="submit"
                     className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-emerald-500 text-slate-950 disabled:opacity-60"
                   >
-                    {editingQualifiedTeamId ? 'Update Qualified Team' : 'Save Qualified Team'}
+                    {editingQualifiedTeamId ? 'Update Team' : 'Save Team'}
                   </button>
                 </div>
               </form>
             )}
 
-            <div className="rounded-2xl border border-emerald-500/20 overflow-hidden">
-              {sortedQualifiedTeams.length === 0 ? (
-                <div className="p-10 text-center text-slate-400 font-semibold">No qualified teams added yet.</div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-3 sm:p-4">
-                  {sortedQualifiedTeams.map((team) => (
-                    <div key={team.id} className="rounded-xl border border-emerald-500/20 bg-slate-900/60 p-4">
-                      <div className="h-28 rounded-lg border border-slate-700 bg-slate-950 flex items-center justify-center p-3 mb-3">
-                        <img src={team.logoUrl} alt={team.teamName} className="max-h-full max-w-full object-contain" />
-                      </div>
-                      <p className="text-lg font-bold text-white line-clamp-1">{team.teamName}</p>
-                      <p className="text-xs text-emerald-300 mt-1 line-clamp-1">{team.collegeName}</p>
-                      <p className="text-xs text-slate-400 mt-1">Members: {team.participantNames.length}</p>
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {team.participantNames.slice(0, 3).map((name, index) => (
-                          <span key={`${team.id}-member-${index}`} className="text-[10px] rounded-full bg-slate-800 border border-slate-700 px-2 py-0.5 text-slate-300">
-                            {name}
-                          </span>
-                        ))}
-                        {team.participantNames.length > 3 && (
-                          <span className="text-[10px] rounded-full bg-slate-800 border border-slate-700 px-2 py-0.5 text-slate-300">
-                            +{team.participantNames.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-3 flex justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            setEditingQualifiedTeamId(team.id)
-                            setQualifiedTeamForm({
-                              teamName: team.teamName,
-                              logoUrl: team.logoUrl,
-                              participantNamesText: team.participantNames.join('\n'),
-                              collegeName: team.collegeName,
-                            })
-                            setQualifiedTeamPreviewUrl(team.logoUrl)
-                            setShowQualifiedTeamForm(true)
-                          }}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
-                        >
-                          <Pencil size={14} />
-                        </button>
-                        <button
-                          onClick={() => void onDeleteQualifiedTeam(team.id)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/40"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-emerald-500/20 overflow-hidden">
+                <div className="border-b border-emerald-500/20 px-4 py-3 bg-slate-900/70">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-emerald-300">Grand Finalist Teams</h3>
                 </div>
-              )}
+                {sortedFinalistTeams.length === 0 ? (
+                  <div className="p-8 text-center text-slate-400 font-semibold">No grand finalist teams added yet.</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-3 sm:p-4">
+                    {sortedFinalistTeams.map((team) => (
+                      <div key={team.id} className="rounded-xl border border-emerald-500/20 bg-slate-900/60 p-4">
+                        <p className="text-xs font-bold uppercase tracking-widest text-emerald-300">Sr No: {team.sequenceNo}</p>
+                        <p className="text-lg font-bold text-white line-clamp-1 mt-1">{team.teamName}</p>
+                        <p className="text-sm text-emerald-200 mt-1 line-clamp-1">Leader: {team.teamLeaderName}</p>
+                        <p className="text-sm text-emerald-300/90 mt-1 line-clamp-1">{team.collegeName}</p>
+                        <p className="text-xs text-slate-400 mt-2 uppercase tracking-wide">Team ID: {team.teamId}</p>
+                        <div className="mt-3 flex justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingQualifiedTeamId(`finalist:${team.id}`)
+                              setQualifiedTeamForm({
+                                stage: 'finalist',
+                                sequenceNo: String(team.sequenceNo),
+                                teamId: team.teamId,
+                                teamName: team.teamName,
+                                teamLeaderName: team.teamLeaderName,
+                                collegeName: team.collegeName,
+                              })
+                              setShowQualifiedTeamForm(true)
+                            }}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => void onDeleteQualifiedTeam(team.id, 'finalist')}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/40"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-emerald-500/20 overflow-hidden">
+                <div className="border-b border-emerald-500/20 px-4 py-3 bg-slate-900/70">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-emerald-300">Qualified Teams (General)</h3>
+                </div>
+                {sortedQualifiedTeams.length === 0 ? (
+                  <div className="p-8 text-center text-slate-400 font-semibold">No qualified teams added yet.</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-3 sm:p-4">
+                    {sortedQualifiedTeams.map((team) => (
+                      <div key={team.id} className="rounded-xl border border-emerald-500/20 bg-slate-900/60 p-4">
+                        <p className="text-xs font-bold uppercase tracking-widest text-emerald-300">Sr No: {team.sequenceNo}</p>
+                        <p className="text-lg font-bold text-white line-clamp-1 mt-1">{team.teamName}</p>
+                        <p className="text-sm text-emerald-300/90 mt-1 line-clamp-1">{team.collegeName}</p>
+                        <p className="text-xs text-slate-400 mt-2 uppercase tracking-wide">Team ID: {team.teamId}</p>
+                        <div className="mt-3 flex justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingQualifiedTeamId(`qualified:${team.id}`)
+                              setQualifiedTeamForm({
+                                stage: 'qualified',
+                                sequenceNo: String(team.sequenceNo),
+                                teamId: team.teamId,
+                                teamName: team.teamName,
+                                teamLeaderName: '',
+                                collegeName: team.collegeName,
+                              })
+                              setShowQualifiedTeamForm(true)
+                            }}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => void onDeleteQualifiedTeam(team.id, 'qualified')}
+                            className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/40"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -2366,6 +2365,59 @@ export default function AdminDashboardPage() {
                   className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-violet-500 text-slate-950 disabled:opacity-60"
                 >
                   Save Redirect
+                </button>
+              </div>
+            </form>
+
+            <form onSubmit={onSaveLoadingPopup} className="rounded-2xl border border-violet-500/20 bg-slate-900/80 p-4 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-violet-300">
+                Loading Popup Content
+              </p>
+
+              <label className="inline-flex items-center gap-2 text-sm text-slate-200">
+                <input
+                  type="checkbox"
+                  checked={loadingPopupForm.enabled}
+                  onChange={(e) => setLoadingPopupForm((prev) => ({ ...prev, enabled: e.target.checked }))}
+                />
+                Enable popup after page load
+              </label>
+
+              <input
+                value={loadingPopupForm.title}
+                onChange={(e) => setLoadingPopupForm((prev) => ({ ...prev, title: e.target.value }))}
+                placeholder="Popup title"
+                className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                required
+              />
+
+              <textarea
+                value={loadingPopupForm.message}
+                onChange={(e) => setLoadingPopupForm((prev) => ({ ...prev, message: e.target.value }))}
+                placeholder="Popup message"
+                rows={4}
+                className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                required
+              />
+
+              <p className="text-xs text-slate-400">
+                Live title: {loadingPopupSettings.title}
+              </p>
+
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLoadingPopupForm(loadingPopupSettings)}
+                  className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-700 text-slate-200"
+                >
+                  Reset
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-violet-500 text-slate-950 disabled:opacity-60"
+                >
+                  Save Popup
                 </button>
               </div>
             </form>

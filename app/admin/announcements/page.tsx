@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Clock3, LogOut, Megaphone, Pencil, Plus, Trash2 } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Clock3, LogOut, Megaphone, Pencil, Plus, Trash2 } from 'lucide-react'
+import { createPortal } from 'react-dom'
 import { useAuth } from '@/context/auth-context'
 import type { AnnouncementEntry } from '@/lib/admin-repository'
 
@@ -46,6 +47,7 @@ export default function AdminAnnouncementsPage() {
   const [error, setError] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm)
 
   useEffect(() => {
@@ -122,10 +124,6 @@ export default function AdminAnnouncementsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this announcement?')) {
-      return
-    }
-
     setSaving(true)
     setError(null)
 
@@ -284,7 +282,7 @@ export default function AdminAnnouncementsPage() {
                         <Pencil size={14} />
                       </button>
                       <button
-                        onClick={() => void handleDelete(announcement.id)}
+                        onClick={() => setPendingDeleteId(announcement.id)}
                         className="rounded-lg bg-slate-800 p-2 text-slate-200 hover:bg-red-500/40 transition"
                         aria-label="Delete announcement"
                       >
@@ -298,6 +296,57 @@ export default function AdminAnnouncementsPage() {
           )}
         </div>
       </div>
+
+      {pendingDeleteId && typeof window !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/75 backdrop-blur-sm px-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="announcement-delete-title"
+            className="w-full max-w-md rounded-3xl border border-rose-400/30 bg-slate-900 shadow-[0_28px_80px_rgba(2,6,23,0.65)]"
+          >
+            <div className="p-5 sm:p-6 space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-rose-400/30 bg-rose-500/15 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-rose-200">
+                <AlertTriangle size={14} /> Delete Confirmation
+              </div>
+
+              <div className="space-y-2">
+                <h3 id="announcement-delete-title" className="text-xl font-black text-white">
+                  Delete this announcement?
+                </h3>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  This announcement will be removed immediately from admin records and live ticker sync.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setPendingDeleteId(null)}
+                  className="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-slate-800 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-200 transition hover:bg-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const id = pendingDeleteId
+                    setPendingDeleteId(null)
+
+                    if (id) {
+                      void handleDelete(id)
+                    }
+                  }}
+                  className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-rose-400 to-red-500 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-950 transition hover:brightness-110"
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   )
 }

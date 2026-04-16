@@ -26,7 +26,7 @@ export default function QualifiedTeamsPage() {
             <Users size={14} /> Shortlisted Teams
           </p>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white">Qualified Teams</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Find qualified teams and view their members and college details.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">View grand finalists and all generally qualified teams for the online round.</p>
         </div>
 
         <QualifiedTeamsLive />

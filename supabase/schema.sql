@@ -20,16 +20,62 @@ create index if not exists idx_leaderboard_disqualified on public.leaderboard_en
 
 create table if not exists public.qualified_teams (
   id uuid primary key default gen_random_uuid(),
+  team_id text not null unique,
   team_name text not null,
-  logo_url text not null,
-  participant_names text[] not null,
+  logo_url text not null default '',
+  participant_names text[] not null default '{}',
   college_name text not null,
-  created_at timestamptz not null default now(),
-  constraint qualified_teams_participants_count_check check (cardinality(participant_names) between 2 and 6)
+  sequence_no integer not null default 0 check (sequence_no >= 0),
+  created_at timestamptz not null default now()
 );
 
+alter table public.qualified_teams
+  alter column logo_url set default '';
+
+alter table public.qualified_teams
+  add column if not exists sequence_no integer not null default 0;
+
+alter table public.qualified_teams
+  add column if not exists team_id text not null default '';
+
+alter table public.qualified_teams
+  alter column participant_names set default '{}';
+
+alter table public.qualified_teams
+  drop constraint if exists qualified_teams_participants_count_check;
+
 create index if not exists idx_qualified_teams_team_name on public.qualified_teams(team_name);
+create unique index if not exists idx_qualified_teams_team_id on public.qualified_teams(team_id) where team_id <> '';
 create index if not exists idx_qualified_teams_college_name on public.qualified_teams(college_name);
+create index if not exists idx_qualified_teams_sequence_no on public.qualified_teams(sequence_no);
+
+create table if not exists public.finalist_teams (
+  id uuid primary key default gen_random_uuid(),
+  team_id text not null unique,
+  team_name text not null,
+  logo_url text not null default '',
+  team_leader_name text not null,
+  college_name text not null,
+  sequence_no integer not null default 0 check (sequence_no >= 0),
+  created_at timestamptz not null default now()
+);
+
+alter table public.finalist_teams
+  alter column logo_url set default '';
+
+alter table public.finalist_teams
+  add column if not exists sequence_no integer not null default 0;
+
+alter table public.finalist_teams
+  add column if not exists team_id text not null default '';
+
+alter table public.finalist_teams
+  add column if not exists team_leader_name text not null default '';
+
+create index if not exists idx_finalist_teams_team_name on public.finalist_teams(team_name);
+create unique index if not exists idx_finalist_teams_team_id on public.finalist_teams(team_id) where team_id <> '';
+create index if not exists idx_finalist_teams_college_name on public.finalist_teams(college_name);
+create index if not exists idx_finalist_teams_sequence_no on public.finalist_teams(sequence_no);
 
 create table if not exists public.winners (
   id uuid primary key default gen_random_uuid(),
@@ -51,6 +97,123 @@ create table if not exists public.problem_statements (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.final_problem_statements (
+  id uuid primary key default gen_random_uuid(),
+  problem_statement_id text not null default '',
+  title text not null,
+  domain text not null,
+  description text not null,
+  pdf_link text not null default '',
+  display_order integer not null default 0 check (display_order >= 0),
+  max_slots integer not null default 6 check (max_slots > 0),
+  created_at timestamptz not null default now()
+);
+
+alter table public.final_problem_statements
+  add column if not exists problem_statement_id text not null default '';
+
+alter table public.final_problem_statements
+  add column if not exists display_order integer not null default 0;
+
+alter table public.final_problem_statements
+  add column if not exists max_slots integer not null default 6;
+
+alter table public.final_problem_statements
+  drop constraint if exists final_problem_statements_max_slots_check;
+
+alter table public.final_problem_statements
+  add constraint final_problem_statements_max_slots_check check (max_slots > 0);
+
+create index if not exists idx_final_problem_statements_display_order on public.final_problem_statements(display_order);
+create unique index if not exists idx_final_problem_statements_problem_statement_id
+  on public.final_problem_statements(problem_statement_id)
+  where problem_statement_id <> '';
+
+create table if not exists public.final_round_teams (
+  id uuid primary key default gen_random_uuid(),
+  team_id text not null unique,
+  team_name text not null,
+  password_hash text not null,
+  selected_problem_statement_id uuid references public.final_problem_statements(id) on delete set null,
+  selected_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+alter table public.final_round_teams
+  add column if not exists selected_problem_statement_id uuid references public.final_problem_statements(id) on delete set null;
+
+alter table public.final_round_teams
+  add column if not exists selected_at timestamptz;
+
+create unique index if not exists idx_final_round_teams_team_id on public.final_round_teams(team_id);
+create index if not exists idx_final_round_teams_selected_problem_statement_id on public.final_round_teams(selected_problem_statement_id);
+
+create or replace function public.final_round_select_problem_statement(
+  p_team_id text,
+  p_problem_statement_id uuid
+)
+returns table (
+  team_id text,
+  team_name text,
+  selected_problem_statement_id uuid,
+  selected_at timestamptz
+)
+language plpgsql
+as $$
+declare
+  v_team public.final_round_teams%rowtype;
+  v_statement public.final_problem_statements%rowtype;
+  v_filled_slots integer;
+begin
+  select *
+    into v_team
+    from public.final_round_teams as frt
+   where frt.team_id = p_team_id
+   for update;
+
+  if not found then
+    raise exception 'Team not found';
+  end if;
+
+  if v_team.selected_problem_statement_id is not null then
+    raise exception 'Team already selected a problem statement';
+  end if;
+
+  select *
+    into v_statement
+    from public.final_problem_statements as fps
+   where fps.id = p_problem_statement_id
+   for update;
+
+  if not found then
+    raise exception 'Problem statement not found';
+  end if;
+
+  select count(*)
+    into v_filled_slots
+    from public.final_round_teams as frt
+   where frt.selected_problem_statement_id = p_problem_statement_id;
+
+  if v_filled_slots >= v_statement.max_slots then
+    raise exception 'Problem statement is full';
+  end if;
+
+  update public.final_round_teams as frt
+     set selected_problem_statement_id = p_problem_statement_id,
+         selected_at = now()
+   where frt.id = v_team.id;
+
+  return query
+    select
+      v_team.team_id,
+      v_team.team_name,
+      p_problem_statement_id,
+      now();
+end;
+$$;
+
+create index if not exists idx_final_problem_statements_title on public.final_problem_statements(title);
+
 create table if not exists public.announcements (
   id uuid primary key default gen_random_uuid(),
   title text not null,
@@ -64,7 +227,7 @@ create index if not exists idx_announcements_created_at on public.announcements(
 create index if not exists idx_announcements_updated_at on public.announcements(updated_at desc);
 
 create table if not exists public.publish_state (
-  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams')),
+  section text primary key check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'finalProblemStatements', 'finalProblemStatementsDownload', 'qualifiedTeams', 'finalistTeams')),
   is_live boolean not null default false,
   updated_at timestamptz not null default now()
 );
@@ -74,7 +237,7 @@ drop constraint if exists publish_state_section_check;
 
 alter table public.publish_state
 add constraint publish_state_section_check
-check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'qualifiedTeams'));
+check (section in ('leaderboard', 'winners', 'problemStatements', 'problemStatementsDownload', 'finalProblemStatements', 'finalProblemStatementsDownload', 'qualifiedTeams', 'finalistTeams'));
 
 create table if not exists public.site_settings (
   key text primary key,
@@ -132,7 +295,10 @@ values
   ('winners', false),
   ('problemStatements', false),
   ('problemStatementsDownload', false),
-  ('qualifiedTeams', false)
+  ('finalProblemStatements', false),
+  ('finalProblemStatementsDownload', false),
+  ('qualifiedTeams', false),
+  ('finalistTeams', false)
 on conflict (section) do nothing;
 
 insert into public.site_settings(key, value_text)
@@ -145,6 +311,13 @@ values
   ('navbar_show_leaderboard', 'true'),
   ('navbar_show_winners', 'true'),
   ('navbar_show_qualified_teams', 'true')
+on conflict (key) do nothing;
+
+insert into public.site_settings(key, value_text)
+values
+  ('loading_popup_enabled', 'true'),
+  ('loading_popup_title', 'Qualified Teams Are Live'),
+  ('loading_popup_message', 'Qualified teams are now live and can be viewed in the Qualified Teams section. Check the latest list to see the updated entries.')
 on conflict (key) do nothing;
 
 create table if not exists public.website_visitors (

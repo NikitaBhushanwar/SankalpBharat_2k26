@@ -1,6 +1,5 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
-import { Texturina } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/context/auth-context'
 import Navbar from '@/components/navbar'
@@ -11,12 +10,6 @@ import { Loader } from '@/components/loader'
 import RegistrationPolicyPopup from '@/components/registration-policy-popup'
 import VisitTracker from '@/components/visit-tracker'
 import './globals.css'
-
-const texturina = Texturina({
-  subsets: ["latin"],
-  variable: "--font-texturina",
-  weight: ["700","800","900"],
-});
 
 export const metadata: Metadata = {
   title: 'Sankalp Bharat Hackathon 2026',
@@ -38,7 +31,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${texturina.className} antialiased transition-colors duration-300`}>
+      <body className="antialiased transition-colors duration-300">
     <AuthProvider>
 
       <Loader />

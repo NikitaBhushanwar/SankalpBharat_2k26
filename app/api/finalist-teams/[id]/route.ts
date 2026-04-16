@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 import { requireAdminSession } from '@/lib/admin-session'
 import {
-  deleteQualifiedTeam,
-  updateQualifiedTeam,
-  type QualifiedTeamEntry,
+  deleteFinalistTeam,
+  updateFinalistTeam,
+  type FinalistTeamEntry,
 } from '@/lib/admin-repository'
 
 interface ApiResponse<T> {
@@ -36,7 +36,7 @@ export async function PUT(
       )
     }
 
-    const updatePayload: Partial<Omit<QualifiedTeamEntry, 'id'>> = {}
+    const updatePayload: Partial<Omit<FinalistTeamEntry, 'id'>> = {}
 
     if (body.teamId !== undefined) {
       const teamId = String(body.teamId).trim()
@@ -60,6 +60,20 @@ export async function PUT(
       updatePayload.logoUrl = String(body.logoUrl).trim()
     }
 
+    if (body.teamLeaderName !== undefined) {
+      const teamLeaderName = String(body.teamLeaderName).trim()
+      if (!teamLeaderName) {
+        return NextResponse.json<ApiResponse<null>>(
+          {
+            success: false,
+            error: 'Team leader name cannot be empty',
+          },
+          { status: 400 }
+        )
+      }
+      updatePayload.teamLeaderName = teamLeaderName
+    }
+
     if (body.collegeName !== undefined) {
       updatePayload.collegeName = String(body.collegeName).trim()
     }
@@ -78,9 +92,9 @@ export async function PUT(
       updatePayload.sequenceNo = sequenceNo
     }
 
-    const updated = await updateQualifiedTeam(supabase, id, updatePayload)
+    const updated = await updateFinalistTeam(supabase, id, updatePayload)
 
-    return NextResponse.json<ApiResponse<QualifiedTeamEntry>>(
+    return NextResponse.json<ApiResponse<FinalistTeamEntry>>(
       {
         success: true,
         data: updated,
@@ -88,7 +102,7 @@ export async function PUT(
       { status: 200 }
     )
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to update qualified team'
+    const message = error instanceof Error ? error.message : 'Failed to update finalist team'
 
     if (message.toLowerCase().includes('duplicate key') && message.toLowerCase().includes('team_id')) {
       return NextResponse.json<ApiResponse<null>>(
@@ -130,7 +144,7 @@ export async function DELETE(
     }
 
     const { data: teamRow, error: teamError } = await supabase
-      .from('qualified_teams')
+      .from('finalist_teams')
       .select('id')
       .eq('id', id)
       .maybeSingle<{ id: string }>()
@@ -149,7 +163,7 @@ export async function DELETE(
       )
     }
 
-    await deleteQualifiedTeam(supabase, id)
+    await deleteFinalistTeam(supabase, id)
 
     return NextResponse.json<ApiResponse<null>>(
       {
@@ -161,7 +175,7 @@ export async function DELETE(
     return NextResponse.json<ApiResponse<null>>(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to delete qualified team',
+        error: error instanceof Error ? error.message : 'Failed to delete finalist team',
       },
       { status: 500 }
     )

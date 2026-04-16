@@ -57,7 +57,7 @@ const timeline = [
   },
   {
     phase: '10',
-    date: '12th April 2026 (Sunday)',
+    date: 'Before Hackathon Starts;',
     title: 'PS declaration & PS explanation for the final round (Offline Grand Finale)',
     description: 'Final problem statements for the onsite hackathon are declared, along with detailed explanations for finalists.',
   },

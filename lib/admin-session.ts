@@ -3,6 +3,7 @@ import type { NextRequest, NextResponse } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export const ADMIN_SESSION_COOKIE = 'sb_admin_session'
+export const ADMIN_SESSION_TTL_SECONDS = 60 * 10
 
 interface SessionPayload {
   email: string
@@ -27,7 +28,7 @@ const signValue = (value: string) =>
     return createHmac('sha256', secret).update(value).digest('base64url')
   })()
 
-export function createAdminSessionToken(email: string, ttlSeconds = 60 * 60 * 12) {
+export function createAdminSessionToken(email: string, ttlSeconds = ADMIN_SESSION_TTL_SECONDS) {
   const payload: SessionPayload = {
     email,
     exp: Math.floor(Date.now() / 1000) + ttlSeconds,
@@ -81,7 +82,7 @@ export function setAdminSessionCookie(response: NextResponse, token: string) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: '/',
-    maxAge: 60 * 60 * 12,
+    maxAge: ADMIN_SESSION_TTL_SECONDS,
   })
 }
 

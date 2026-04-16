@@ -1,14 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft, FileText } from 'lucide-react'
+import { ArrowLeft, FileText, Lock } from 'lucide-react'
 import ProblemStatementsLive from '@/components/problem-statements-live'
 
 export const metadata: Metadata = {
   title: 'Problem Statements - Sankalp Bharat Hackathon 2K26',
   description: 'Official problem statements published for Sankalp Bharat Hackathon 2K26.',
 }
-
-const pitchDeckHref = '/PPT%20sankalp.pptx'
 
 export default function ProblemStatementsPage() {
   return (
@@ -29,27 +27,26 @@ export default function ProblemStatementsPage() {
           </p>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white">Problem Statements</h1>
           <p className="mt-3 text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-    Problem statements are sourced from industry experts and research organizations, reflecting real-world challenges.
+            Browse the regular problem bank and the separate final problem statements sourced from industry experts and real-world use cases.
 
           </p>
         </div>
 
         <div className="glass-effect mb-8 rounded-2xl border border-border/50 p-4 sm:p-5 text-center">
           <p className="text-sm sm:text-base text-foreground/90 leading-relaxed max-w-3xl mx-auto">
-            You can download the official PPT format by clicking the button below. Please use the same format for your submission.
+            Final round teams should use the button below to enter the problem-statement allocation portal.
           </p>
           <div className="mt-4 flex justify-center">
-            <a
-              href={pitchDeckHref}
-              download
-              className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-white transition hover:-translate-y-0.5"
+            <Link
+              href="/final-round"
+              className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-white transition hover:-translate-y-0.5"
               style={{
-                background: 'linear-gradient(135deg, #0891b2 0%, #0284c7 55%, #1d4ed8 100%)',
+                background: 'linear-gradient(135deg, #059669 0%, #0891b2 55%, #1d4ed8 100%)',
                 boxShadow: '0 4px 15px rgba(14, 116, 144, 0.4)',
               }}
             >
-              Download
-            </a>
+              <Lock size={14} /> Final Round Portal
+            </Link>
           </div>
         </div>
 
