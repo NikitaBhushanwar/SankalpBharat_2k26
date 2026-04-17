@@ -4,7 +4,6 @@ export interface LeaderboardEntry {
   teamName: string
   projectTitle: string
   score: number
-  members: number
 }
 
 export interface WinnerEntry {

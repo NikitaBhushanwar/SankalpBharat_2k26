@@ -22,7 +22,6 @@ export interface LeaderboardEntry {
   projectTitle: string
   score: number
   isDisqualified: boolean
-  members: number
 }
 
 export interface WinnerEntry {
@@ -92,7 +91,6 @@ interface LeaderboardRow {
   project_title: string
   score: number
   is_disqualified: boolean
-  members: number
   created_at: string
 }
 
@@ -150,7 +148,6 @@ export const mapLeaderboardRow = (row: LeaderboardRow): LeaderboardEntry => ({
   projectTitle: row.project_title,
   score: row.score,
   isDisqualified: row.is_disqualified,
-  members: row.members,
 })
 
 export const mapWinnerRow = (row: WinnerRow): WinnerEntry => ({
@@ -432,12 +429,20 @@ export async function recomputeLeaderboardRanks(supabase: SupabaseClient) {
 
   const orderedRows = [...qualified, ...disqualified]
 
-  const updates = orderedRows.map((entry, index) =>
-    supabase
+  let previousScore: number | null = null
+  let previousRank = 0
+
+  const updates = orderedRows.map((entry, index) => {
+    const nextRank = previousScore !== null && entry.score === previousScore ? previousRank : previousRank + 1
+
+    previousScore = entry.score
+    previousRank = nextRank
+
+    return supabase
       .from('leaderboard_entries')
-      .update({ rank: index + 1 })
+      .update({ rank: nextRank })
       .eq('id', entry.id)
-  )
+  })
 
   await Promise.all(updates)
 }

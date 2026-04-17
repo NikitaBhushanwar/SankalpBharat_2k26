@@ -64,10 +64,10 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabaseAdmin()
     await requireAdminSession(request, supabase)
     const body = await request.json()
-    const { teamName, projectTitle, score, members, isDisqualified } = body
+    const { teamName, projectTitle, score, isDisqualified } = body
 
     // Validation
-    if (!teamName || !projectTitle || score === undefined || members === undefined) {
+    if (!teamName || !projectTitle || score === undefined) {
       return NextResponse.json(
         {
           success: false,
@@ -78,13 +78,12 @@ export async function POST(request: NextRequest) {
     }
 
     const parsedScore = Number(score)
-    const parsedMembers = Number(members)
 
-    if (!Number.isFinite(parsedScore) || !Number.isFinite(parsedMembers)) {
+    if (!Number.isFinite(parsedScore)) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Score and members must be valid numbers',
+          error: 'Score must be a valid number',
         },
         { status: 400 }
       )
@@ -97,7 +96,6 @@ export async function POST(request: NextRequest) {
         project_title: String(projectTitle).trim(),
         score: parsedScore,
         is_disqualified: Boolean(isDisqualified),
-        members: parsedMembers,
         rank: 0,
       })
       .select('*')

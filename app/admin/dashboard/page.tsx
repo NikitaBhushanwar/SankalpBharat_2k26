@@ -30,7 +30,6 @@ interface LeaderboardEntry {
   projectTitle: string
   score: number
   isDisqualified: boolean
-  members: number
 }
 
 interface WinnerEntry {
@@ -101,7 +100,6 @@ const emptyTeamForm = {
   score: '',
   scoreAdjustment: '0',
   isDisqualified: false,
-  members: '',
 }
 
 const emptyWinnerForm = {
@@ -473,7 +471,6 @@ export default function AdminDashboardPage() {
         projectTitle: teamForm.projectTitle.trim(),
         score: nextScore,
         isDisqualified: teamForm.isDisqualified,
-        members: Number(teamForm.members),
       }
 
       const endpoint = editingTeamId ? `/api/leaderboard/${editingTeamId}` : '/api/leaderboard'
@@ -1483,16 +1480,6 @@ export default function AdminDashboardPage() {
                 ) : (
                   <div className="hidden lg:block" />
                 )}
-                <input
-                  type="number"
-                  min="1"
-                  value={teamForm.members}
-                  onChange={(e) => setTeamForm((prev) => ({ ...prev, members: e.target.value }))}
-                  placeholder="Members"
-                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
-                  required
-                />
-
                 <label className="sm:col-span-2 lg:col-span-4 inline-flex items-center gap-2 text-sm text-slate-200">
                   <input
                     type="checkbox"
@@ -1532,9 +1519,8 @@ export default function AdminDashboardPage() {
               <div className="hidden md:grid grid-cols-12 bg-slate-900/90 text-slate-300 text-xs font-bold uppercase tracking-wider px-4 py-3">
                 <div className="col-span-1">#</div>
                 <div className="col-span-3">Team</div>
-                <div className="col-span-3">Project</div>
-                <div className="col-span-1">Score</div>
-                <div className="col-span-1">Members</div>
+                <div className="col-span-4">Project</div>
+                <div className="col-span-2">Score</div>
                 <div className="col-span-1">Status</div>
                 <div className="col-span-2 text-right">Actions</div>
               </div>
@@ -1548,9 +1534,8 @@ export default function AdminDashboardPage() {
                       <div key={entry.id} className="grid grid-cols-12 px-4 py-4 border-t border-cyan-500/10 bg-slate-950/40 text-sm text-slate-200">
                         <div className="col-span-1 font-bold text-cyan-300">{entry.isDisqualified ? 'DQ' : entry.rank}</div>
                         <div className="col-span-3 font-semibold">{entry.teamName}</div>
-                        <div className="col-span-3 text-slate-300">{entry.projectTitle}</div>
-                        <div className="col-span-1 font-bold">{entry.score}</div>
-                        <div className="col-span-1">{entry.members}</div>
+                        <div className="col-span-4 text-slate-300">{entry.projectTitle}</div>
+                        <div className="col-span-2 font-bold">{entry.score}</div>
                         <div className="col-span-1">
                           {entry.isDisqualified ? (
                             <span className="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/20 text-red-300 border border-red-500/40">
@@ -1570,7 +1555,6 @@ export default function AdminDashboardPage() {
                                 score: String(entry.score),
                                 scoreAdjustment: '0',
                                 isDisqualified: entry.isDisqualified,
-                                members: String(entry.members),
                               })
                               setShowTeamForm(true)
                             }}
@@ -1605,7 +1589,6 @@ export default function AdminDashboardPage() {
                           </div>
                           <div className="text-right">
                             <p className="text-sm font-bold text-white">{entry.score} pts</p>
-                            <p className="text-xs text-slate-400">{entry.members} members</p>
                           </div>
                         </div>
                         <div className="mt-3 flex justify-end gap-2">
@@ -1618,7 +1601,6 @@ export default function AdminDashboardPage() {
                                 score: String(entry.score),
                                 scoreAdjustment: '0',
                                 isDisqualified: entry.isDisqualified,
-                                members: String(entry.members),
                               })
                               setShowTeamForm(true)
                             }}

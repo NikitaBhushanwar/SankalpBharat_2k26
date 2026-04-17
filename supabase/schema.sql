@@ -7,12 +7,14 @@ create table if not exists public.leaderboard_entries (
   project_title text not null,
   score integer not null check (score >= 0),
   is_disqualified boolean not null default false,
-  members integer not null check (members >= 1),
   created_at timestamptz not null default now()
 );
 
 alter table public.leaderboard_entries
   add column if not exists is_disqualified boolean not null default false;
+
+alter table public.leaderboard_entries
+  drop column if exists members;
 
 create index if not exists idx_leaderboard_rank on public.leaderboard_entries(rank);
 create index if not exists idx_leaderboard_score on public.leaderboard_entries(score desc);
