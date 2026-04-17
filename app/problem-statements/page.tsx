@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft, FileText, Lock } from 'lucide-react'
+import { ArrowLeft, Download, FileText, Lock } from 'lucide-react'
 import ProblemStatementsLive from '@/components/problem-statements-live'
 
 export const metadata: Metadata = {
@@ -36,7 +36,7 @@ export default function ProblemStatementsPage() {
           <p className="text-sm sm:text-base text-foreground/90 leading-relaxed max-w-3xl mx-auto">
             Final round teams should use the button below to enter the problem-statement allocation portal.
           </p>
-          <div className="mt-4 flex justify-center">
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
             <Link
               href="/final-round"
               className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-white transition hover:-translate-y-0.5"
@@ -47,6 +47,17 @@ export default function ProblemStatementsPage() {
             >
               <Lock size={14} /> Final Round Portal
             </Link>
+            <a
+              href="/PPT%20sankalp.pptx"
+              download
+              className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-white transition hover:-translate-y-0.5"
+              style={{
+                background: 'linear-gradient(135deg, #7c3aed 0%, #9333ea 45%, #ec4899 100%)',
+                boxShadow: '0 4px 15px rgba(147, 51, 234, 0.4)',
+              }}
+            >
+              <Download size={14} /> Final Round PPT Template
+            </a>
           </div>
         </div>
 

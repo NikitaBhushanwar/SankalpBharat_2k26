@@ -3,7 +3,7 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin'
 import { hashPassword } from '@/lib/password'
 import { createFinalRoundSessionToken, setFinalRoundSessionCookie } from '@/lib/final-round-session'
 import { getFinalRoundDashboardData } from '@/lib/final-round-repository'
-import { createPasswordHashDigest, verifyFinalRoundSetupToken } from '@/lib/final-round-setup-token'
+import { verifyFinalRoundSetupToken } from '@/lib/final-round-setup-token'
 
 interface ApiResponse<T> {
   success: boolean
@@ -77,16 +77,6 @@ export async function POST(request: NextRequest) {
           error: 'Team not found',
         },
         { status: 404 }
-      )
-    }
-
-    if (createPasswordHashDigest(team.password_hash) !== payload.passwordHashDigest) {
-      return NextResponse.json<ApiResponse<null>>(
-        {
-          success: false,
-          error: 'Setup link has already been used. Ask admin for a fresh link.',
-        },
-        { status: 409 }
       )
     }
 

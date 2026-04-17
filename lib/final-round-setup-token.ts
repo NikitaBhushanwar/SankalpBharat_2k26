@@ -8,6 +8,15 @@ interface SetupTokenPayload {
 }
 
 const resolveSetupSecret = () => process.env.FINAL_ROUND_SETUP_SECRET || process.env.FINAL_ROUND_SESSION_SECRET
+const resolveSetupTokenGraceSeconds = () => {
+  const rawMinutes = Number(process.env.FINAL_ROUND_SETUP_TOKEN_GRACE_MINUTES ?? '720')
+
+  if (!Number.isFinite(rawMinutes) || rawMinutes < 0) {
+    return 0
+  }
+
+  return Math.floor(rawMinutes) * 60
+}
 
 const base64UrlEncode = (input: string) => Buffer.from(input, 'utf8').toString('base64url')
 const base64UrlDecode = (input: string) => Buffer.from(input, 'base64url').toString('utf8')
@@ -68,7 +77,10 @@ export function verifyFinalRoundSetupToken(token?: string | null): SetupTokenPay
       return null
     }
 
-    if (payload.exp < Math.floor(Date.now() / 1000)) {
+    const now = Math.floor(Date.now() / 1000)
+    const graceSeconds = resolveSetupTokenGraceSeconds()
+
+    if (payload.exp + graceSeconds < now) {
       return null
     }
 
