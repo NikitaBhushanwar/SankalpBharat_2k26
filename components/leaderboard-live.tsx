@@ -5,12 +5,14 @@ import AnimatedList from './animated-list'
 
 interface LeaderboardEntry {
   id: string
-  rank: number
   teamName: string
   projectTitle: string
   score: number
   isDisqualified: boolean
-  members: number
+}
+
+interface RankedLeaderboardEntry extends LeaderboardEntry {
+  displayRank: number
 }
 
 interface ApiResponse<T> {
@@ -48,7 +50,7 @@ export default function LeaderboardLive() {
 
     try {
       const [response, publishResponse] = await Promise.all([
-        fetch('/api/leaderboard?sortBy=rank', { cache: 'no-store' }),
+        fetch('/api/leaderboard?sortBy=score', { cache: 'no-store' }),
         fetch('/api/publish-state', { cache: 'no-store' }),
       ])
       const json = (await response.json()) as ApiResponse<LeaderboardEntry[]>
@@ -108,11 +110,39 @@ export default function LeaderboardLive() {
     }
   }, [])
 
-  const totalScore = useMemo(
-    () => entries.filter((item) => !item.isDisqualified).reduce((acc, item) => acc + item.score, 0),
-    [entries]
-  )
-  const disqualifiedCount = useMemo(() => entries.filter((item) => item.isDisqualified).length, [entries])
+  const rankedEntries = useMemo<RankedLeaderboardEntry[]>(() => {
+    const sortedEntries = [...entries].sort((left, right) => {
+      if (left.isDisqualified !== right.isDisqualified) {
+        return left.isDisqualified ? 1 : -1
+      }
+
+      return right.score - left.score || left.teamName.localeCompare(right.teamName)
+    })
+
+    let previousScore: number | null = null
+    let previousWasDisqualified = false
+    let previousRank = 0
+
+    return sortedEntries.map((entry, index) => {
+      const sameRankingGroup =
+        previousScore !== null &&
+        entry.score === previousScore &&
+        entry.isDisqualified === previousWasDisqualified
+
+      const displayRank = sameRankingGroup ? previousRank : previousRank + 1
+
+      previousScore = entry.score
+      previousWasDisqualified = entry.isDisqualified
+      previousRank = displayRank
+
+      return {
+        ...entry,
+        displayRank,
+      }
+    })
+  }, [entries])
+
+  const disqualifiedCount = useMemo(() => rankedEntries.filter((item) => item.isDisqualified).length, [rankedEntries])
 
   const getRankColor = (rank: number) => {
     if (rank === 1) return 'text-amber-600 dark:text-yellow-300'
@@ -130,7 +160,7 @@ export default function LeaderboardLive() {
       return <div className="p-8 text-center text-red-400">{error}</div>
     }
 
-    if (entries.length === 0) {
+    if (rankedEntries.length === 0) {
       return <div className="p-8 text-center text-muted-foreground">No leaderboard entries published yet.</div>
     }
 
@@ -140,14 +170,10 @@ export default function LeaderboardLive() {
 
     return (
       <>
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="glass-effect rounded-xl p-4">
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Teams</p>
             <p className="text-2xl font-black text-cyan-700 dark:text-cyan-300">{entries.length}</p>
-          </div>
-          <div className="glass-effect rounded-xl p-4">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">Total Score</p>
-            <p className="text-2xl font-black text-cyan-700 dark:text-cyan-300">{totalScore}</p>
           </div>
           <div className="glass-effect rounded-xl p-4">
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Status</p>
@@ -160,22 +186,21 @@ export default function LeaderboardLive() {
         </div>
 
         <div className="rounded-2xl border border-secondary/20 bg-card/75 backdrop-blur p-2 sm:p-3">
-          <div className="hidden sm:grid grid-cols-12 px-4 py-2 mb-1 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-            <p className="col-span-1">#</p>
-            <p className="col-span-3">Team</p>
-            <p className="col-span-4">Project</p>
+          <div className="hidden sm:grid grid-cols-10 px-4 py-2 mb-1 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+            <p className="col-span-1">Rank</p>
+            <p className="col-span-4">Team</p>
+            <p className="col-span-3">Team ID</p>
             <p className="col-span-2 text-right">Score</p>
-            <p className="col-span-2 text-right">Members</p>
           </div>
 
           <AnimatedList
-            items={entries}
-            getItemKey={(item) => (item as LeaderboardEntry).id}
+            items={rankedEntries}
+            getItemKey={(item) => (item as RankedLeaderboardEntry).id}
             onItemSelect={(item, index) =>
-              console.log('Selected leaderboard item:', (item as LeaderboardEntry).teamName, index)
+              console.log('Selected leaderboard item:', (item as RankedLeaderboardEntry).teamName, index)
             }
             renderItem={(item, _index, isSelected) => {
-              const entry = item as LeaderboardEntry
+              const entry = item as RankedLeaderboardEntry
 
               return (
                 <div
@@ -185,15 +210,24 @@ export default function LeaderboardLive() {
                       : 'bg-background/85 border-secondary/20'
                   }`}
                 >
-                  <div className="sm:grid sm:grid-cols-12 sm:items-center gap-2">
+                  <div className="sm:grid sm:grid-cols-10 sm:items-center gap-2">
                     <div className="sm:col-span-1 flex items-center justify-between sm:justify-start">
-                      <p className={`text-sm font-black ${entry.isDisqualified ? 'text-red-500 dark:text-red-300' : getRankColor(entry.rank)}`}>
-                        {entry.isDisqualified ? 'DQ' : `#${entry.rank}`}
-                      </p>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground sm:hidden">Rank</p>
+                        <div className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-black border ${
+                          entry.isDisqualified
+                            ? 'bg-red-500/10 text-red-500 dark:text-red-300 border-red-500/30'
+                            : 'bg-cyan-500/10 border-cyan-500/30 '
+                        }`}>
+                          <span className={entry.isDisqualified ? '' : getRankColor(entry.displayRank)}>
+                            {entry.isDisqualified ? 'DQ' : `#${entry.displayRank}`}
+                          </span>
+                        </div>
+                      </div>
                       <p className="sm:hidden text-sm font-black text-cyan-700 dark:text-cyan-300">{entry.score} pts</p>
                     </div>
 
-                    <div className="sm:col-span-3 mt-1 sm:mt-0">
+                    <div className="sm:col-span-4 mt-1 sm:mt-0">
                       <p className="text-sm sm:text-base font-bold text-foreground leading-tight">{entry.teamName}</p>
                       {entry.isDisqualified && (
                         <span className="mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/20 text-red-500 dark:text-red-300 border border-red-500/40">
@@ -202,18 +236,13 @@ export default function LeaderboardLive() {
                       )}
                     </div>
 
-                    <div className="sm:col-span-4 mt-1 sm:mt-0">
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-tight">{entry.projectTitle}</p>
+                    <div className="sm:col-span-3 mt-1 sm:mt-0">
+                      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Team ID</p>
+                      <p className="text-xs sm:text-sm text-foreground/90 leading-tight font-semibold">{entry.projectTitle || '-'}</p>
                     </div>
 
                     <div className="hidden sm:block sm:col-span-2 text-right">
                       <p className="text-sm font-black text-cyan-700 dark:text-cyan-300">{entry.score} pts</p>
-                    </div>
-
-                    <div className="sm:col-span-2 flex justify-end mt-2 sm:mt-0">
-                      <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold bg-background/80 text-foreground/85 border border-border">
-                        {entry.members} members
-                      </span>
                     </div>
                   </div>
                 </div>

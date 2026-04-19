@@ -137,7 +137,49 @@ pnpm dev      # Start dev server
 pnpm build    # Production build
 pnpm start    # Run production build
 pnpm lint     # Lint project
+pnpm final-round:links -- --in teams.csv --out teams-with-links.csv --base-url https://your-domain.com --ttl-minutes 180
 ```
+
+## Final Round Bulk Email Workflow (Google Sheets)
+
+Use this when you have team data in Google Sheets and want to email each team a unique password setup link.
+
+1. In Google Sheets, keep columns like:
+   - `team_id` (required)
+   - `team_name` (recommended)
+   - `email` (recommended for mail merge)
+
+2. Export the sheet as CSV (File -> Download -> Comma Separated Values).
+
+3. Generate links from terminal:
+
+```bash
+pnpm final-round:links -- \
+  --in teams.csv \
+  --out teams-with-links.csv \
+  --base-url https://sankalpbharat.stvincentngp.edu.in \
+  --ttl-minutes 180
+```
+
+4. Import `teams-with-links.csv` back into Google Sheets.
+
+5. Send emails using your preferred mail merge add-on (for example YAMM) using:
+   - `email_subject`
+   - `email_body`
+   - `email`
+
+Output columns added by the script:
+- `status`: `ok` or `error`
+- `note`: reason when `status=error`
+- `setup_link`: one-time secure setup URL
+- `expires_at`: UTC timestamp
+- `email_subject`
+- `email_body`
+
+Required env vars for this script:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `FINAL_ROUND_SETUP_SECRET` (or fallback: `FINAL_ROUND_SESSION_SECRET`)
 
 ## API Overview
 

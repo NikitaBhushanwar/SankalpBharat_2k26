@@ -22,7 +22,6 @@ export interface LeaderboardEntry {
   projectTitle: string
   score: number
   isDisqualified: boolean
-  members: number
 }
 
 export interface WinnerEntry {
@@ -68,6 +67,7 @@ export interface PublishState {
   finalProblemStatementsDownload: boolean
   qualifiedTeams: boolean
   finalistTeams: boolean
+  finalRoundSelector: boolean
 }
 
 export interface LoadingPopupSettings {
@@ -82,7 +82,7 @@ export interface NavbarVisibilityState {
   qualifiedTeams: boolean
 }
 
-export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
+export type PublishSection = 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams' | 'finalRoundSelector'
 
 interface LeaderboardRow {
   id: string
@@ -91,7 +91,6 @@ interface LeaderboardRow {
   project_title: string
   score: number
   is_disqualified: boolean
-  members: number
   created_at: string
 }
 
@@ -133,7 +132,7 @@ interface AnnouncementRow {
 }
 
 interface PublishStateRow {
-  section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams'
+  section: 'leaderboard' | 'winners' | 'problemStatements' | 'problemStatementsDownload' | 'finalProblemStatements' | 'finalProblemStatementsDownload' | 'qualifiedTeams' | 'finalistTeams' | 'finalRoundSelector'
   is_live: boolean
 }
 
@@ -149,7 +148,6 @@ export const mapLeaderboardRow = (row: LeaderboardRow): LeaderboardEntry => ({
   projectTitle: row.project_title,
   score: row.score,
   isDisqualified: row.is_disqualified,
-  members: row.members,
 })
 
 export const mapWinnerRow = (row: WinnerRow): WinnerEntry => ({
@@ -431,12 +429,20 @@ export async function recomputeLeaderboardRanks(supabase: SupabaseClient) {
 
   const orderedRows = [...qualified, ...disqualified]
 
-  const updates = orderedRows.map((entry, index) =>
-    supabase
+  let previousScore: number | null = null
+  let previousRank = 0
+
+  const updates = orderedRows.map((entry, index) => {
+    const nextRank = previousScore !== null && entry.score === previousScore ? previousRank : previousRank + 1
+
+    previousScore = entry.score
+    previousRank = nextRank
+
+    return supabase
       .from('leaderboard_entries')
-      .update({ rank: index + 1 })
+      .update({ rank: nextRank })
       .eq('id', entry.id)
-  )
+  })
 
   await Promise.all(updates)
 }
@@ -472,6 +478,7 @@ export async function readPublishState(supabase: SupabaseClient): Promise<Publis
     finalProblemStatementsDownload: false,
     qualifiedTeams: false,
     finalistTeams: false,
+    finalRoundSelector: true,
   }
 
   const { data, error } = await supabase

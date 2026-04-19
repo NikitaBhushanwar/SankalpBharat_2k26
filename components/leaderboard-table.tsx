@@ -8,7 +8,6 @@ interface LeaderboardEntry {
   teamName: string
   projectTitle: string
   score: number
-  members: number
 }
 
 const leaderboardData: LeaderboardEntry[] = []
@@ -90,9 +89,6 @@ export function LeaderboardTable() {
               <th className="text-left py-4 px-6 font-semibold text-muted-foreground text-sm">
                 Project Title
               </th>
-              <th className="text-center py-4 px-6 font-semibold text-muted-foreground text-sm">
-                Members
-              </th>
               <th className="text-right py-4 px-6 font-semibold text-muted-foreground text-sm">
                 <button
                   onClick={() => handleSort('score')}
@@ -131,13 +127,6 @@ export function LeaderboardTable() {
                   <p className="text-foreground truncate">{entry.projectTitle}</p>
                 </td>
 
-                {/* Members */}
-                <td className="py-4 px-6 text-center">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-secondary/20 text-secondary text-xs font-semibold">
-                    {entry.members}
-                  </span>
-                </td>
-
                 {/* Score */}
                 <td className="py-4 px-6">
                   <div className="text-right">
@@ -173,8 +162,7 @@ export function LeaderboardTable() {
             </div>
             <h4 className="font-semibold text-foreground mb-1">{entry.teamName}</h4>
             <p className="text-sm text-muted-foreground mb-3">{entry.projectTitle}</p>
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Members: {entry.members}</span>
+            <div className="flex items-center justify-end text-xs text-muted-foreground">
               <span className="text-secondary font-semibold">pts</span>
             </div>
           </div>
