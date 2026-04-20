@@ -180,7 +180,7 @@ export default function LeaderboardLive() {
             <p className="text-2xl font-black text-cyan-700 dark:text-cyan-300">{isLive ? 'Live' : 'Offline'}</p>
           </div>
           <div className="glass-effect rounded-xl p-4">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">Disqualified</p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Walked Off</p>
             <p className="text-2xl font-black text-red-500 dark:text-red-300">{disqualifiedCount}</p>
           </div>
         </div>
@@ -231,7 +231,7 @@ export default function LeaderboardLive() {
                       <p className="text-sm sm:text-base font-bold text-foreground leading-tight">{entry.teamName}</p>
                       {entry.isDisqualified && (
                         <span className="mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/20 text-red-500 dark:text-red-300 border border-red-500/40">
-                          Disqualified
+                          Walked Off
                         </span>
                       )}
                     </div>

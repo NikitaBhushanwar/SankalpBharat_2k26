@@ -84,9 +84,25 @@ create table if not exists public.winners (
   rank integer not null default 0,
   team_name text not null,
   title text not null,
+  place_title text not null default '',
+  college_name text not null default '',
+  members text[] not null default '{}',
+  image_url text not null default '',
   prize_amount text not null,
   created_at timestamptz not null default now()
 );
+
+alter table public.winners
+  add column if not exists place_title text not null default '';
+
+alter table public.winners
+  add column if not exists college_name text not null default '';
+
+alter table public.winners
+  add column if not exists members text[] not null default '{}';
+
+alter table public.winners
+  add column if not exists image_url text not null default '';
 
 create index if not exists idx_winners_rank on public.winners(rank);
 
@@ -337,6 +353,19 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
 values (
   'qualified-teams',
   'qualified-teams',
+  true,
+  5242880,
+  array['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml']
+)
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'winners',
+  'winners',
   true,
   5242880,
   array['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml']

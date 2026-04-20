@@ -31,28 +31,8 @@ export function HeroSection({ visible }: HeroSectionProps) {
   });
 
   useEffect(() => {
-    const eventDate = new Date('2026-04-17T09:00:00+05:30').getTime();
-
-    const updateCountdown = () => {
-      const now = new Date().getTime();
-      const distance = eventDate - now;
-
-      if (distance <= 0) {
-        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0, isLive: true });
-        return;
-      }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      setCountdown({ days, hours, minutes, seconds, isLive: false });
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
+    // Event has completed - show completion status
+    setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0, isLive: true });
   }, []);
 
   return (
@@ -171,13 +151,14 @@ export function HeroSection({ visible }: HeroSectionProps) {
 
         <div className="mt-3 max-w-3xl mx-auto">
           <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-1.5 rounded-full border border-primary/40 bg-slate-950/70 backdrop-blur mb-5 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-            <span className="text-[10px] sm:text-xs font-semibold text-foreground tracking-wide uppercase">Event Countdown · 17 April 2026, 09:00 AM</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[10px] sm:text-xs font-semibold text-foreground tracking-wide uppercase">Event Completed · 17-19 April 2026</span>
           </div>
 
           {countdown.isLive ? (
             <div className="glass-effect rounded-2xl p-6 border border-emerald-500/40">
-              <p className="text-xl sm:text-2xl md:text-3xl font-black text-emerald-400">Hackathon is Live!</p>
+              <p className="text-xl sm:text-2xl md:text-3xl font-black text-emerald-400">Hackathon Complete!</p>
+              <p className="text-xs sm:text-sm text-emerald-300/80 mt-2">Thank you for participating in Sankalp Bharat 2K26</p>
             </div>
           ) : (
             <div className="flex items-center justify-center gap-0 sm:gap-1">

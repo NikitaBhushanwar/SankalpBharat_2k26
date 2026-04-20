@@ -37,7 +37,18 @@ interface WinnerEntry {
   rank: number
   teamName: string
   title: string
+  placeTitle: string
+  collegeName: string
+  members: string[]
+  imageUrl: string
   prizeAmount: string
+}
+
+interface WinnerMetaFormData {
+  placeTitle: string
+  collegeName: string
+  membersText: string
+  imageUrl: string
 }
 
 interface ProblemStatementEntry {
@@ -104,9 +115,76 @@ const emptyTeamForm = {
 
 const emptyWinnerForm = {
   teamName: '',
-  title: '',
+  placeTitle: '',
+  collegeName: '',
+  membersText: '',
+  imageUrl: '',
   prizeAmount: '',
 }
+
+const WINNER_META_PREFIX = '__SB_WINNER_META__'
+
+const parseLegacyWinnerMetaFromTitle = (title: string): WinnerMetaFormData => {
+  if (!title.startsWith(WINNER_META_PREFIX)) {
+    return {
+      placeTitle: title,
+      collegeName: '',
+      membersText: '',
+      imageUrl: '',
+    }
+  }
+
+  try {
+    const raw = title.slice(WINNER_META_PREFIX.length)
+    const parsed = JSON.parse(raw) as {
+      placeTitle?: string
+      collegeName?: string
+      members?: string[]
+      imageUrl?: string
+    }
+
+    return {
+      placeTitle: parsed.placeTitle?.trim() || '',
+      collegeName: parsed.collegeName?.trim() || '',
+      membersText: Array.isArray(parsed.members) ? parsed.members.join('\n') : '',
+      imageUrl: parsed.imageUrl?.trim() || '',
+    }
+  } catch {
+    return {
+      placeTitle: title,
+      collegeName: '',
+      membersText: '',
+      imageUrl: '',
+    }
+  }
+}
+
+const winnerTemplatePresets: Array<typeof emptyWinnerForm> = [
+  {
+    teamName: 'CoinToss',
+    placeTitle: '1st Place',
+    collegeName: 'IIIT Nagpur',
+    membersText: ['Vedant Badukale', 'Vaishnavi Newalkar', 'Om Tilwar', 'Pragyan Srivastava'].join('\n'),
+    imageUrl: '/winners/cointoss.jpg',
+    prizeAmount: 'Rs 30,000',
+  },
+  {
+    teamName: 'Codex',
+    placeTitle: '2nd Place',
+    collegeName: 'IIIT Nagpur',
+    membersText: ['Sanchit Garg', 'Shlok Dadhich', 'Arijeet Tripathi', 'Abhinav Pandey', 'Vanshaj Sharma'].join('\n'),
+    imageUrl: '/winners/codex.jpg',
+    prizeAmount: 'Rs 20,000',
+  },
+  {
+    teamName: 'Terranexus',
+    placeTitle: '3rd Place',
+    collegeName: 'Prof. Ram Meghe Institute of Technology & Research, Amravati',
+    membersText: ['Abhanga Vyawhare', 'Parth Deshmukh', 'Aniruddha Akhare', 'Sarthak Pundlik', 'Pranav Gujar'].join('\n'),
+    imageUrl: '/winners/terranexus.jpg',
+    prizeAmount: 'Rs 10,000',
+  },
+]
 
 const emptyProblemForm = {
   title: '',
@@ -235,6 +313,8 @@ export default function AdminDashboardPage() {
   const [sponsorForm, setSponsorForm] = useState(emptySponsorForm)
   const [announcementForm, setAnnouncementForm] = useState(emptyAnnouncementForm)
   const [accessForm, setAccessForm] = useState(emptyAccessForm)
+  const [winnerImagePreviewUrl, setWinnerImagePreviewUrl] = useState<string | null>(null)
+  const [winnerImageUploading, setWinnerImageUploading] = useState(false)
   const [sponsorPrimaryPreviewUrl, setSponsorPrimaryPreviewUrl] = useState<string | null>(null)
   const [sponsorSecondaryPreviewUrl, setSponsorSecondaryPreviewUrl] = useState<string | null>(null)
   const [sponsorUploadingPrimary, setSponsorUploadingPrimary] = useState(false)
@@ -431,6 +511,8 @@ export default function AdminDashboardPage() {
   const resetWinnerForm = () => {
     setEditingWinnerId(null)
     setWinnerForm(emptyWinnerForm)
+    setWinnerImagePreviewUrl(null)
+    setWinnerImageUploading(false)
     setShowWinnerForm(false)
   }
 
@@ -522,10 +604,23 @@ export default function AdminDashboardPage() {
     setError(null)
 
     try {
+      const members = winnerForm.membersText
+        .split(/\r?\n/)
+        .map((member) => member.trim())
+        .filter(Boolean)
+
       const payload = {
         teamName: winnerForm.teamName.trim(),
-        title: winnerForm.title.trim(),
+        title: winnerForm.placeTitle.trim(),
+        placeTitle: winnerForm.placeTitle.trim(),
+        collegeName: winnerForm.collegeName.trim(),
+        members,
+        imageUrl: winnerForm.imageUrl.trim(),
         prizeAmount: winnerForm.prizeAmount.trim(),
+      }
+
+      if (!winnerForm.placeTitle.trim()) {
+        throw new Error('Place title is required')
       }
 
       const endpoint = editingWinnerId ? `/api/winners/${editingWinnerId}` : '/api/winners'
@@ -776,6 +871,48 @@ export default function AdminDashboardPage() {
     reader.readAsDataURL(file)
 
     void onUploadSponsorLogo(file, target)
+  }
+
+  const onUploadWinnerImage = async (file: File) => {
+    if (!file) return
+
+    try {
+      setWinnerImageUploading(true)
+      setError(null)
+
+      const uploadData = new FormData()
+      uploadData.append('file', file)
+
+      const response = await fetch('/api/winners/upload', {
+        method: 'POST',
+        body: uploadData,
+      })
+
+      const json = (await response.json()) as ApiResponse<{ url: string }>
+      if (!response.ok || !json.success || !json.data?.url) {
+        throw new Error(json.error || 'Failed to upload winner image')
+      }
+
+      setWinnerForm((prev) => ({ ...prev, imageUrl: json.data.url }))
+      setWinnerImagePreviewUrl(json.data.url)
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : 'Failed to upload winner image')
+    } finally {
+      setWinnerImageUploading(false)
+    }
+  }
+
+  const onWinnerFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setWinnerImagePreviewUrl(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+
+    void onUploadWinnerImage(file)
   }
 
   const resetProblemForm = () => {
@@ -1487,7 +1624,7 @@ export default function AdminDashboardPage() {
                     onChange={(e) => setTeamForm((prev) => ({ ...prev, isDisqualified: e.target.checked }))}
                     className="h-4 w-4 rounded border-slate-600"
                   />
-                  Mark as disqualified
+                  Mark as Walked Off
                 </label>
 
                 {editingTeamId && (
@@ -1539,7 +1676,7 @@ export default function AdminDashboardPage() {
                         <div className="col-span-1">
                           {entry.isDisqualified ? (
                             <span className="inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/20 text-red-300 border border-red-500/40">
-                              Disqualified
+                              Walked Off
                             </span>
                           ) : (
                             <span className="text-slate-500">-</span>
@@ -1583,7 +1720,7 @@ export default function AdminDashboardPage() {
                             <p className="text-sm text-slate-400">{entry.projectTitle}</p>
                             {entry.isDisqualified && (
                               <p className="mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/20 text-red-300 border border-red-500/40">
-                                Disqualified
+                                Walked Off
                               </p>
                             )}
                           </div>
@@ -1642,11 +1779,33 @@ export default function AdminDashboardPage() {
                     setEditingWinnerId(null)
                     setWinnerForm(emptyWinnerForm)
                   }
+                  setWinnerImagePreviewUrl(null)
                 }}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 text-sm font-black hover:brightness-110 transition"
               >
                 <Plus size={16} /> {showWinnerForm ? 'Close' : 'Add Winner'}
               </button>
+            </div>
+
+            <div className="rounded-2xl border border-cyan-500/20 bg-slate-900/60 p-3 sm:p-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-cyan-300 mb-2">Quick Winner Templates</p>
+              <div className="flex flex-wrap gap-2">
+                {winnerTemplatePresets.map((preset) => (
+                  <button
+                    key={preset.placeTitle}
+                    type="button"
+                    onClick={() => {
+                      setEditingWinnerId(null)
+                      setWinnerForm(preset)
+                      setWinnerImagePreviewUrl(preset.imageUrl || null)
+                      setShowWinnerForm(true)
+                    }}
+                    className="px-3 py-2 rounded-lg bg-slate-800 text-slate-100 text-xs font-bold uppercase tracking-wider border border-cyan-500/20 hover:bg-slate-700"
+                  >
+                    {preset.placeTitle} · {preset.teamName}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {showWinnerForm && (
@@ -1659,9 +1818,9 @@ export default function AdminDashboardPage() {
                   required
                 />
                 <input
-                  value={winnerForm.title}
-                  onChange={(e) => setWinnerForm((prev) => ({ ...prev, title: e.target.value }))}
-                  placeholder="Winner title (e.g. Overall Best)"
+                  value={winnerForm.placeTitle}
+                  onChange={(e) => setWinnerForm((prev) => ({ ...prev, placeTitle: e.target.value }))}
+                  placeholder="Place title (e.g. 1st Place)"
                   className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
                   required
                 />
@@ -1671,6 +1830,49 @@ export default function AdminDashboardPage() {
                   placeholder="Prize (e.g. ₹50,000)"
                   className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
                   required
+                />
+                <input
+                  value={winnerForm.collegeName}
+                  onChange={(e) => setWinnerForm((prev) => ({ ...prev, collegeName: e.target.value }))}
+                  placeholder="College name"
+                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white sm:col-span-2"
+                />
+                <input
+                  value={winnerForm.imageUrl}
+                  onChange={(e) => {
+                    const nextValue = e.target.value
+                    setWinnerForm((prev) => ({ ...prev, imageUrl: nextValue }))
+                    setWinnerImagePreviewUrl(nextValue || null)
+                  }}
+                  placeholder="Team image URL (e.g. /winners/cointoss.jpg)"
+                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white"
+                />
+                <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-3 sm:col-span-2">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-2">Upload Team Image</p>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                    onChange={onWinnerFileChange}
+                    disabled={winnerImageUploading}
+                    className="w-full text-xs text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-cyan-500/20 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-cyan-200 hover:file:bg-cyan-500/30"
+                  />
+                  {winnerImageUploading && <p className="mt-2 text-xs text-amber-300">Uploading winner image...</p>}
+                </div>
+                {(winnerImagePreviewUrl || winnerForm.imageUrl) && (
+                  <div className="sm:col-span-2 lg:col-span-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-3">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-cyan-300 mb-2">Image Preview</p>
+                    <img
+                      src={winnerImagePreviewUrl || winnerForm.imageUrl}
+                      alt="Winner preview"
+                      className="h-40 w-full sm:w-64 rounded-lg object-cover border border-slate-700"
+                    />
+                  </div>
+                )}
+                <textarea
+                  value={winnerForm.membersText}
+                  onChange={(e) => setWinnerForm((prev) => ({ ...prev, membersText: e.target.value }))}
+                  placeholder={'Members (one per line)\nVedant Badukale\nVaishnavi Newalkar'}
+                  className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white sm:col-span-2 lg:col-span-3 min-h-[110px]"
                 />
 
                 <div className="sm:col-span-2 lg:col-span-3 flex gap-2 justify-end">
@@ -1682,7 +1884,7 @@ export default function AdminDashboardPage() {
                     Cancel
                   </button>
                   <button
-                    disabled={loading}
+                    disabled={loading || winnerImageUploading}
                     type="submit"
                     className="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-cyan-500 text-slate-950 disabled:opacity-60"
                   >
@@ -1702,19 +1904,24 @@ export default function AdminDashboardPage() {
                       <div>
                         <p className="text-xs text-cyan-300 font-bold uppercase tracking-wider">Rank #{winner.rank}</p>
                         <p className="text-lg font-bold text-white">{winner.teamName}</p>
-                        <p className="text-sm text-slate-400">{winner.title}</p>
+                        <p className="text-sm text-slate-400">{winner.placeTitle || winner.title}</p>
                       </div>
                       <div className="flex items-center gap-3 justify-between sm:justify-end">
                         <p className="text-base font-black text-cyan-300">{winner.prizeAmount}</p>
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
+                              const parsedLegacyMeta = parseLegacyWinnerMetaFromTitle(winner.title)
                               setEditingWinnerId(winner.id)
                               setWinnerForm({
                                 teamName: winner.teamName,
-                                title: winner.title,
+                                placeTitle: winner.placeTitle || parsedLegacyMeta.placeTitle,
+                                collegeName: winner.collegeName || parsedLegacyMeta.collegeName,
+                                membersText: winner.members?.length ? winner.members.join('\n') : parsedLegacyMeta.membersText,
+                                imageUrl: winner.imageUrl || parsedLegacyMeta.imageUrl,
                                 prizeAmount: winner.prizeAmount,
                               })
+                              setWinnerImagePreviewUrl(winner.imageUrl || parsedLegacyMeta.imageUrl || null)
                               setShowWinnerForm(true)
                             }}
                             className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700"

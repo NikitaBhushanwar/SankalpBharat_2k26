@@ -29,6 +29,10 @@ export interface WinnerEntry {
   rank: number
   teamName: string
   title: string
+  placeTitle: string
+  collegeName: string
+  members: string[]
+  imageUrl: string
   prizeAmount: string
 }
 
@@ -99,6 +103,10 @@ interface WinnerRow {
   rank: number
   team_name: string
   title: string
+  place_title: string | null
+  college_name: string | null
+  members: string[] | null
+  image_url: string | null
   prize_amount: string
   created_at: string
 }
@@ -155,6 +163,10 @@ export const mapWinnerRow = (row: WinnerRow): WinnerEntry => ({
   rank: row.rank,
   teamName: row.team_name,
   title: row.title,
+  placeTitle: row.place_title?.trim() || row.title,
+  collegeName: row.college_name?.trim() || '',
+  members: Array.isArray(row.members) ? row.members.map((member) => String(member).trim()).filter(Boolean) : [],
+  imageUrl: row.image_url?.trim() || '',
   prizeAmount: row.prize_amount,
 })
 
