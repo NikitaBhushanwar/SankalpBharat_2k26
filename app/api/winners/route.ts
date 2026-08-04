@@ -42,9 +42,14 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabaseAdmin()
     await requireAdminSession(request, supabase)
     const body = await request.json()
-    const { teamName, title, prizeAmount } = body
+    const { teamName, title, placeTitle, collegeName, members, imageUrl, prizeAmount } = body
 
-    if (!teamName || !title || !prizeAmount) {
+    const finalPlaceTitle = String(placeTitle ?? title ?? '').trim()
+    const finalMembers = Array.isArray(members)
+      ? members.map((member) => String(member).trim()).filter(Boolean)
+      : []
+
+    if (!teamName || !finalPlaceTitle || !prizeAmount) {
       return NextResponse.json(
         {
           success: false,
@@ -65,7 +70,11 @@ export async function POST(request: NextRequest) {
       .insert({
         rank,
         team_name: String(teamName).trim(),
-        title: String(title).trim(),
+        title: finalPlaceTitle,
+        place_title: finalPlaceTitle,
+        college_name: String(collegeName ?? '').trim(),
+        members: finalMembers,
+        image_url: String(imageUrl ?? '').trim(),
         prize_amount: String(prizeAmount).trim(),
       })
       .select('*')

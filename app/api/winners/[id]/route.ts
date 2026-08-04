@@ -44,11 +44,15 @@ export async function PUT(
     await requireAdminSession(request, supabase)
     const { id } = await params
     const body = await request.json()
-    const { teamName, title, prizeAmount } = body
+    const { teamName, title, placeTitle, collegeName, members, imageUrl, prizeAmount } = body
 
     const updatePayload: {
       team_name?: string
       title?: string
+      place_title?: string
+      college_name?: string
+      members?: string[]
+      image_url?: string
       prize_amount?: string
     } = {}
 
@@ -56,8 +60,24 @@ export async function PUT(
       updatePayload.team_name = String(teamName).trim()
     }
 
-    if (title !== undefined) {
-      updatePayload.title = String(title).trim()
+    if (title !== undefined || placeTitle !== undefined) {
+      const finalPlaceTitle = String(placeTitle ?? title ?? '').trim()
+      updatePayload.title = finalPlaceTitle
+      updatePayload.place_title = finalPlaceTitle
+    }
+
+    if (collegeName !== undefined) {
+      updatePayload.college_name = String(collegeName).trim()
+    }
+
+    if (members !== undefined) {
+      updatePayload.members = Array.isArray(members)
+        ? members.map((member) => String(member).trim()).filter(Boolean)
+        : []
+    }
+
+    if (imageUrl !== undefined) {
+      updatePayload.image_url = String(imageUrl).trim()
     }
 
     if (prizeAmount !== undefined) {

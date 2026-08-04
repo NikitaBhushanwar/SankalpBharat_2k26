@@ -11,6 +11,10 @@ export interface WinnerEntry {
   rank: number
   teamName: string
   title: string
+  placeTitle: string
+  collegeName: string
+  members: string[]
+  imageUrl: string
   prizeAmount: string
 }
 
